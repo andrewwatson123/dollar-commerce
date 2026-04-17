@@ -93,15 +93,25 @@ function inferCategory(title, defaultCat) {
 
   const t = title.toLowerCase();
 
+  // Financial / stock context — NEVER classify as Bug.
+  // Route these through Feature, as "Down X%" is about share price not an outage.
+  const isFinancial = /\b(stock|shares?|buy|sell|price|%|percent|market cap|dividend|investors?|shareholder|trading|nyse|nasdaq|analyst|upgrade|downgrade|rating)\b/.test(t);
+
   // AI — check first (most specific)
   if (/\bai\b|artificial intelligence|machine learning|generative|llm|co-?pilot|gemini|gpt/.test(t)) return 'AI Update';
 
   // API — explicit mentions
   if (/\bapi\b|sdk|developer|endpoint|integration|webhook|graph api|marketing api/.test(t)) return 'API Update';
 
-  // Bug — MUST have software/platform context, NOT product reviews
-  if (/\b(outage|down|incident|service disruption|not working|error|crash|glitch|degraded|maintenance)\b/.test(t)) return 'Bug';
-  if (/\bbug\s*(fix|report|patch|issue)\b/.test(t)) return 'Bug';
+  // Bug — MUST have software/platform context, NOT financial articles
+  if (!isFinancial) {
+    // "down" only counts as Bug when combined with service-related terms
+    if (/\b(outage|service disruption|not working|crash|glitch|degraded|maintenance)\b/.test(t)) return 'Bug';
+    if (/\b(site|service|platform|server|app|dashboard|checkout)\s+(is\s+)?(down|offline)\b/.test(t)) return 'Bug';
+    if (/\bdown\s+for\s+(users|sellers|merchants|everyone)\b/.test(t)) return 'Bug';
+    if (/\bbug\s*(fix|report|patch|issue)\b/.test(t)) return 'Bug';
+    if (/\berror\b.*\b(message|code|fix)\b/.test(t)) return 'Bug';
+  }
 
   // Policy — regulatory, terms, fees
   if (/policy|rule|compliance|regulation|ban|restrict|require|mandate|fee change|surcharge|terms of service|terms change|guideline/.test(t)) return 'Policy';
@@ -114,6 +124,10 @@ const NOISE = [
   // Financial / stock stuff
   /stock price/i, /share price/i, /\bearnings\b/i, /revenue (miss|beat|report)/i,
   /quarterly results/i, /\bipo\b/i, /valuation/i,
+  /\bstock\s+(is\s+)?(a\s+)?(buy|sell|hold)\b/i, /should you buy/i, /price target/i,
+  /analyst (upgrade|downgrade|rating)/i, /\b(up|down)\s+\d+%\b.*\b(stock|shares?)\b/i,
+  /\bstock\b.*\b(buy|sell|hold|target)\b/i, /is.*stock.*a.*(buy|sell)/i,
+  /shareholders? (should|must|need)/i, /\bdividend/i,
   // Legal
   /lawsuit/i, /\bsued\b/i, /court order/i, /antitrust/i,
   // Product reviews / shopping guides / listicles
