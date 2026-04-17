@@ -56,7 +56,14 @@ export default function ProfilePage({ session, userData }) {
     } catch { /* silent fail */ }
   };
 
-  const handleSignOut = () => signOut({ callbackUrl: '/' });
+  const handleSignOut = () => {
+    // Clear local bookmarks on sign out so UI doesn't show them as saved
+    if (typeof window !== 'undefined') {
+      try { localStorage.removeItem('dc_saved_articles'); } catch {}
+      window.dispatchEvent(new Event('dc-saved-changed'));
+    }
+    signOut({ callbackUrl: '/' });
+  };
 
   const memberSince = userData?.createdAt
     ? new Date(userData.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
@@ -193,36 +200,6 @@ export default function ProfilePage({ session, userData }) {
             />
           </div>
 
-          {/* Legal links */}
-          <div style={{
-            borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 20,
-            marginBottom: 24,
-          }}>
-            <div style={{
-              fontSize: 10, fontWeight: 700, color: '#94a3b8',
-              textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12,
-            }}>
-              Legal
-            </div>
-            <div style={{ display: 'flex', gap: 20 }}>
-              {[
-                { label: 'Terms of Service', view: 'legal-terms' },
-                { label: 'Privacy Policy', view: 'legal-privacy' },
-                { label: 'Cookie Policy', view: 'legal-cookies' },
-              ].map((l) => (
-                <button
-                  key={l.view}
-                  onClick={() => setSubView(l.view)}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    fontSize: 12, color: '#94a3b8', padding: 0, fontWeight: 500,
-                  }}
-                >
-                  {l.label}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Sign out */}
           <button

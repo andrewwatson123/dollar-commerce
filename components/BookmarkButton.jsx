@@ -43,7 +43,8 @@ export default function BookmarkButton({ article, size = 18, color = '#666' }) {
   const saved = useSavedArticles();
   const { data: session, status } = useSession();
   const [showPrompt, setShowPrompt] = useState(false);
-  const isSaved = saved.some((a) => a.slug === article.slug);
+  // Only show as saved if user is logged in (logged-out users see unfilled bookmark)
+  const isSaved = !!session && saved.some((a) => a.slug === article.slug);
 
   const toggle = (e) => {
     e.preventDefault();
