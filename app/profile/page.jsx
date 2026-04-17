@@ -6,7 +6,12 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import { getTopBarData } from '@/lib/topbar-data';
 
-export const metadata = { title: 'Profile — Dollar Commerce' };
+export const metadata = {
+  title: 'Your Profile',
+  description: 'Manage your Dollar Commerce account — saved articles, email preferences, and notification settings.',
+  alternates: { canonical: '/profile' },
+  robots: { index: false, follow: false },
+};
 export const dynamic = 'force-dynamic';
 
 async function getUserData(userId) {

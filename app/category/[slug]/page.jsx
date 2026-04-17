@@ -15,7 +15,26 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const cats = await getAllCategories();
   const cat = cats.find((c) => c.slug === params.slug);
-  return { title: `${cat?.title ?? 'Category'} — Dollar Commerce` };
+  const name = cat?.title ?? 'Category';
+  const description = cat?.description ||
+    `${name} articles on Dollar Commerce — analysis, news, and intelligence on ${name.toLowerCase()} in the e-commerce industry.`;
+  const canonical = `/category/${params.slug}`;
+  return {
+    title: `${name} — E-Commerce Analysis`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title: `${name} — Dollar Commerce`,
+      description,
+      url: `https://dollarcommerce.co${canonical}`,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${name} — Dollar Commerce`,
+      description,
+    },
+  };
 }
 
 export default async function CategoryPage({ params }) {

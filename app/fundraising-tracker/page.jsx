@@ -6,7 +6,23 @@ import { getTopBarData } from '@/lib/topbar-data';
 import SiteFooter from '@/components/SiteFooter';
 
 export const revalidate = 300;
-export const metadata = { title: 'Fundraising Tracker — Dollar Commerce' };
+export const metadata = {
+  title: 'E-Commerce Fundraising Tracker — Live VC Deals & Funding Rounds',
+  description:
+    'Live tracker of fundraising rounds across e-commerce, DTC brands, marketplaces, and commerce software. Filter by sector, round stage, and region. Updated daily with deals from Series Seed to IPO.',
+  alternates: { canonical: '/fundraising-tracker' },
+  openGraph: {
+    title: 'E-Commerce Fundraising Tracker',
+    description: 'Live VC deals and funding rounds across e-commerce, DTC, and commerce software.',
+    url: 'https://dollarcommerce.co/fundraising-tracker',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'E-Commerce Fundraising Tracker',
+    description: 'Live VC deals across e-commerce and DTC.',
+  },
+};
 
 async function getIpoData() {
   try {

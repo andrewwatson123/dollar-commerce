@@ -6,7 +6,23 @@ import { getTopBarData } from '@/lib/topbar-data';
 import { EVENTS_DATA } from '@/lib/events-data';
 
 export const revalidate = 300;
-export const metadata = { title: 'Events Tracker — Dollar Commerce' };
+export const metadata = {
+  title: 'E-Commerce Events Calendar — Conferences, Summits & Expos',
+  description:
+    'Comprehensive calendar of e-commerce conferences, summits, and expos worldwide. Shoptalk, NRF Big Show, CommerceNext, Prosper, eTail, and more. Filter by region, type, and date.',
+  alternates: { canonical: '/events' },
+  openGraph: {
+    title: 'E-Commerce Events Calendar',
+    description: 'Conferences, summits, and expos across the global e-commerce industry.',
+    url: 'https://dollarcommerce.co/events',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'E-Commerce Events Calendar',
+    description: 'Conferences, summits, and expos across e-commerce.',
+  },
+};
 
 export default async function EventsPage({ searchParams }) {
   const type = searchParams?.type || undefined;

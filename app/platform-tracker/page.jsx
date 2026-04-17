@@ -5,7 +5,23 @@ import { getPlatformUpdates, getPlatformStats } from '@/sanity/lib/queries';
 import { getTopBarData } from '@/lib/topbar-data';
 
 export const revalidate = 300;
-export const metadata = { title: 'Platform Tracker — Dollar Commerce' };
+export const metadata = {
+  title: 'Platform Tracker — Amazon, Shopify, Meta & Google Updates',
+  description:
+    'Every important update from Amazon, Shopify, Meta, Google, TikTok, and Pinterest — features, policy changes, outages, and API releases. Filter by platform and severity. Built for e-commerce operators.',
+  alternates: { canonical: '/platform-tracker' },
+  openGraph: {
+    title: 'Platform Tracker — Amazon, Shopify, Meta & Google Updates',
+    description: 'Live updates across the platforms your e-commerce business runs on.',
+    url: 'https://dollarcommerce.co/platform-tracker',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Platform Tracker — Amazon, Shopify, Meta & Google',
+    description: 'Live updates across the platforms your e-commerce business runs on.',
+  },
+};
 
 export default async function PlatformTrackerPage({ searchParams }) {
   const platform = searchParams?.platform || undefined;

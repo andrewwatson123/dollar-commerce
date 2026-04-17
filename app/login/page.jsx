@@ -2,7 +2,12 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import LoginForm from '@/components/LoginForm';
 
-export const metadata = { title: 'Sign In — Dollar Commerce' };
+export const metadata = {
+  title: 'Sign In',
+  description: 'Sign in to Dollar Commerce to save articles, sync bookmarks, and personalise your feed.',
+  alternates: { canonical: '/login' },
+  robots: { index: false, follow: true },
+};
 
 export default async function LoginPage() {
   const session = await auth();

@@ -6,7 +6,23 @@ import SiteFooter from '@/components/SiteFooter';
 
 export const revalidate = 60;
 
-export const metadata = { title: 'Top Articles — Dollar Commerce' };
+export const metadata = {
+  title: 'Top E-Commerce Articles — Most-Read Industry Analysis',
+  description:
+    'The most-read articles on Dollar Commerce. Deep-dive analysis on DTC brands, marketplaces, commerce software, platform shifts, and the companies shaping the e-commerce industry.',
+  alternates: { canonical: '/top-articles' },
+  openGraph: {
+    title: 'Top E-Commerce Articles — Dollar Commerce',
+    description: 'The most-read analysis on the e-commerce industry.',
+    url: 'https://dollarcommerce.co/top-articles',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Top E-Commerce Articles',
+    description: 'The most-read analysis on the e-commerce industry.',
+  },
+};
 
 export default async function TopArticlesPage() {
   const [articles, topBar] = await Promise.all([getAllArticles(), getTopBarData()]);

@@ -14,6 +14,34 @@ export async function generateStaticParams() {
   return authors.map((a) => ({ slug: a.slug }));
 }
 
+export async function generateMetadata({ params }) {
+  const authors = await getAllAuthors();
+  const author = authors.find((a) => a.slug === params.slug);
+  if (!author) return { title: 'Author not found' };
+  const name = author.name;
+  const bio = author.bio || `Articles and analysis by ${name} on Dollar Commerce — e-commerce industry intelligence.`;
+  const canonical = `/author/${params.slug}`;
+  const imageUrl = author.image ? urlFor(author.image).width(400).url() : undefined;
+  return {
+    title: `${name} — Author`,
+    description: bio,
+    alternates: { canonical },
+    openGraph: {
+      title: `${name} — Dollar Commerce`,
+      description: bio,
+      url: `https://dollarcommerce.co${canonical}`,
+      type: 'profile',
+      images: imageUrl ? [{ url: imageUrl, alt: name }] : undefined,
+    },
+    twitter: {
+      card: 'summary',
+      title: `${name} — Dollar Commerce`,
+      description: bio,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+  };
+}
+
 export default async function AuthorPage({ params }) {
   const authors = await getAllAuthors();
   const author = authors.find((a) => a.slug === params.slug);

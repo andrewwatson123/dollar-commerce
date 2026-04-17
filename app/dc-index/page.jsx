@@ -10,7 +10,23 @@ import SiteFooter from '@/components/SiteFooter';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 300;
-export const metadata = { title: 'DC Index — Dollar Commerce' };
+export const metadata = {
+  title: 'DC Index — The E-Commerce Stock Index',
+  description:
+    'Track 116 public e-commerce companies with the DC Index. Live performance of brands, marketplaces, and software stocks like Amazon, Shopify, Nike, Lululemon, Klaviyo, and more. Equal-weighted and market-cap weighted views.',
+  alternates: { canonical: '/dc-index' },
+  openGraph: {
+    title: 'DC Index — The E-Commerce Stock Index',
+    description: 'Live tracking of 116 public e-commerce stocks across brands, marketplaces, and software.',
+    url: 'https://dollarcommerce.co/dc-index',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'DC Index — The E-Commerce Stock Index',
+    description: 'Live tracking of 116 public e-commerce stocks.',
+  },
+};
 
 // Base prices and market caps now imported from lib/index-base-data.js
 

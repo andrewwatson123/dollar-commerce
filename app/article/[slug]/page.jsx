@@ -22,9 +22,31 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const article = await getArticleBySlug(params.slug);
   if (!article) return { title: 'Not found' };
+  const description = article.excerpt || article.subtitle ||
+    `${article.title} — e-commerce analysis on Dollar Commerce.`;
+  const canonical = `/article/${params.slug}`;
+  const imageUrl = article.mainImage?.asset?.url || article.imageUrl;
   return {
-    title: `${article.title} — Dollar Commerce`,
-    description: article.excerpt || article.subtitle,
+    title: article.title,
+    description,
+    alternates: { canonical },
+    authors: article.author?.name ? [{ name: article.author.name }] : undefined,
+    openGraph: {
+      title: article.title,
+      description,
+      url: `https://dollarcommerce.co${canonical}`,
+      type: 'article',
+      publishedTime: article.publishedAt,
+      authors: article.author?.name ? [article.author.name] : undefined,
+      section: article.category?.title,
+      images: imageUrl ? [{ url: imageUrl, alt: article.title }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
   };
 }
 
