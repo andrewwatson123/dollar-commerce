@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="320" viewBox="0 0 1600 320">
+  <rect width="1600" height="320" fill="#F4F1EA"/>
+  <text x="800" y="185" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="128" fill="#0F172A">
+    <tspan font-weight="400">dollar</tspan><tspan fill="#D2042D" font-size="140" dx="8" dy="-5">·</tspan><tspan font-weight="700" dx="8" dy="5">commerce</tspan>
+  </text>
+</svg>

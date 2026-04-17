@@ -1,0 +1,32 @@
+Topic,Detail
+---,---
+OVERLAP: SHOP,"Appears in Brands AND Software. Recommend: Software only (it's a platform, not a brand)"
+OVERLAP: CHWY,"Appears in Brands AND Marketplaces. Recommend: Marketplaces (it's a platform for pet brands)"
+OVERLAP: W (Wayfair),"Appears in Brands AND Marketplaces. Recommend: Marketplaces (it's a product marketplace)"
+OVERLAP: REAL,"Appears in Brands AND Marketplaces. Recommend: Marketplaces (consignment platform)"
+OVERLAP: TDUP,"Appears in Brands AND Marketplaces. Recommend: Marketplaces (resale platform)"
+OVERLAP: GLBE,"Appears in Marketplaces AND Software. Recommend: Software (it's infrastructure, not a consumer marketplace)"
+OVERLAP: ETSY,"Appears in Brands AND Marketplaces. Recommend: Marketplaces (it's a platform)"
+---,---
+DEBATE: BKNG/ABNB/DASH,"Travel/delivery marketplaces — are these 'e-commerce'? Included because marketplace model, but team may want to exclude"
+DEBATE: V/MA,"Visa and Mastercard dominate the Software index by weight. Include or too broad?"
+DEBATE: UPS/FDX,"Same question — core logistics but are they 'e-commerce software'?"
+DEBATE: ADBE,"Adobe is huge and diversified. Magento qualifies it, but it's primarily a creative tools company"
+DEBATE: NET/DDOG/AKAM,"Infrastructure companies that serve all websites, not just e-commerce. Too generic?"
+DEBATE: PINS/SNAP/TTD,"AdTech/social commerce — where's the line between 'powers e-commerce' and 'general tech'?"
+DEBATE: BROS/WING/CELH,"Food & bev brands with digital ordering — are these really DTC e-commerce?"
+---,---
+EXCLUDED: BIRD (Allbirds),"Sold shoe business, pivoted to AI — no longer qualifies"
+EXCLUDED: SKX (Skechers),"Taken private by 3G Capital Sept 2025"
+EXCLUDED: POSH (Poshmark),"Acquired by Naver Jan 2023, delisted"
+EXCLUDED: FTCH (Farfetch),"Acquired by Coupang Jan 2024, delisted"
+EXCLUDED: SQSP (Squarespace),"Taken private Oct 2024"
+EXCLUDED: NVEI (Nuvei),"Taken private Jan 2025"
+EXCLUDED: ZEN (Zendesk),"Taken private Nov 2022"
+EXCLUDED: AVLR (Avalara),"Taken private Nov 2022 (re-IPO pending)"
+EXCLUDED: ZUO (Zuora),"Taken private Feb 2025"
+EXCLUDED: Stripe,"Still private (~$159B valuation)"
+---,---
+DC INDEX (Master),"Take union of all 3 sub-indexes after removing overlaps, rank by market cap, take top 100, weight by float-adjusted market cap"
+BASE DATE,"Keep Jan 2 2024 = 100 for consistency with existing DC Index"
+REBALANCE,"Quarterly constituent review; daily weight recalculation from market cap"

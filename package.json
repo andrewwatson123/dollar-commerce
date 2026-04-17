@@ -1,0 +1,40 @@
+{
+  "name": "dollar-commerce",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 5180",
+    "build": "next build",
+    "start": "next start -p 5180",
+    "lint": "next lint",
+    "import:substack": "node --env-file=.env.local scripts/import-substack.mjs",
+    "categorize": "node --env-file=.env.local scripts/categorize-articles.mjs",
+    "scrape:fundraising": "node --env-file=.env.local scripts/scrape-fundraising.mjs",
+    "clean:fundraising": "node --env-file=.env.local scripts/clean-fundraising.mjs",
+    "scrape:platforms": "node --env-file=.env.local scripts/scrape-platform-news.mjs",
+    "scrape:newsletters": "node --env-file=.env.local scripts/scrape-newsletters.mjs",
+    "gmail:auth": "node --env-file=.env.local scripts/gmail-auth.mjs"
+  },
+  "dependencies": {
+    "@portabletext/react": "^3.1.0",
+    "@sanity/client": "^6.22.1",
+    "@sanity/image-url": "^1.1.0",
+    "@sanity/vision": "^3.62.2",
+    "cheerio": "^1.0.0",
+    "googleapis": "^171.4.0",
+    "lucide-react": "^0.445.0",
+    "next": "^14.2.15",
+    "next-auth": "^5.0.0-beta.30",
+    "next-sanity": "^9.8.19",
+    "nodemailer": "^8.0.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-is": "^19.2.5",
+    "sanity": "^3.62.2",
+    "styled-components": "^6.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.15"
+  }
+}

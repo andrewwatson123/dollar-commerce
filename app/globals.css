@@ -1,0 +1,140 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+* {
+  box-sizing: border-box;
+}
+
+/* =================================================================
+   Desktop sidebar layout (>=1024px)
+   The SideNav is fixed at 260px on the left.
+   Everything else (topbar, header, main) shifts right.
+   ================================================================= */
+
+@media (min-width: 1024px) {
+  /* Show sidebar */
+  [data-dc="side-nav"] {
+    display: flex !important;
+  }
+
+  /* Hide the burger button on desktop */
+  [data-dc="burger-btn"] {
+    display: none !important;
+  }
+
+  /* Shift ALL page content right to clear the fixed sidebar */
+  body {
+    padding-left: 260px;
+  }
+
+  /* Sidebar: fixed, full height, with z-index below header so
+     header border draws across the full width. Sidebar content
+     starts below header via padding. */
+  [data-dc="side-nav"] {
+    top: 0 !important;
+    z-index: 80 !important;
+  }
+
+  /* Center the logo in the header */
+  [data-dc="site-header"] > div {
+    position: relative;
+    justify-content: center !important;
+  }
+  [data-dc="site-header"] [data-dc="header-actions"] {
+    position: absolute;
+    right: 40px;
+  }
+
+}
+
+/* =================================================================
+   Below 1024px — hide sidebar, show burger
+   ================================================================= */
+
+@media (max-width: 1023px) {
+  [data-dc="side-nav"] {
+    display: none !important;
+  }
+}
+
+
+/* ---------------------------------------------------------------------
+   Mobile basics (<=900px).
+   The homepage component uses inline styles and was designed desktop-first
+   ("DCHomepageDesktop.jsx"). These overrides make it at least usable on
+   phones without a full rewrite. Hook points are data-* attributes we add
+   to the structural containers in the JSX.
+   --------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  /* Ticker: hide half the symbols + shrink */
+  [data-dc="ticker"] {
+    padding: 8px 0 !important;
+    font-size: 11px !important;
+  }
+  [data-dc="ticker"] > div {
+    padding: 0 16px !important;
+    gap: 24px !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  /* Header: tighter padding + smaller logo */
+  [data-dc="site-header"] > div {
+    padding: 14px 16px !important;
+  }
+  [data-dc="site-title"] {
+    font-size: 17px !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  /* Main container */
+  [data-dc="home-main"] {
+    padding: 20px 16px !important;
+  }
+
+  /* Hero grid: stack */
+  [data-dc="hero-grid"] {
+    display: block !important;
+  }
+  [data-dc="hero-grid"] > * {
+    margin-bottom: 32px;
+  }
+  [data-dc="hero-image"] {
+    height: 240px !important;
+  }
+  [data-dc="hero-title"] {
+    font-size: 28px !important;
+    line-height: 1.2 !important;
+  }
+  [data-dc="hero-excerpt"] {
+    font-size: 15px !important;
+  }
+
+  /* Top stories sidebar — unsticky on mobile */
+  [data-dc="top-stories"] {
+    position: static !important;
+    top: auto !important;
+  }
+
+  /* Founder features carousel: single column cards */
+  [data-dc="founder-features"] > div {
+    grid-template-columns: 1fr !important;
+    min-width: 85vw !important;
+  }
+  [data-dc="founder-features"] [data-dc="feature-img"] {
+    height: 180px !important;
+  }
+
+  /* Burger drawer — full-width on phones */
+  [data-dc="burger-drawer"] {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+
+  /* Generic section title shrink */
+  h1 { font-size: 30px !important; }
+  h2 { font-size: 22px !important; }
+}

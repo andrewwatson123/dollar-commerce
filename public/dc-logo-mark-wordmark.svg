@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="320" viewBox="0 0 1600 320">
+  <rect width="1600" height="320" fill="#F4F1EA"/>
+  <!-- dc icon box -->
+  <rect x="260" y="72" width="176" height="176" rx="24" fill="#0F172A"/>
+  <text x="348" y="185" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="88" fill="#fff">
+    <tspan font-weight="400">d</tspan><tspan fill="#D2042D" font-size="44" dy="-8">·</tspan><tspan font-weight="700" dy="8">c</tspan>
+  </text>
+  <!-- wordmark -->
+  <text x="500" y="185" font-family="Georgia, 'Times New Roman', serif" font-size="112" fill="#0F172A">
+    <tspan font-weight="400">dollar</tspan><tspan fill="#D2042D" font-size="123" dx="6" dy="-4">·</tspan><tspan font-weight="700" dx="6" dy="4">commerce</tspan>
+  </text>
+</svg>

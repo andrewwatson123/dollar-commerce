@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/scrape-fundraising",
+      "schedule": "17 7 * * *"
+    },
+    {
+      "path": "/api/cron/scrape-newsletters",
+      "schedule": "3 8 * * *"
+    },
+    {
+      "path": "/api/cron/newsletter-draft",
+      "schedule": "15 8 * * *"
+    }
+  ]
+}

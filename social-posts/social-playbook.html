@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dollar Commerce — Social Media Playbook</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0F172A;
+  --bg-card: #1E293B;
+  --bg-card-hover: #253349;
+  --bg-surface: #162032;
+  --cream: #F4F1EA;
+  --red: #D2042D;
+  --red-soft: rgba(210,4,45,0.15);
+  --green: #10B981;
+  --green-soft: rgba(16,185,129,0.15);
+  --amber: #F59E0B;
+  --amber-soft: rgba(245,158,11,0.15);
+  --blue: #3B82F6;
+  --blue-soft: rgba(59,130,246,0.15);
+  --purple: #8B5CF6;
+  --purple-soft: rgba(139,92,246,0.15);
+  --pink: #EC4899;
+  --pink-soft: rgba(236,72,153,0.15);
+  --teal: #14B8A6;
+  --teal-soft: rgba(20,184,166,0.15);
+  --text: #E2E8F0;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
+  --border: #334155;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── NAV ─── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15,23,42,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+}
+.topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.topbar-logo {
+  font-family: 'PT Serif', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cream);
+  letter-spacing: 0.5px;
+}
+.topbar-logo span { color: var(--red); }
+.topbar-nav { display: flex; gap: 4px; overflow-x: auto; }
+.topbar-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.topbar-nav a:hover, .topbar-nav a.active {
+  color: var(--cream);
+  background: var(--bg-card);
+}
+
+/* ─── LAYOUT ─── */
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 32px 80px; }
+
+.hero {
+  text-align: center;
+  padding: 60px 0 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+.hero h1 {
+  font-family: 'PT Serif', serif;
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 12px;
+}
+.hero h1 span { color: var(--red); }
+.hero p { color: var(--text-muted); font-size: 18px; max-width: 600px; margin: 0 auto; }
+.hero .version {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+  background: var(--bg-card);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* ─── SECTIONS ─── */
+.section {
+  margin-bottom: 56px;
+  scroll-margin-top: 80px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  cursor: pointer;
+  user-select: none;
+}
+.section-header .num {
+  font-family: 'PT Serif', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--red);
+  background: var(--red-soft);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-family: 'PT Serif', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--cream);
+  flex: 1;
+}
+.section-header .toggle {
+  font-size: 20px;
+  color: var(--text-dim);
+  transition: transform 0.3s;
+}
+.section-header.collapsed .toggle { transform: rotate(-90deg); }
+.section-body { transition: all 0.3s ease; }
+.section-body.hidden { display: none; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+.card h3 {
+  font-family: 'PT Serif', serif;
+  font-size: 18px;
+  color: var(--cream);
+  margin-bottom: 8px;
+}
+.card p { color: var(--text-muted); font-size: 14px; }
+
+/* ─── PILL TAGS ─── */
+.pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.pill-red { background: var(--red-soft); color: var(--red); }
+.pill-green { background: var(--green-soft); color: var(--green); }
+.pill-amber { background: var(--amber-soft); color: var(--amber); }
+.pill-blue { background: var(--blue-soft); color: var(--blue); }
+.pill-purple { background: var(--purple-soft); color: var(--purple); }
+.pill-pink { background: var(--pink-soft); color: var(--pink); }
+.pill-teal { background: var(--teal-soft); color: var(--teal); }
+
+/* ─── PILLAR CARDS ─── */
+.pillar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.pillar-card:hover { border-color: var(--text-dim); }
+.pillar-card .accent-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.pillar-card h3 {
+  font-family: 'PT Serif', serif;
+  font-size: 17px;
+  color: var(--cream);
+  margin: 8px 0 6px;
+}
+.pillar-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+.pillar-card .meta { font-size: 12px; color: var(--text-dim); }
+.pillar-card .meta strong { color: var(--text-muted); }
+
+/* ─── CALENDAR ─── */
+.calendar-wrapper { overflow-x: auto; }
+.calendar {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  gap: 2px;
+  min-width: 800px;
+}
+.cal-header {
+  background: var(--bg-surface);
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.cal-label {
+  background: var(--bg-surface);
+  padding: 12px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.cal-cell {
+  background: var(--bg-card);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 10px;
+  min-height: 80px;
+  font-size: 12px;
+  transition: all 0.2s;
+  cursor: default;
+}
+.cal-cell:hover { border-color: var(--text-dim); background: var(--bg-card-hover); }
+.cal-cell .cal-pillar {
+  font-weight: 600;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+.cal-cell .cal-desc {
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* ─── FORMAT SHOWCASE ─── */
+.format-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+.format-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.format-item:hover { border-color: var(--text-dim); transform: translateY(-2px); }
+.format-item .icon { font-size: 28px; margin-bottom: 8px; }
+.format-item h4 { font-size: 13px; font-weight: 600; color: var(--cream); margin-bottom: 4px; }
+.format-item p { font-size: 11px; color: var(--text-dim); }
+
+/* ─── ENGAGEMENT ─── */
+.eng-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.eng-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.eng-card h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.eng-card ul { list-style: none; padding: 0; }
+.eng-card li {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
+.eng-card li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 11px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+
+/* ─── SOURCES TABLE ─── */
+.source-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.source-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.source-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.source-table tr:hover td { background: var(--bg-card-hover); }
+
+/* ─── ACCOUNTS LIST ─── */
+.acct-tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+.acct-tab {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+.acct-tab:hover { border-color: var(--text-dim); color: var(--cream); }
+.acct-tab.active { background: var(--red); border-color: var(--red); color: white; }
+.acct-list { display: none; }
+.acct-list.active { display: block; }
+.acct-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.acct-item:last-child { border-bottom: none; }
+.acct-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.acct-info { flex: 1; }
+.acct-handle { font-size: 13px; font-weight: 600; color: var(--cream); }
+.acct-desc { font-size: 12px; color: var(--text-dim); }
+
+/* ─── DOS/DONTS ─── */
+.dd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.dd-col { background: var(--bg-card); border-radius: var(--radius); padding: 24px; }
+.dd-col h3 {
+  font-family: 'PT Serif', serif;
+  font-size: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dd-col.do h3 { color: var(--green); }
+.dd-col.dont h3 { color: var(--red); }
+.dd-col li {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 6px 0;
+  list-style: none;
+  padding-left: 20px;
+  position: relative;
+}
+.dd-col.do li::before { content: '+'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+.dd-col.dont li::before { content: '-'; position: absolute; left: 2px; color: var(--red); font-weight: 700; }
+
+/* ─── PLATFORM CARDS ─── */
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.platform-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+}
+.platform-card .p-icon { font-size: 32px; margin-bottom: 12px; }
+.platform-card h3 { font-family: 'PT Serif', serif; font-size: 20px; color: var(--cream); margin-bottom: 4px; }
+.platform-card .p-role { font-size: 12px; color: var(--red); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.platform-card p { font-size: 13px; color: var(--text-muted); text-align: left; }
+.platform-card .p-stat { display: flex; justify-content: center; gap: 24px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.platform-card .p-stat div { text-align: center; }
+.platform-card .p-stat .val { font-size: 20px; font-weight: 700; color: var(--cream); }
+.platform-card .p-stat .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .topbar { padding: 0 16px; }
+  .topbar-nav { display: none; }
+  .container { padding: 24px 16px 60px; }
+  .hero h1 { font-size: 32px; }
+  .hero p { font-size: 15px; }
+  .section-header h2 { font-size: 22px; }
+  .card-grid, .eng-grid { grid-template-columns: 1fr; }
+  .platform-grid { grid-template-columns: 1fr; }
+  .dd-grid { grid-template-columns: 1fr; }
+  .format-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-logo">dollar <span>&middot;</span> commerce</div>
+    <nav class="topbar-nav">
+      <a href="#persona" class="active">Persona</a>
+      <a href="#platforms">Platforms</a>
+      <a href="#pillars">Pillars</a>
+      <a href="#calendar">Calendar</a>
+      <a href="#formats">Formats</a>
+      <a href="#engagement">Engagement</a>
+      <a href="#sources">Sources</a>
+      <a href="#accounts">Accounts</a>
+      <a href="#rules">Rules</a>
+    </nav>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <h1>Social Media <span>Playbook</span></h1>
+  <p>The day-to-day operating manual for Dollar Commerce social. Strategy, content pillars, calendars, and engagement rules.</p>
+  <div class="version">v1.0 &mdash; April 2026</div>
+</div>
+
+<!-- ═══ 1. BRAND IDENTITY & PERSONA ═══ -->
+<div class="section" id="persona">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="num">1</span>
+    <h2>Brand Identity & Persona</h2>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="card" style="margin-bottom:24px;">
+      <h3>Target Audience</h3>
+      <p style="font-size:16px;color:var(--cream);margin:12px 0 8px;">22-30 year old city professional</p>
+      <p>Think SW London or NYC. Works in finance, tech, or consulting. Active lifestyle &mdash; gym before work, sauna on weekends. Reads Bloomberg on the commute, listens to podcasts on DTC brands. Higher income bracket, style-conscious but not flashy. Cares about building something, not just consuming.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Interests</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+          <span class="pill pill-red">Entrepreneurship</span>
+          <span class="pill pill-green">Finance & Markets</span>
+          <span class="pill pill-blue">E-Commerce / DTC</span>
+          <span class="pill pill-amber">Sport</span>
+          <span class="pill pill-purple">Longevity & Health</span>
+          <span class="pill pill-pink">Wellness / Biohacking</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Voice & Tone</h3>
+        <p>Smart, not pretentious. Data-driven with a pulse on culture. We can be funny &mdash; not corporate. Think "your well-read mate who works in VC" energy. Short, punchy captions. Strong opinions backed by data.</p>
+      </div>
+      <div class="card">
+        <h3>Visual Identity</h3>
+        <p><strong>Font:</strong> PT Serif for post graphics<br>
+        <strong>Colors:</strong> Dark backgrounds, cream text, red accents<br>
+        <strong>Style:</strong> Clean, minimal, high-contrast. Numbered carousels. Bold data callouts. No stock photo energy.</p>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <div style="width:40px;height:40px;border-radius:8px;background:#0F172A;border:1px solid var(--border);" title="#0F172A"></div>
+          <div style="width:40px;height:40px;border-radius:8px;background:#F4F1EA;" title="#F4F1EA"></div>
+          <div style="width:40px;height:40px;border-radius:8px;background:#D2042D;" title="#D2042D"></div>
+          <div style="width:40px;height:40px;border-radius:8px;background:#1E293B;border:1px solid var(--border);" title="#1E293B"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 2. PLATFORM STRATEGY ═══ -->
+<div class="section" id="platforms">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="num">2</span>
+    <h2>Platform Strategy</h2>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="platform-grid">
+      <div class="platform-card">
+        <div class="p-icon">&#128247;</div>
+        <h3>Instagram</h3>
+        <div class="p-role">Primary Engine</div>
+        <p>Visual-first. Carousels, lifestyle imagery, data graphics, short video clips. This is where we build the community. Every post should stop thumbs.</p>
+        <div class="p-stat">
+          <div><div class="val">2x</div><div class="label">Posts/Day</div></div>
+          <div><div class="val">14</div><div class="label">Per Week</div></div>
+        </div>
+      </div>
+      <div class="platform-card">
+        <div class="p-icon">&#120143;</div>
+        <h3>X / Twitter</h3>
+        <div class="p-role">Amplifier</div>
+        <p>Repurpose IG content as threads or single-image posts. Faster news cycle &mdash; break stories here first. Jump into relevant conversations. Tag founders, brands, journalists.</p>
+        <div class="p-stat">
+          <div><div class="val">3-5x</div><div class="label">Posts/Day</div></div>
+          <div><div class="val">~28</div><div class="label">Per Week</div></div>
+        </div>
+      </div>
+      <div class="platform-card">
+        <div class="p-icon">&#128188;</div>
+        <h3>LinkedIn</h3>
+        <div class="p-role">Owner-Posted</div>
+        <p>Andrew posts personally. Longer-form, founder perspective, industry commentary. More professional tone but still authentic. Repurpose DC article angles.</p>
+        <div class="p-stat">
+          <div><div class="val">3-5x</div><div class="label">Per Week</div></div>
+          <div><div class="val">Personal</div><div class="label">Voice</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 3. CONTENT PILLARS ═══ -->
+<div class="section" id="pillars">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="num">3</span>
+    <h2>Content Pillars</h2>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <p style="color:var(--text-muted);margin-bottom:20px;font-size:14px;">Seven rotating pillars. DC Articles take priority when published (2-3/week). Remaining slots filled from the other six pillars based on what's trending that day.</p>
+    <div class="card-grid">
+      <div class="pillar-card">
+        <div class="accent-bar" style="background:var(--red);"></div>
+        <span class="pill pill-red">Priority</span>
+        <h3>DC Articles</h3>
+        <p>When we publish a new article on Dollar Commerce, it gets featured that day. Carousel or single-image with key takeaway + link in bio.</p>
+        <div class="meta"><strong>Frequency:</strong> 2-3x/week when published<br><strong>Format:</strong> Carousel, article feature graphic<br><strong>Timeliness:</strong> Same day as publish</div>
+      </div>
+      <div class="pillar-card">
+        <div class="accent-bar" style="background:var(--blue);"></div>
+        <span class="pill pill-blue">News</span>
+        <h3>E-Commerce, Platforms & Brand News</h3>
+        <p>Breaking stories about DTC brands, marketplaces, funding rounds, launches, failures &mdash; plus platform-level news: Shopify updates, Meta/Google ad platform changes, TikTok Shop moves, new ad software features, algorithm shifts. Anything that affects how commerce gets done online.</p>
+        <div class="meta"><strong>Frequency:</strong> 3-4x/week<br><strong>Format:</strong> Numbered news carousel, single stat card<br><strong>Timeliness:</strong> Within 24 hours of breaking<br><strong>Includes:</strong> Shopify, Meta Ads, Google Ads, TikTok, Amazon, Klaviyo, ad tech updates</div>
+      </div>
+      <div class="pillar-card">
+        <div class="accent-bar" style="background:var(--amber);"></div>
+        <span class="pill pill-amber">Culture</span>
+        <h3>Startup & Founder Culture</h3>
+        <p>Founder stories, startup lessons, funding milestones, "what I learned" angles. Relatable to our demo who are building or want to build.</p>
+        <div class="meta"><strong>Frequency:</strong> 2-3x/week<br><strong>Format:</strong> Carousel, quote card, video clip<br><strong>Timeliness:</strong> Evergreen OK, trending preferred</div>
+      </div>
+      <div class="pillar-card">
+        <div class="accent-bar" style="background:var(--green);"></div>
+        <span class="pill pill-green">Health &amp; Science</span>
+        <h3>Longevity, Wellness & Biotech</h3>
+        <p>Sauna, ice bath, sleep science, biohacking, WHOOP data, fitness &mdash; plus new clinical studies, biotech fundraising rounds, and breakthrough science. Dig deeper than mainstream news: preprint servers, niche biotech journals, clinical trial registries. Our demo lives this lifestyle and wants to be ahead of the curve.</p>
+        <div class="meta"><strong>Frequency:</strong> 2-3x/week<br><strong>Format:</strong> Data card, stat graphic, study breakdown carousel, video clip<br><strong>Timeliness:</strong> New studies &amp; biotech funding ASAP, practical tips evergreen<br><strong>Sources:</strong> Not just public news &mdash; dig into bioRxiv, ClinicalTrials.gov, Fierce Biotech, STAT News, Endpoints News, Crunchbase for biotech rounds</div>
+      </div>
+      <div class="pillar-card">
+        <div class="accent-bar" style="background:var(--pink);"></div>
+        <span class="pill pill-pink">Sport</span>
+        <h3>Sport & Culture</h3>
+        <p>Where sport meets business. NIL deals, athlete brands, major event data (like Masters WHOOP), crossover stories.</p>
+        <div class="meta"><strong>Frequency:</strong> 1-2x/week<br><strong>Format:</strong> Data carousel, video clip, hot take<br><strong>Timeliness:</strong> Event-driven, ride the wave</div>
+      </div>
+      <div class="pillar-card">
+        <div class="accent-bar" style="background:var(--purple);"></div>
+        <span class="pill pill-purple">Markets</span>
+        <h3>Finance & Markets</h3>
+        <p>DC Index movers, interesting stock stories, macro trends affecting commerce. Make finance visual and accessible.</p>
+        <div class="meta"><strong>Frequency:</strong> 2x/week<br><strong>Format:</strong> Data card, chart graphic, carousel<br><strong>Timeliness:</strong> Same day for market moves</div>
+      </div>
+      <div class="pillar-card">
+        <div class="accent-bar" style="background:var(--teal);"></div>
+        <span class="pill pill-teal">Local</span>
+        <h3>London & NYC</h3>
+        <p>Localized business news for our two core cities. New policy affecting young professionals or startups, business openings/closings, local tech scene moves, tax or regulation changes impacting UK/US founders. If it matters to a 26-year-old building something in Fulham or the West Village, it belongs here.</p>
+        <div class="meta"><strong>Frequency:</strong> 1-2x/week<br><strong>Format:</strong> News carousel, single card, hot take<br><strong>Timeliness:</strong> Within 24-48hrs of announcement<br><strong>Scope:</strong> Business &amp; policy only &mdash; no crime, no partisan politics</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. WEEKLY CONTENT CALENDAR ═══ -->
+<div class="section" id="calendar">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="num">4</span>
+    <h2>Weekly Content Calendar</h2>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <p style="color:var(--text-muted);margin-bottom:8px;font-size:14px;">14 posts/week on Instagram (2/day). This is a template week &mdash; flex based on what's breaking. DC Articles always take the AM slot when published.</p>
+    <p style="color:var(--text-dim);margin-bottom:20px;font-size:12px;">Suggested times: AM post 8:00-9:30 &nbsp;|&nbsp; PM post 17:30-19:00 (London) &nbsp;/&nbsp; 12:00-13:30 (NYC)</p>
+
+    <div class="calendar-wrapper">
+      <div class="calendar">
+        <!-- Header row -->
+        <div class="cal-header"></div>
+        <div class="cal-header">Mon</div>
+        <div class="cal-header">Tue</div>
+        <div class="cal-header">Wed</div>
+        <div class="cal-header">Thu</div>
+        <div class="cal-header">Fri</div>
+        <div class="cal-header">Sat</div>
+        <div class="cal-header">Sun</div>
+
+        <!-- AM Row -->
+        <div class="cal-label">AM</div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--blue);">Brand News</div>
+          <div class="cal-desc">Weekend recap. What broke in ecom/brands Sat-Sun.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--red);">DC Article</div>
+          <div class="cal-desc">Feature new article if published. Carousel with key stats.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--green);">Health / Biotech</div>
+          <div class="cal-desc">New clinical study, biotech funding round, or breakthrough science.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--red);">DC Article</div>
+          <div class="cal-desc">Feature new article if published.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--purple);">Finance / Markets</div>
+          <div class="cal-desc">DC Index weekly movers. Top 3 gainers/losers.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--pink);">Sport & Culture</div>
+          <div class="cal-desc">Weekend sport angle. Athlete biz, event data.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--amber);">Founder / Startup</div>
+          <div class="cal-desc">Lighter weekend content. Founder story or lesson.</div>
+        </div>
+
+        <!-- PM Row -->
+        <div class="cal-label">PM</div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--teal);">London / NYC</div>
+          <div class="cal-desc">Local biz news, policy, or city scene update from the weekend.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--green);">Health / Biotech</div>
+          <div class="cal-desc">Clinical study, biotech funding, or practical wellness tip.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--blue);">Platforms / Ecom</div>
+          <div class="cal-desc">Shopify, Meta Ads, ad tech update, or breaking ecom story.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--pink);">Sport & Culture</div>
+          <div class="cal-desc">Crossover content. Sport meets business.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--amber);">Founder / Startup</div>
+          <div class="cal-desc">Weekend vibes. Motivation or behind-the-scenes.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--purple);">Finance / Markets</div>
+          <div class="cal-desc">Interesting stock deep-dive or macro take.</div>
+        </div>
+        <div class="cal-cell">
+          <div class="cal-pillar" style="color:var(--teal);">London / NYC</div>
+          <div class="cal-desc">Sunday local angle. New spot, policy change, or city biz story.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>Calendar Rules</h3>
+      <ul style="list-style:none;padding:0;">
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x2022; DC Articles always bump whatever was scheduled &mdash; they take the AM slot that day</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x2022; If major news breaks, it takes the next available slot regardless of pillar</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x2022; Never post two of the same pillar in one day (unless DC Article + another)</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x2022; Weekend posts can be lighter/more lifestyle &mdash; engagement is lower but consistency matters</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x2022; X/Twitter mirrors IG content + 1-2 additional quick-take text posts per day</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 5. POST FORMATS ═══ -->
+<div class="section" id="formats">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="num">5</span>
+    <h2>Post Formats & Templates</h2>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <p style="color:var(--text-muted);margin-bottom:20px;font-size:14px;">Mix formats to keep the grid visually interesting. Aim for no two adjacent posts in the same format.</p>
+    <div class="format-grid">
+      <div class="format-item">
+        <div class="icon">&#128196;</div>
+        <h4>Numbered Carousel</h4>
+        <p>PT Serif headers. Red number at top. 3-8 slides. Our signature format for news and breakdowns.</p>
+      </div>
+      <div class="format-item">
+        <div class="icon">&#128200;</div>
+        <h4>Data / Stat Card</h4>
+        <p>Single bold stat with context. Dark bg, colored accents. Great for WHOOP-style data, market moves.</p>
+      </div>
+      <div class="format-item">
+        <div class="icon">&#128240;</div>
+        <h4>Article Feature</h4>
+        <p>Promote DC articles. Hero image + headline + "Link in bio". Can be single or carousel.</p>
+      </div>
+      <div class="format-item">
+        <div class="icon">&#128172;</div>
+        <h4>Quote / Hot Take</h4>
+        <p>Bold opinion on clean background. PT Serif quote, minimal design. Drives comments.</p>
+      </div>
+      <div class="format-item">
+        <div class="icon">&#127796;</div>
+        <h4>Lifestyle Image</h4>
+        <p>Full-bleed photo. Product shots, city life, wellness aesthetic. Breaks up the data-heavy posts.</p>
+      </div>
+      <div class="format-item">
+        <div class="icon">&#127916;</div>
+        <h4>Video Clip</h4>
+        <p>15-60s clips sourced from YouTube, podcasts, interviews. Add captions. Relevant founder/health content.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>Grid Aesthetic Goal</h3>
+      <p>When someone lands on the profile, the grid should alternate between: dark data graphics, lifestyle photos, and carousel covers. No two visually identical posts side by side. The vibe is "this person knows things" not "this is a content mill."</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 6. ENGAGEMENT PLAYBOOK ═══ -->
+<div class="section" id="engagement">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="num">6</span>
+    <h2>Engagement Playbook</h2>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="eng-grid">
+      <div class="eng-card">
+        <h4>&#128172; Post Engagement (Critical)</h4>
+        <ul>
+          <li>Reply to every comment within 30-60 min of posting</li>
+          <li>Like all comments on our posts</li>
+          <li>Pin the best comment or conversation starter</li>
+          <li>Add a question in captions to drive replies</li>
+          <li>Use Stories to tease the post and drive to grid</li>
+        </ul>
+      </div>
+      <div class="eng-card">
+        <h4>&#128640; Outbound Daily</h4>
+        <ul>
+          <li>Comment thoughtfully on 10-15 relevant accounts</li>
+          <li>Follow 5-10 quality accounts in our demo</li>
+          <li>Engage 15 min BEFORE posting (warms the algo)</li>
+          <li>Engage 15 min AFTER posting (signals activity)</li>
+          <li>Share relevant content to Stories with our take</li>
+        </ul>
+      </div>
+      <div class="eng-card">
+        <h4>&#127919; Who to Engage</h4>
+        <ul>
+          <li>Founders building real companies</li>
+          <li>Quality content creators in our pillars</li>
+          <li>People in our demographic (city, active, professional)</li>
+          <li>Relevant journalists and editors</li>
+          <li>Brands we cover or admire</li>
+        </ul>
+      </div>
+      <div class="eng-card">
+        <h4>&#128683; Who NOT to Engage</h4>
+        <ul>
+          <li>"Learn how to make $10K/month doing ___" accounts</li>
+          <li>Generic motivational quote pages</li>
+          <li>Dropshipping/get-rich-quick gurus</li>
+          <li>Bots, pod groups, or engagement-farming accounts</li>
+          <li>Anything that wouldn't pass the "would I follow this IRL?" test</li>
+        </ul>
+      </div>
+      <div class="eng-card">
+        <h4>&#128204; Tagging & Mentions</h4>
+        <ul>
+          <li>Tag brands/people discussed in posts (they often reshare)</li>
+          <li>Mention data sources (WHOOP, Pitchbook, etc.)</li>
+          <li>Use location tags for London/NYC when relevant</li>
+          <li>Tag DC in all cross-posted content</li>
+        </ul>
+      </div>
+      <div class="eng-card">
+        <h4>&#128337; Stories Strategy</h4>
+        <ul>
+          <li>Post 3-5 Stories daily (keeps us in the tray)</li>
+          <li>Mix: reshare grid posts, polls, behind-the-scenes, quick takes</li>
+          <li>Use polls/questions for engagement signals</li>
+          <li>Highlight trending topics or breaking news fast</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. NEWS SOURCING ═══ -->
+<div class="section" id="sources">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="num">7</span>
+    <h2>News Sourcing & Timeliness</h2>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="card" style="margin-bottom:20px;">
+      <h3>Daily Workflow</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.8;">
+        <strong style="color:var(--cream);">7:00 AM</strong> &mdash; Morning scan of sources below. Flag 2-3 stories worth posting.<br>
+        <strong style="color:var(--cream);">9:00 AM</strong> &mdash; AM post goes live. Engage for 15 min before and after.<br>
+        <strong style="color:var(--cream);">12:00 PM</strong> &mdash; Check for midday breaking news. Draft PM post if not done.<br>
+        <strong style="color:var(--cream);">5:30 PM</strong> &mdash; PM post goes live. Engage for 15 min before and after.<br>
+        <strong style="color:var(--cream);">8:00 PM</strong> &mdash; Final engagement sweep. Respond to all comments. Plan tomorrow.
+      </p>
+    </div>
+
+    <table class="source-table">
+      <thead>
+        <tr>
+          <th>Source</th>
+          <th>Pillar</th>
+          <th>Timeliness</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="color:var(--cream);font-weight:600;">Dollar Commerce</td><td><span class="pill pill-red">DC Articles</span></td><td>Same day</td><td>Always feature when published</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">TechCrunch</td><td><span class="pill pill-blue">Brand News</span></td><td>&lt;24hrs</td><td>Funding rounds, startup news</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Modern Retail</td><td><span class="pill pill-blue">Brand News</span></td><td>&lt;24hrs</td><td>DTC and retail deep dives</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Business of Fashion</td><td><span class="pill pill-blue">Brand News</span></td><td>&lt;24hrs</td><td>Fashion/luxury commerce</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Bloomberg</td><td><span class="pill pill-purple">Markets</span></td><td>Same day</td><td>Macro trends, market moves</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">The Information</td><td><span class="pill pill-amber">Startups</span></td><td>&lt;24hrs</td><td>Insider VC/startup scoops</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Shopify Changelog / Dev Blog</td><td><span class="pill pill-blue">Platforms</span></td><td>&lt;24hrs</td><td>New features, API changes, merchant-facing updates</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Meta for Business Blog</td><td><span class="pill pill-blue">Platforms</span></td><td>&lt;24hrs</td><td>Ad platform changes, new ad formats, algorithm updates</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Google Ads Blog / Search Central</td><td><span class="pill pill-blue">Platforms</span></td><td>&lt;24hrs</td><td>PMax updates, Shopping changes, Performance shifts</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Klaviyo / TikTok / Amazon Seller</td><td><span class="pill pill-blue">Platforms</span></td><td>&lt;24hrs</td><td>Email/SMS platform updates, TikTok Shop, FBA changes</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Huberman Lab</td><td><span class="pill pill-green">Health</span></td><td>Evergreen</td><td>Longevity, sleep, cold exposure protocols</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Peter Attia (Outlive)</td><td><span class="pill pill-green">Health</span></td><td>Evergreen</td><td>Longevity science, exercise physiology</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">PubMed / Nature / Cell</td><td><span class="pill pill-green">Health</span></td><td>When published</td><td>Breakthrough clinical studies on longevity, cold/heat</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">bioRxiv / medRxiv</td><td><span class="pill pill-green">Health</span></td><td>When posted</td><td>Pre-print servers &mdash; early access to studies before mainstream picks up</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">STAT News / Endpoints News</td><td><span class="pill pill-green">Biotech</span></td><td>&lt;24hrs</td><td>Biotech industry news, clinical trial results, FDA decisions</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Fierce Biotech</td><td><span class="pill pill-green">Biotech</span></td><td>&lt;24hrs</td><td>Biotech fundraising, M&amp;A, pipeline breakthroughs</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">ClinicalTrials.gov</td><td><span class="pill pill-green">Biotech</span></td><td>Dig deeper</td><td>Track interesting longevity/health trials directly. Not mainstream.</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Crunchbase (Biotech filter)</td><td><span class="pill pill-green">Biotech</span></td><td>&lt;48hrs</td><td>Biotech/healthtech funding rounds, new startups in the space</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">ESPN / The Athletic</td><td><span class="pill pill-pink">Sport</span></td><td>Event-driven</td><td>Athlete business, NIL, event data</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">X / Twitter trending</td><td><span class="pill pill-amber">Culture</span></td><td>Real-time</td><td>Trending founder/tech conversations</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">WHOOP / Oura / Strava</td><td><span class="pill pill-green">Health</span></td><td>When posted</td><td>Athlete/founder data shares</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Evening Standard / City A.M.</td><td><span class="pill pill-teal">London</span></td><td>&lt;24hrs</td><td>London business news, policy, startup scene, local economy</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">London Tech Week / Tech Nation</td><td><span class="pill pill-teal">London</span></td><td>Event-driven</td><td>UK tech ecosystem, policy impacting founders</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Crain's New York / NY Post Biz</td><td><span class="pill pill-teal">NYC</span></td><td>&lt;24hrs</td><td>NYC business, real estate, local startup ecosystem</td></tr>
+        <tr><td style="color:var(--cream);font-weight:600;">Gov.uk / IRS / HMRC updates</td><td><span class="pill pill-teal">Policy</span></td><td>When announced</td><td>Tax, regulation, policy changes affecting young professionals/founders</td></tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>Timeliness Rules</h3>
+      <ul style="list-style:none;padding:0;">
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x26A0;&#xFE0F; E-commerce and brand news MUST be posted within 24 hours of breaking, or skip it</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x26A0;&#xFE0F; DC Articles must be featured the same day they're published</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x2705; Health/longevity studies can be posted within a week of release</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x2705; Founder stories and lessons are mostly evergreen</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;">&#x2705; Sport content should ride the event wave (post during/right after)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 8. ACCOUNTS TO FOLLOW ═══ -->
+<div class="section" id="accounts">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="num">8</span>
+    <h2>Accounts to Follow & Engage</h2>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px;">Starter list of quality accounts. These are people with strong content, in the right demographic, or in our pillars. NOT hustle/grind accounts.</p>
+
+    <div class="acct-tabs">
+      <button class="acct-tab active" onclick="switchTab(this,'founders')">Founders & Startup</button>
+      <button class="acct-tab" onclick="switchTab(this,'brands')">Brands</button>
+      <button class="acct-tab" onclick="switchTab(this,'health')">Health & Wellness</button>
+      <button class="acct-tab" onclick="switchTab(this,'finance')">Finance</button>
+      <button class="acct-tab" onclick="switchTab(this,'sport')">Sport & Culture</button>
+      <button class="acct-tab" onclick="switchTab(this,'media')">Media & Journalists</button>
+    </div>
+
+    <div class="card">
+      <div class="acct-list active" id="tab-founders">
+        <div class="acct-item"><div class="acct-avatar">&#128640;</div><div class="acct-info"><div class="acct-handle">@garyvee</div><div class="acct-desc">Gary Vaynerchuk &mdash; commerce, culture, investing. Massive reach. Engage selectively on relevant posts.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128640;</div><div class="acct-info"><div class="acct-handle">@tobylutke</div><div class="acct-desc">Shopify CEO &mdash; ecommerce infrastructure, founder wisdom. Quality follows quality.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128640;</div><div class="acct-info"><div class="acct-handle">@alexisohanian</div><div class="acct-desc">Reddit co-founder, 776 Ventures. Startup meets sport. Culturally relevant.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128640;</div><div class="acct-info"><div class="acct-handle">@stfrancisvc</div><div class="acct-desc">Turner Novak &mdash; VC content creator. Good memes, real insights. Perfect demo overlap.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128640;</div><div class="acct-info"><div class="acct-handle">@pacaboricua</div><div class="acct-desc">Packy McCormick (Not Boring) &mdash; long-form business meets culture. Smart crowd.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128640;</div><div class="acct-info"><div class="acct-handle">@web</div><div class="acct-desc">Jason Calacanis &mdash; angel investor, podcaster. Hot takes on startups.</div></div></div>
+      </div>
+
+      <div class="acct-list" id="tab-brands">
+        <div class="acct-item"><div class="acct-avatar">&#127991;&#65039;</div><div class="acct-info"><div class="acct-handle">@glossier</div><div class="acct-desc">DTC beauty benchmark. Community-first brand with strong visual identity.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#127991;&#65039;</div><div class="acct-info"><div class="acct-handle">@outdoorvoices</div><div class="acct-desc">Active lifestyle brand. Wellness demographic overlap. Visual inspo.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#127991;&#65039;</div><div class="acct-info"><div class="acct-handle">@whoop</div><div class="acct-desc">Wearable health data. Perfect crossover of sport, health, and data content.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#127991;&#65039;</div><div class="acct-info"><div class="acct-handle">@vuoriclothing</div><div class="acct-desc">Performance lifestyle brand. Massive DTC growth story. Right demo.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#127991;&#65039;</div><div class="acct-info"><div class="acct-handle">@athleticgreens</div><div class="acct-desc">AG1 &mdash; health/wellness brand with strong founder marketing. Our audience uses this.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#127991;&#65039;</div><div class="acct-info"><div class="acct-handle">@rapha</div><div class="acct-desc">Premium cycling brand. Lifestyle meets performance. London roots.</div></div></div>
+      </div>
+
+      <div class="acct-list" id="tab-health">
+        <div class="acct-item"><div class="acct-avatar">&#129516;</div><div class="acct-info"><div class="acct-handle">@hubaboratorylab</div><div class="acct-desc">Andrew Huberman &mdash; neuroscience, sleep, cold exposure. Our demo's go-to health source.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#129516;</div><div class="acct-info"><div class="acct-handle">@peterattiamd</div><div class="acct-desc">Longevity medicine. Deep science made accessible. Strong authority.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#129516;</div><div class="acct-info"><div class="acct-handle">@drrhondapatrick</div><div class="acct-desc">Micronutrient research, sauna science, aging. Data-heavy content.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#129516;</div><div class="acct-info"><div class="acct-handle">@bryanjohnson</div><div class="acct-desc">Blueprint protocol. Controversial but drives massive engagement. Longevity content.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#129516;</div><div class="acct-info"><div class="acct-handle">@wilahmed</div><div class="acct-desc">Will Ahmed, WHOOP CEO. Shares athlete data, health insights. Founder + health crossover.</div></div></div>
+      </div>
+
+      <div class="acct-list" id="tab-finance">
+        <div class="acct-item"><div class="acct-avatar">&#128200;</div><div class="acct-info"><div class="acct-handle">@litcapital</div><div class="acct-desc">Litquidity &mdash; finance memes meets real analysis. Our demo follows this religiously.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128200;</div><div class="acct-info"><div class="acct-handle">@morning_brew</div><div class="acct-desc">Morning Brew &mdash; business news with personality. Content format inspiration.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128200;</div><div class="acct-info"><div class="acct-handle">@saxena_puru</div><div class="acct-desc">Puru Saxena &mdash; macro investing, chart analysis. Clean, data-driven.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128200;</div><div class="acct-info"><div class="acct-handle">@profgalloway</div><div class="acct-desc">Scott Galloway &mdash; NYU prof, tech/brand analysis. Strong opinions, massive audience.</div></div></div>
+      </div>
+
+      <div class="acct-list" id="tab-sport">
+        <div class="acct-item"><div class="acct-avatar">&#9917;</div><div class="acct-info"><div class="acct-handle">@frontofficesports</div><div class="acct-desc">Business of sports. NIL, deals, athlete brands. Perfect pillar overlap.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#9917;</div><div class="acct-info"><div class="acct-handle">@boardroom</div><div class="acct-desc">Rich Kleiman &amp; KD's media brand. Sports business, culture, style.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#9917;</div><div class="acct-info"><div class="acct-handle">@sporttechie</div><div class="acct-desc">Sports technology and innovation. Where sport meets tech/data.</div></div></div>
+      </div>
+
+      <div class="acct-list" id="tab-media">
+        <div class="acct-item"><div class="acct-avatar">&#128240;</div><div class="acct-info"><div class="acct-handle">@2pทml</div><div class="acct-desc">The Hustle / Trends &mdash; business trends in digestible format. Content inspo.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128240;</div><div class="acct-info"><div class="acct-handle">@modernretail</div><div class="acct-desc">Modern Retail &mdash; DTC, ecommerce, retail news. Primary source for brand news pillar.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128240;</div><div class="acct-info"><div class="acct-handle">@businessoffashion</div><div class="acct-desc">BoF &mdash; fashion commerce, luxury market, brand strategy.</div></div></div>
+        <div class="acct-item"><div class="acct-avatar">&#128240;</div><div class="acct-info"><div class="acct-handle">@theinformation</div><div class="acct-desc">The Information &mdash; tech/VC scoops. High quality, breaking insider stories.</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 9. DOS AND DON'TS ═══ -->
+<div class="section" id="rules">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span class="num">9</span>
+    <h2>Do's and Don'ts</h2>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="dd-grid">
+      <div class="dd-col do">
+        <h3>&#x2705; Do</h3>
+        <ul>
+          <li>Use data and stats in every carousel &mdash; our audience loves numbers</li>
+          <li>Have a strong opinion in captions. Don't be neutral wallpaper</li>
+          <li>Mix formats constantly: carousel, single image, video, quote</li>
+          <li>Post natively (not from schedulers) when possible</li>
+          <li>Engage genuinely &mdash; thoughtful comments, not "great post!"</li>
+          <li>Credit sources and tag people/brands discussed</li>
+          <li>Use PT Serif consistently in post graphics</li>
+          <li>Keep captions punchy. Lead with the hook, not context</li>
+          <li>Feature DC articles prominently when published</li>
+          <li>Reference the DC Index when discussing market moves</li>
+          <li>Stay on top of breaking news &mdash; first to post wins</li>
+          <li>Use Stories daily even on lower-effort days</li>
+          <li>Dig deeper for health/biotech &mdash; preprints, clinical trial registries, niche journals beat mainstream</li>
+          <li>Include platform-level news (Shopify, Meta Ads, etc.) alongside brand stories</li>
+          <li>Post localized London/NYC business news that our demo actually cares about</li>
+          <li>Keep policy posts factual and business-focused, never partisan</li>
+        </ul>
+      </div>
+      <div class="dd-col dont">
+        <h3>&#x274C; Don't</h3>
+        <ul>
+          <li>Follow or engage with "make money online" / hustle grind accounts</li>
+          <li>Post stale news (>24hrs for ecom, >48hrs for everything else)</li>
+          <li>Use generic stock photos &mdash; every image should feel intentional</li>
+          <li>Write corporate copy. No "We're excited to announce..."</li>
+          <li>Post without a caption hook in the first line</li>
+          <li>Ignore comments &mdash; reply to everything within the first hour</li>
+          <li>Use too many hashtags (3-5 max, relevant ones only)</li>
+          <li>Copy competitors' exact angles &mdash; add our own take</li>
+          <li>Post identical content across all platforms with no adaptation</li>
+          <li>Engage with bots or join engagement pods</li>
+          <li>Sacrifice quality for the 2x/day cadence &mdash; 1 great post beats 2 mid ones</li>
+          <li>Forget to check DC for new articles before planning the day</li>
+          <li>Post crime news, violent stories, or anything sensationalist</li>
+          <li>Take political sides or post contentious partisan content (unless it's a DC article Andrew has written)</li>
+          <li>Post opinions on divisive social/political topics &mdash; we're a business brand, stay in lane</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;border-left:3px solid var(--red);">
+      <h3>&#x1F6A8; Content Guardrails</h3>
+      <p style="margin-bottom:12px;">These are hard rules, not guidelines:</p>
+      <ul style="list-style:none;padding:0;">
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;"><strong style="color:var(--red);">NO crime content.</strong> Never post about crime, violence, or public safety incidents.</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;"><strong style="color:var(--red);">NO partisan politics.</strong> Unless it's a DC article Andrew has personally written, we don't take political sides. Period.</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;"><strong style="color:var(--red);">NO culture war topics.</strong> If Twitter is fighting about it, we're not weighing in.</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;"><strong style="color:var(--green);">YES to policy that affects business.</strong> Tax changes, regulation, startup-friendly legislation &mdash; frame it as "what this means for founders" not "which party did what."</li>
+        <li style="color:var(--text-muted);font-size:13px;padding:4px 0;"><strong style="color:var(--green);">When in doubt, skip it.</strong> If you're unsure whether something is too political or contentious, don't post it. Flag it for Andrew instead.</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3>The Litmus Test</h3>
+      <p>Before posting anything, ask: <em>"Would a 26-year-old working in finance in Fulham or the West Village stop scrolling for this?"</em> If not, rethink it.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+function toggleSection(header) {
+  header.classList.toggle('collapsed');
+  const body = header.nextElementSibling;
+  body.classList.toggle('hidden');
+}
+
+function switchTab(btn, tabName) {
+  document.querySelectorAll('.acct-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.acct-list').forEach(l => l.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tabName).classList.add('active');
+}
+
+// Highlight active nav on scroll
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.topbar-nav a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
