@@ -8,6 +8,7 @@ import { BASE_PRICES, BASE_MARKET_CAPS } from '@/lib/index-base-data';
 import { getTopBarData } from '@/lib/topbar-data';
 import SiteFooter from '@/components/SiteFooter';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 300;
 export const metadata = { title: 'DC Index — Dollar Commerce' };
 
