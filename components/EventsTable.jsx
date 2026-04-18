@@ -185,6 +185,7 @@ export default function EventsTable({ events }) {
 
               {/* Visit button */}
               <a
+                data-dc="events-visit-btn"
                 href={ev.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
