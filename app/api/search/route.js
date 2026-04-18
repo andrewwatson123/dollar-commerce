@@ -13,14 +13,31 @@ export async function GET(request) {
   const escaped = q.replace(/"/g, '\\"');
   const matcher = `"*${escaped}*"`;
 
+  // Also build a loose word list for multi-word queries. Split on whitespace.
+  const words = escaped.split(/\s+/).filter((w) => w.length >= 2);
+  const wordMatchers = words.map((w) => `"*${w}*"`);
+
   try {
     const [articles, fundraising, platformUpdates] = await Promise.all([
       sanityClient.fetch(
-        `*[_type=="article" && (title match ${matcher} || excerpt match ${matcher})]
-          | order(publishedAt desc)[0...8]{
+        `*[_type=="article" && (
+            title match ${matcher}
+            || subtitle match ${matcher}
+            || excerpt match ${matcher}
+            || pt::text(body) match ${matcher}
+            || author->name match ${matcher}
+            || category->title match ${matcher}
+            || count(tags[]->title[@ match ${matcher}]) > 0
+            ${words.length > 1 ? `|| (${wordMatchers.map((m) => `title match ${m}`).join(' && ')})` : ''}
+          )]
+          | order(
+              select(title match ${matcher} => 0, 1),
+              publishedAt desc
+            )[0...10]{
             _id, title, "slug": slug.current, publishedAt,
             "category": category->title,
-            "excerpt": excerpt
+            "author": author->name,
+            excerpt
           }`
       ),
       sanityClient.fetch(

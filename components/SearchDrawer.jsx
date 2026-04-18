@@ -121,36 +121,31 @@ export default function SearchDrawer({ onClose }) {
           <Search size={18} color="#64748B" />
           <input
             ref={inputRef}
-            type="search"
+            type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && query.trim()) runSearch(query.trim()); }}
             placeholder="Search articles, companies, updates..."
+            autoComplete="off"
+            spellCheck="false"
             style={{
               flex: 1, fontSize: 16, fontFamily: 'inherit',
               border: 'none', outline: 'none', background: 'transparent',
               color: '#0F172A', padding: 0,
             }}
           />
-          {query && (
-            <button
-              onClick={() => setQuery('')}
-              aria-label="Clear"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#94A3B8' }}
-            >
-              <X size={16} />
-            </button>
-          )}
           <button
-            onClick={onClose}
-            aria-label="Close"
+            onClick={() => { if (query) setQuery(''); else onClose(); }}
+            aria-label={query ? 'Clear' : 'Close'}
             style={{
-              marginLeft: 4, background: '#F1F5F9', border: 'none', borderRadius: 6,
-              cursor: 'pointer', padding: '4px 8px', fontSize: 11, fontWeight: 600,
-              color: '#64748B',
+              background: '#F1F5F9', border: 'none', borderRadius: 6,
+              cursor: 'pointer', padding: '6px 10px',
+              display: 'flex', alignItems: 'center', gap: 4,
+              fontSize: 11, fontWeight: 600, color: '#64748B',
             }}
           >
-            Esc
+            <X size={14} />
+            {query ? 'Clear' : 'Esc'}
           </button>
         </div>
 
