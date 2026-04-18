@@ -27,7 +27,7 @@ export default function NewsletterSignup({ variant = 'dark' }) {
         setMessage(data.error || 'Something went wrong. Please try again.');
       } else {
         setStatus('success');
-        setMessage('You\u2019re in. Check your inbox for tomorrow\u2019s DC Daily.');
+        setMessage('You\u2019re in. Look out for tomorrow\u2019s DC Daily.');
         setEmail('');
       }
     } catch {

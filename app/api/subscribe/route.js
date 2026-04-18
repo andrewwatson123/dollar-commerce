@@ -42,7 +42,7 @@ export async function POST(request) {
         body: JSON.stringify({
           email,
           reactivate_existing: true,
-          send_welcome_email: true,
+          send_welcome_email: false,
           utm_source: 'dollarcommerce.co',
           utm_medium: 'homepage_subscribe',
         }),
