@@ -11,6 +11,7 @@ import TopBar from '@/components/TopBar';
 import LikeButton from '@/components/LikeButton';
 import BookmarkButton from '@/components/BookmarkButton';
 import SiteFooter from '@/components/SiteFooter';
+import SearchDrawer from '@/components/SearchDrawer';
 
 // Feature flag — flip to true to re-enable premium gates, paywall modal,
 // PREMIUM badges, Free Plan upsell card, and Market Intelligence section.
@@ -56,6 +57,7 @@ export default function DCHomepageDesktop({
   const router = useRouter();
   const [hoveredCard, setHoveredCard] = useState(null);
   const [burgerMenuOpen, setBurgerMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState('E-Commerce');
   const [isPremium, setIsPremium] = useState(false);
   const [currentView, setCurrentView] = useState('home');
@@ -171,12 +173,16 @@ export default function DCHomepageDesktop({
           </div>
 
           <div data-dc="header-actions" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <button style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '8px'
-            }}>
+            <button
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '8px'
+              }}
+            >
               <Search size={22} color="#0F172A" />
             </button>
             <button onClick={() => setCurrentView('profile')} style={{
@@ -193,6 +199,9 @@ export default function DCHomepageDesktop({
 
       {/* Burger Menu Drawer — shared across all pages via BurgerDrawer */}
       {burgerMenuOpen && <BurgerDrawer onClose={() => setBurgerMenuOpen(false)} />}
+
+      {/* Search drawer */}
+      {searchOpen && <SearchDrawer onClose={() => setSearchOpen(false)} />}
 
       {/* Paywall Modal — preserved but only renders when PREMIUM_ENABLED=true */}
       {PREMIUM_ENABLED && showPaywallModal && (

@@ -14,9 +14,11 @@ import { Menu, Search, User } from 'lucide-react';
 import BurgerDrawer from './BurgerDrawer';
 import SideNav from './SideNav';
 import TopBar from './TopBar';
+import SearchDrawer from './SearchDrawer';
 
 export default function SiteHeader({ dcIndexValue, dcIndexChange, latestArticle }) {
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { data: session } = useSession();
 
   return (
@@ -75,7 +77,11 @@ export default function SiteHeader({ dcIndexValue, dcIndexChange, latestArticle 
             <span style={{ fontWeight: 400 }}>dollar</span><span style={{ color: '#D2042D', margin: '0 3px', fontSize: '110%' }}>·</span><span style={{ fontWeight: 700 }}>commerce</span>
           </Link>
           <div data-dc="header-actions" style={{ display: 'flex', gap: 16 }}>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}>
+            <button
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}
+            >
               <Search size={22} color="#0F172A" />
             </button>
             <Link href={session ? '/profile' : '/login'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, display: 'flex', alignItems: 'center' }}>
@@ -91,6 +97,9 @@ export default function SiteHeader({ dcIndexValue, dcIndexChange, latestArticle 
 
       {/* Mobile burger drawer overlay */}
       {open && <BurgerDrawer onClose={() => setOpen(false)} />}
+
+      {/* Search drawer */}
+      {searchOpen && <SearchDrawer onClose={() => setSearchOpen(false)} />}
     </>
   );
 }
