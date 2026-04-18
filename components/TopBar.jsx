@@ -61,10 +61,11 @@ export default function TopBar({ dcIndexValue, dcIndexChange, latestArticle }) {
           >
             DC Index
           </span>
-          <span style={{ fontSize: 15, fontWeight: 800 }}>
+          <span data-dc="topbar-index-value" style={{ fontSize: 15, fontWeight: 800 }}>
             {dcIndexValue?.toFixed(2) ?? '—'}
           </span>
           <span
+            data-dc="topbar-index-change"
             style={{
               fontSize: 12,
               fontWeight: 600,
@@ -103,6 +104,7 @@ export default function TopBar({ dcIndexValue, dcIndexChange, latestArticle }) {
         {/* Right: Latest article */}
         {latestArticle && (
           <Link
+            data-dc="topbar-latest"
             href={`/article/${latestArticle.slug}`}
             style={{
               display: 'flex',

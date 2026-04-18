@@ -72,6 +72,7 @@ export default async function ArticlePage({ params }) {
       <ViewTracker slug={article.slug} />
 
       <article
+        data-dc="article-body"
         style={{
           maxWidth: 800,
           margin: '0 auto',
@@ -95,6 +96,7 @@ export default async function ArticlePage({ params }) {
         )}
 
         <h1
+          data-dc="article-title"
           style={{
             fontSize: 34,
             lineHeight: 1.2,
@@ -113,6 +115,7 @@ export default async function ArticlePage({ params }) {
         )}
 
         <div
+          data-dc="article-meta"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -141,7 +144,7 @@ export default async function ArticlePage({ params }) {
         </div>
 
         {article.heroImage?.asset && (
-          <figure style={{ margin: '0 0 40px' }}>
+          <figure data-dc="article-hero" style={{ margin: '0 0 40px' }}>
             <Image
               src={urlFor(article.heroImage).width(1200).url()}
               alt={article.heroImage.alt || article.title}

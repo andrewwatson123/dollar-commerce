@@ -6,6 +6,23 @@ html, body {
   box-sizing: border-box;
 }
 
+/* ============================================================
+   Universal mobile basics — applied at all sizes.
+   ============================================================ */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+html, body {
+  overflow-x: hidden;
+}
+img, svg, video {
+  max-width: 100%;
+  height: auto;
+}
+a, button {
+  touch-action: manipulation;
+}
+
 /* =================================================================
    Desktop sidebar layout (>=1024px)
    The SideNav is fixed at 260px on the left.
@@ -49,13 +66,44 @@ html, body {
 }
 
 /* =================================================================
-   Below 1024px — hide sidebar, show burger
+   Below 1024px — hide sidebar, show burger, tighten layout
    ================================================================= */
 
 @media (max-width: 1023px) {
   [data-dc="side-nav"] {
     display: none !important;
   }
+
+  /* Header padding tighter */
+  [data-dc="site-header"] > div {
+    padding: 18px 24px !important;
+  }
+
+  /* Footer: 4-col -> 2-col */
+  [data-dc="footer-grid"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 32px !important;
+    padding: 36px 24px 20px !important;
+  }
+
+  /* Generic grid shrinks */
+  [data-dc="grid-4"] { grid-template-columns: repeat(2, 1fr) !important; }
+  [data-dc="grid-3"] { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Page container gutters */
+  [data-dc="page-main"] { padding: 24px 24px !important; }
+
+  /* Article reading — allow full column width */
+  [data-dc="article-body"] { padding: 32px 24px 64px !important; }
+
+  /* Data tables — horizontal scroll on tablet */
+  [data-dc="table-wrap"] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Profile grid to single col */
+  [data-dc="profile-grid"] { grid-template-columns: 1fr !important; }
 }
 
 
@@ -137,4 +185,158 @@ html, body {
   /* Generic section title shrink */
   h1 { font-size: 30px !important; }
   h2 { font-size: 22px !important; }
+}
+
+
+/* =================================================================
+   PHONE BLOCK (<=599px)
+   Aggressive mobile-first optimizations for phones.
+   ================================================================= */
+
+@media (max-width: 599px) {
+  /* --- Typography base --- */
+  h1, [data-dc="h1-page"]    { font-size: 26px !important; line-height: 1.2 !important; }
+  h2, [data-dc="h2-section"] { font-size: 20px !important; line-height: 1.25 !important; }
+  h3, [data-dc="h3-card"]    { font-size: 16px !important; line-height: 1.3 !important; }
+  [data-dc="page-subtitle"]  { font-size: 14px !important; }
+  [data-dc="body-lede"]      { font-size: 15px !important; line-height: 1.55 !important; }
+
+  /* --- TopBar --- */
+  [data-dc="topbar"] > div {
+    padding: 0 14px !important;
+    height: 38px !important;
+    gap: 12px !important;
+  }
+  [data-dc="topbar-latest"]       { display: none !important; }
+  [data-dc="topbar-index-value"]  { font-size: 13px !important; }
+  [data-dc="topbar-index-change"] { font-size: 11px !important; }
+
+  /* --- SiteHeader --- */
+  [data-dc="site-header"] > div { padding: 12px 14px !important; }
+  [data-dc="site-title"]        { font-size: 16px !important; letter-spacing: 0.3px !important; }
+  [data-dc="header-actions"]    { gap: 8px !important; }
+
+  /* --- Page container --- */
+  [data-dc="page-main"]    { padding: 16px 14px !important; }
+  [data-dc="home-main"]    { padding: 16px 14px !important; }
+  [data-dc="content-wrap"] { padding: 0 !important; }
+
+  /* --- Grids all collapse to single column --- */
+  [data-dc="grid-2"],
+  [data-dc="grid-3"],
+  [data-dc="grid-4"] { grid-template-columns: 1fr !important; gap: 20px !important; }
+
+  /* --- Footer: 2-col -> 1-col, stacked bottom --- */
+  [data-dc="footer-grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding: 28px 18px 16px !important;
+  }
+  [data-dc="footer-bottom"] {
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 18px !important;
+    text-align: center !important;
+  }
+
+  /* --- BurgerDrawer tighter padding on phone --- */
+  [data-dc="burger-drawer"] {
+    width: 100vw !important;
+    padding: 24px 18px !important;
+  }
+
+  /* --- Homepage hero (extends 900 rules) --- */
+  [data-dc="hero-image"]   { height: 200px !important; }
+  [data-dc="hero-title"]   { font-size: 24px !important; }
+  [data-dc="hero-excerpt"] { font-size: 14px !important; }
+
+  /* --- DCIndexHub --- */
+  [data-dc="dc-index-overall"] {
+    padding: 20px 16px !important;
+  }
+  [data-dc="dc-index-overall"] [data-dc="overall-value"] {
+    font-size: 36px !important;
+  }
+  [data-dc="dc-index-buckets"] {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  [data-dc="dc-index-range-tabs"] {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  [data-dc="watchlist-list"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* --- FundraisingTable: swap table for cards --- */
+  [data-dc="fundraising-table-wrap"] { display: none !important; }
+  [data-dc="fundraising-cards"]      { display: block !important; }
+  [data-dc="fundraising-cards-sort"] { display: flex !important; }
+  [data-dc="fundraising-search"] input { font-size: 16px !important; }
+
+  /* --- EventsTable: stack date chip on top --- */
+  [data-dc="events-card"] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding: 16px !important;
+  }
+  [data-dc="events-card"] [data-dc="events-date-chip"] {
+    min-width: 0 !important;
+    text-align: left !important;
+    padding: 8px 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    align-self: flex-start !important;
+  }
+  [data-dc="events-card"] [data-dc="events-date-chip"] > div {
+    display: inline !important;
+    font-size: 12px !important;
+    margin: 0 !important;
+  }
+
+  /* --- PlatformTracker: tighter padding, meta wraps --- */
+  [data-dc="platform-row"] {
+    gap: 10px !important;
+    padding: 14px 0 !important;
+  }
+  [data-dc="platform-row"] [data-dc="platform-meta"] {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  [data-dc="platform-row"] h3 { font-size: 15px !important; line-height: 1.35 !important; }
+
+  /* --- ArticleCard stacked variant --- */
+  [data-dc="article-card-stacked"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 20px 0 !important;
+  }
+  [data-dc="article-card-stacked"] h2 { font-size: 22px !important; }
+
+  /* --- Article reading --- */
+  [data-dc="article-body"]  { padding: 20px 16px 48px !important; }
+  [data-dc="article-hero"]  {
+    height: 220px !important;
+    margin: 0 -16px 20px !important;
+    border-radius: 0 !important;
+  }
+  [data-dc="article-title"] { font-size: 26px !important; line-height: 1.2 !important; }
+  [data-dc="article-meta"]  { flex-wrap: wrap !important; font-size: 12px !important; }
+  [data-dc="article-body"] p { font-size: 16px !important; line-height: 1.65 !important; }
+
+  /* --- Profile --- */
+  [data-dc="profile-wrap"]   { padding: 18px 14px !important; }
+  [data-dc="profile-header"] {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 10px !important;
+  }
+  [data-dc="profile-tabs"] {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+  }
 }

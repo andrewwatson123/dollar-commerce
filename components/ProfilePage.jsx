@@ -85,7 +85,7 @@ export default function ProfilePage({ session, userData }) {
   );
 
   return (
-    <main style={{ maxWidth: 640, margin: '0 auto', padding: '40px 24px 80px' }}>
+    <main data-dc="profile-wrap" style={{ maxWidth: 640, margin: '0 auto', padding: '40px 24px 80px' }}>
       {/* ════════ MAIN VIEW ════════ */}
       {subView === 'main' && (
         <>

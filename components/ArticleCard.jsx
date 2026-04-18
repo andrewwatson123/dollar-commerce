@@ -16,7 +16,7 @@ export default function ArticleCard({ article, variant = 'compact' }) {
 
   if (variant === 'stacked') {
     return (
-      <div style={{
+      <div data-dc="article-card-stacked" style={{
         display: 'grid',
         gridTemplateColumns: '1fr 2fr',
         gap: 32,

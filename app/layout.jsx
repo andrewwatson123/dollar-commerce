@@ -2,6 +2,13 @@ import './globals.css';
 import AuthProvider from '@/components/AuthProvider';
 import BookmarkSync from '@/components/BookmarkSync';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#F4F1EA',
+};
+
 export const metadata = {
   metadataBase: new URL('https://dollarcommerce.co'),
   title: {

@@ -66,7 +66,7 @@ export default function EventsHeader({
       </p>
 
       {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <div data-dc="grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {statsCards.map((c, i) => {
           const icons = [
             { Icon: CalendarDays, color: '#6366F1' },

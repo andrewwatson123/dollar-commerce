@@ -105,7 +105,7 @@ export default function FundraisingTable({ events, currentSort = 'date_desc', ac
   return (
     <>
       {/* Search bar */}
-      <div style={{ marginBottom: 16, position: 'relative' }}>
+      <div data-dc="fundraising-search" style={{ marginBottom: 16, position: 'relative' }}>
         <Search
           size={16}
           color="#999"
@@ -135,7 +135,38 @@ export default function FundraisingTable({ events, currentSort = 'date_desc', ac
         )}
       </div>
 
+      {/* Mobile-only sort pills (phone <600px) */}
+      <div data-dc="fundraising-cards-sort" style={{
+        display: 'none',
+        gap: 8, marginBottom: 12, flexWrap: 'wrap',
+      }}>
+        <a
+          href={makeSortHref(nextAmountSort, activeRound, activeSector)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            padding: '6px 12px', borderRadius: 999, fontSize: 12, fontWeight: 600,
+            background: amountActive ? '#0F172A' : '#fff', color: amountActive ? '#fff' : '#0F172A',
+            border: '1px solid #E0E0E0', textDecoration: 'none',
+          }}
+        >
+          Amount <AmountArrow size={12} />
+        </a>
+        <a
+          href={makeSortHref(nextDateSort, activeRound, activeSector)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            padding: '6px 12px', borderRadius: 999, fontSize: 12, fontWeight: 600,
+            background: dateActive ? '#0F172A' : '#fff', color: dateActive ? '#fff' : '#0F172A',
+            border: '1px solid #E0E0E0', textDecoration: 'none',
+          }}
+        >
+          Date <DateArrow size={12} />
+        </a>
+      </div>
+
+      {/* Desktop table (hidden on phone via CSS) */}
       <div
+        data-dc="fundraising-table-wrap"
         style={{
           background: '#fff',
           border: '1px solid #E0E0E0',
@@ -245,6 +276,97 @@ export default function FundraisingTable({ events, currentSort = 'date_desc', ac
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile card view (phone <600px only) */}
+      <div data-dc="fundraising-cards" style={{ display: 'none' }}>
+        {visibleEvents.length === 0 && (
+          <div style={{
+            padding: 40, textAlign: 'center', color: '#666',
+            background: '#fff', border: '1px solid #E0E0E0', borderRadius: 8,
+          }}>
+            No events match these filters.
+          </div>
+        )}
+        {visibleEvents.map((e) => {
+          const roundMeta = getRoundMeta(e.round);
+          return (
+            <div
+              key={e._id}
+              style={{
+                background: '#fff', border: '1px solid #E0E0E0', borderRadius: 8,
+                padding: '14px 16px', marginBottom: 10,
+              }}
+            >
+              {/* Top row: round pill + amount */}
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                gap: 12, marginBottom: 8,
+              }}>
+                <span style={{
+                  display: 'inline-block', padding: '4px 10px', borderRadius: 4,
+                  fontSize: 11, fontWeight: 700, color: '#fff',
+                  background: roundMeta.color,
+                  textTransform: 'uppercase', letterSpacing: 0.4, whiteSpace: 'nowrap',
+                }}>
+                  {e.round}
+                </span>
+                <span style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', whiteSpace: 'nowrap' }}>
+                  {fmtUsd(e.amountUsd) || e.amountText || '—'}
+                </span>
+              </div>
+
+              {/* Company (tappable link) */}
+              <a
+                href={visitHref(e)}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  fontSize: 17, fontWeight: 600, color: '#0F172A',
+                  textDecoration: 'none', marginBottom: 4,
+                }}
+              >
+                {e.company}
+                <ExternalLink size={13} style={{ opacity: 0.5 }} />
+              </a>
+
+              {/* Meta line */}
+              <div style={{ fontSize: 12, color: '#999', marginBottom: 8 }}>
+                {e.sector && <span>{e.sector}</span>}
+                {e.sector && e.announcedAt && <span style={{ margin: '0 6px' }}>·</span>}
+                {e.announcedAt && <span>{fmtDate(e.announcedAt)}</span>}
+              </div>
+
+              {/* Description */}
+              {e.description && (
+                <p style={{
+                  fontSize: 13, color: '#666', lineHeight: 1.45, margin: '0 0 10px',
+                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                }}>
+                  {trimSummary(e.description, 180)}
+                </p>
+              )}
+
+              {/* Source */}
+              {e.sourceUrl && (
+                <div style={{
+                  borderTop: '1px solid #f0f0f0', paddingTop: 10, marginTop: 4,
+                }}>
+                  <a
+                    href={e.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ fontSize: 12, color: '#D2042D', textDecoration: 'none', fontWeight: 600 }}
+                  >
+                    Source: {e.sourceName || 'Link'} ↗
+                  </a>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Load More */}

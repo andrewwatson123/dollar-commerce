@@ -238,7 +238,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
             </div>
 
             {/* Date range pills */}
-            <div style={{
+            <div data-dc="dc-index-range-tabs" style={{
               display: 'flex', gap: 2, background: '#fff', padding: 3,
               borderRadius: 999, border: '1px solid #E0E0E0',
             }}>
@@ -268,7 +268,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* HERO — DC Index (Master)                                          */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{
+      <div data-dc="dc-index-overall" style={{
         background: '#0F172A', borderRadius: 14, padding: '36px 40px 32px',
         marginBottom: 14, color: '#fff',
       }}>
@@ -285,7 +285,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
               Dollar Commerce Index
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 56, fontWeight: 800, letterSpacing: -1, lineHeight: 1 }}>
+              <span data-dc="overall-value" style={{ fontSize: 56, fontWeight: 800, letterSpacing: -1, lineHeight: 1 }}>
                 {displayOverall.value?.toFixed(2) ?? '—'}
               </span>
               <span style={{
@@ -335,7 +335,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SUB-INDEX CARDS                                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 12 }}>
+      <div data-dc="dc-index-buckets" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 12 }}>
         {displayBuckets.map((b) => {
           const meta = BUCKET_META[b.bucket] || {};
           const Icon = meta.Icon;

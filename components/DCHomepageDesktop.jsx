@@ -553,7 +553,7 @@ export default function DCHomepageDesktop({
             </div>
           </div>
 
-          <div style={{
+          <div data-dc="grid-4" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
             gap: '20px'
@@ -782,7 +782,7 @@ export default function DCHomepageDesktop({
 
         {/* Latest News Grid */}
         <section style={{ marginBottom: '48px' }}>
-          <div style={{
+          <div data-dc="grid-2" style={{
             display: 'grid',
             gridTemplateColumns: '2fr 1fr',
             gap: '40px'

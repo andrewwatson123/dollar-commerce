@@ -77,7 +77,7 @@ export default function FundraisingHeader({
       </p>
 
       {/* Stats cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <div data-dc="grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {statsCards.map((c, i) => {
           const { Icon, color } = STAT_ICONS[i] || {};
           return (

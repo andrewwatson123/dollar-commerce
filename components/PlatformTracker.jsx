@@ -162,7 +162,7 @@ export default function PlatformTracker({
             const catMeta = CATEGORIES[item.category] || { color: '#999', label: item.category };
             const plat = PLATFORMS.find((p) => p.name === item.platform);
             return (
-              <div key={item._id} style={{
+              <div data-dc="platform-row" key={item._id} style={{
                 display: 'flex', gap: 16, padding: '16px 0',
                 borderBottom: '1px solid #f5f5f5',
               }}>
@@ -177,7 +177,7 @@ export default function PlatformTracker({
 
                 {/* Content */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
+                  <div data-dc="platform-meta" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 11, color: '#999', fontFamily: 'monospace' }}>{formatTime(item.reportedAt)}</span>
                     {plat && (
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#0F172A' }}>

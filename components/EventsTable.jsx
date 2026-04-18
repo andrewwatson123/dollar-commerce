@@ -96,6 +96,7 @@ export default function EventsTable({ events }) {
 
           return (
             <div
+              data-dc="events-card"
               key={ev._id}
               style={{
                 display: 'flex', alignItems: 'flex-start', gap: 20, padding: '20px 24px',
@@ -104,7 +105,7 @@ export default function EventsTable({ events }) {
               }}
             >
               {/* Date chip */}
-              <div style={{
+              <div data-dc="events-date-chip" style={{
                 flexShrink: 0, minWidth: 72, textAlign: 'center',
                 background: isPast ? '#f1f5f9' : '#EEF2FF',
                 borderRadius: 8, padding: '10px 10px',

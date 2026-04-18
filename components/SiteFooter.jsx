@@ -4,12 +4,12 @@ const SERIF = "Georgia, 'Times New Roman', serif";
 
 export default function SiteFooter() {
   return (
-    <footer style={{
+    <footer data-dc="site-footer" style={{
       background: '#0F172A',
       color: '#fff',
       marginTop: 80,
     }}>
-      <div style={{
+      <div data-dc="footer-grid" style={{
         maxWidth: 1400,
         margin: '0 auto',
         padding: '48px 40px 24px',
@@ -56,7 +56,7 @@ export default function SiteFooter() {
       </div>
 
       {/* Logo + copyright */}
-      <div style={{
+      <div data-dc="footer-bottom" style={{
         maxWidth: 1400,
         margin: '0 auto',
         padding: '24px 40px',
