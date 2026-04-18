@@ -237,17 +237,19 @@ function SectorDropdown({ activeSector, activeRound, activeSort, sectorOptions }
       </button>
       {open && (
         <div
+          data-dc="filter-dropdown"
           style={{
             position: 'absolute',
             top: 'calc(100% + 4px)',
             right: 0,
             minWidth: 220,
+            maxHeight: 400,
+            overflowY: 'auto',
             background: '#fff',
             border: '1px solid #E0E0E0',
             borderRadius: 8,
             boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
             zIndex: 50,
-            overflow: 'hidden',
           }}
         >
           <DropdownItem

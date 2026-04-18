@@ -206,10 +206,11 @@ function RegionDropdown({ activeRegion, activeType, activeMonth, regionOptions }
         <ChevronDown size={14} color="#666" />
       </button>
       {open && (
-        <div style={{
+        <div data-dc="filter-dropdown" style={{
           position: 'absolute', top: 'calc(100% + 4px)', right: 0, minWidth: 220,
+          maxHeight: 400, overflowY: 'auto',
           background: '#fff', border: '1px solid #E0E0E0', borderRadius: 8,
-          boxShadow: '0 8px 24px rgba(0,0,0,0.1)', zIndex: 50, overflow: 'hidden',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.1)', zIndex: 50,
         }}>
           <DropdownItem
             onClick={() => navTo(buildQuery({ type: activeType, month: activeMonth }))}
@@ -258,10 +259,10 @@ function MonthDropdown({ activeMonth, activeType, activeRegion, monthOptions }) 
         <ChevronDown size={14} color="#666" />
       </button>
       {open && (
-        <div style={{
+        <div data-dc="filter-dropdown" style={{
           position: 'absolute', top: 'calc(100% + 4px)', right: 0, minWidth: 180,
           background: '#fff', border: '1px solid #E0E0E0', borderRadius: 8,
-          boxShadow: '0 8px 24px rgba(0,0,0,0.1)', zIndex: 50, overflow: 'hidden',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.1)', zIndex: 50,
           maxHeight: 320, overflowY: 'auto',
         }}>
           <DropdownItem
