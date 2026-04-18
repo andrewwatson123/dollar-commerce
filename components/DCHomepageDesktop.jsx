@@ -12,6 +12,7 @@ import LikeButton from '@/components/LikeButton';
 import BookmarkButton from '@/components/BookmarkButton';
 import SiteFooter from '@/components/SiteFooter';
 import SearchDrawer from '@/components/SearchDrawer';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 // Feature flag — flip to true to re-enable premium gates, paywall modal,
 // PREMIUM badges, Free Plan upsell card, and Market Intelligence section.
@@ -921,55 +922,9 @@ export default function DCHomepageDesktop({
                 </Link>
               ))}
 
-              {/* Newsletter Signup */}
-              <div style={{
-                marginTop: '40px',
-                background: '#0F172A',
-                padding: '24px',
-                borderRadius: '8px'
-              }}>
-                <h4 style={{
-                  fontSize: '18px',
-                  fontWeight: '700',
-                  color: '#fff',
-                  marginBottom: '12px'
-                }}>
-                  DC Daily
-                </h4>
-                <p style={{
-                  fontSize: '14px',
-                  color: '#ccc',
-                  marginBottom: '16px',
-                  lineHeight: '1.5'
-                }}>
-                  Get the top stories delivered to your inbox every morning
-                </p>
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    marginBottom: '12px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box'
-                  }}
-                />
-                <button style={{
-                  width: '100%',
-                  background: '#D2042D',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '12px',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  fontWeight: '700',
-                  cursor: 'pointer'
-                }}>
-                  Subscribe
-                </button>
+              {/* Newsletter Signup — wired to Beehiiv via /api/subscribe */}
+              <div style={{ marginTop: '40px' }}>
+                <NewsletterSignup variant="dark" />
               </div>
             </div>
           </div>
