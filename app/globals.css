@@ -266,18 +266,52 @@ a, button {
   /* --- DCIndexHub --- */
   [data-dc="dc-index-overall"] {
     padding: 20px 16px !important;
+    overflow: hidden;
+  }
+  /* Stack the hero inner flex (price info above chart) */
+  [data-dc="dc-index-overall"] > div:first-child {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
   }
   [data-dc="dc-index-overall"] [data-dc="overall-value"] {
     font-size: 36px !important;
+  }
+  /* Chart: reset padding, use natural width */
+  [data-dc="dc-index-chart"] {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  [data-dc="dc-index-chart"] svg {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 100px;
   }
   [data-dc="dc-index-buckets"] {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
   }
+  /* Date range pills: flat horizontal scroll instead of wrapping oval */
   [data-dc="dc-index-range-tabs"] {
-    flex-wrap: wrap !important;
-    gap: 6px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-radius: 10px !important;
+    gap: 2px !important;
+    padding: 3px !important;
+    max-width: 100%;
   }
+  [data-dc="dc-index-range-tabs"]::-webkit-scrollbar { display: none; }
+  [data-dc="dc-index-range-tabs"] button {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    border-radius: 6px !important;
+  }
+  /* Weight toggle: prevent word wrap */
+  [data-dc="weight-toggle"] button { white-space: nowrap !important; }
   [data-dc="watchlist-list"] {
     grid-template-columns: 1fr !important;
   }
@@ -288,9 +322,84 @@ a, button {
   [data-dc="fundraising-cards-sort"] { display: flex !important; }
   [data-dc="fundraising-search"] input { font-size: 16px !important; }
 
-  /* --- Horizontal-scroll carousels on mobile
-         (stat cards + round/category filter pills) --- */
-  [data-dc="stats-carousel"],
+  /* --- Stats cards: 2x2 mosaic grid on phone (smaller/tighter) --- */
+  [data-dc="stats-carousel"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 20px !important;
+  }
+  [data-dc="stats-carousel"] > * {
+    min-width: 0 !important;
+    padding: 12px 14px !important;
+  }
+  [data-dc="stats-carousel"] > * > div:first-child {
+    font-size: 10px !important;
+    gap: 4px !important;
+    margin-bottom: 4px !important;
+  }
+  /* Stat value (the big number) */
+  [data-dc="stats-carousel"] > * > div:nth-child(2) {
+    font-size: 22px !important;
+  }
+  /* Sub text */
+  [data-dc="stats-carousel"] > * > div:nth-child(3) {
+    font-size: 10px !important;
+    margin-top: 2px !important;
+  }
+
+  /* --- Header: put Live pill at top-right next to title, hide dropdowns row's Live --- */
+  [data-dc="header-live-mobile"]  { display: block !important; }
+  [data-dc="header-live-desktop"] { display: none !important; }
+
+  /* --- Consumer Sentiment: stack and reduce paragraph --- */
+  [data-dc="sentiment-row"] {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 32px !important;
+  }
+
+  /* --- Top Movers: horizontal carousel (snap, one tile per view) --- */
+  [data-dc="movers-row"] {
+    display: flex !important;
+    grid-template-columns: none !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    gap: 12px !important;
+    margin: 0 -14px 32px !important;
+    padding: 0 14px 8px !important;
+  }
+  [data-dc="movers-row"]::-webkit-scrollbar { display: none; }
+  [data-dc="movers-row"] > * {
+    flex: 0 0 calc(100% - 32px) !important;
+    scroll-snap-align: start;
+  }
+
+  /* --- ETF + Related stocks: horizontal carousel --- */
+  [data-dc="etf-carousel"],
+  [data-dc="related-carousel"] {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin: 0 -14px 24px !important;
+    padding: 0 14px 8px !important;
+  }
+  [data-dc="etf-carousel"]::-webkit-scrollbar,
+  [data-dc="related-carousel"]::-webkit-scrollbar { display: none; }
+  [data-dc="etf-carousel"] > * {
+    flex: 0 0 180px !important;
+    scroll-snap-align: start;
+  }
+  [data-dc="related-carousel"] > * {
+    flex: 0 0 150px !important;
+    scroll-snap-align: start;
+  }
+
+  /* --- Filter pills: horizontal scroll carousel on phone --- */
   [data-dc="filter-carousel"] {
     display: flex !important;
     flex-wrap: nowrap !important;
@@ -301,16 +410,11 @@ a, button {
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
   }
-  [data-dc="stats-carousel"]::-webkit-scrollbar,
   [data-dc="filter-carousel"]::-webkit-scrollbar { display: none; }
-  [data-dc="stats-carousel"] > * {
-    flex: 0 0 auto !important;
-    min-width: 200px;
-    scroll-snap-align: start;
-  }
   [data-dc="filter-carousel"] > * {
     flex: 0 0 auto !important;
     scroll-snap-align: start;
+    white-space: nowrap !important;
   }
 
   /* --- Filter dropdowns: constrain to viewport on phone --- */

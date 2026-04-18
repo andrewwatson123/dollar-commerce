@@ -49,6 +49,7 @@ export default function FundraisingHeader({
     <>
       {/* Top row: headline + sector dropdown + live pill */}
       <div
+        data-dc="header-title-row"
         style={{
           display: 'flex',
           alignItems: 'flex-end',
@@ -58,17 +59,24 @@ export default function FundraisingHeader({
           flexWrap: 'wrap',
         }}
       >
-        <h1 style={{ fontSize: 30, fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.15 }}>
-          Fundraising Tracker
-        </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div data-dc="header-title-block" style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+          <h1 style={{ fontSize: 30, fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.15 }}>
+            Fundraising Tracker
+          </h1>
+          <div data-dc="header-live-mobile" style={{ display: 'none', marginLeft: 'auto' }}>
+            <LivePill />
+          </div>
+        </div>
+        <div data-dc="header-controls" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <SectorDropdown
             activeSector={activeSector}
             activeRound={activeRound}
             activeSort={activeSort}
             sectorOptions={sectorOptions}
           />
-          <LivePill />
+          <div data-dc="header-live-desktop">
+            <LivePill />
+          </div>
         </div>
       </div>
 

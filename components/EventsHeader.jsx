@@ -37,14 +37,19 @@ export default function EventsHeader({
   return (
     <>
       {/* Title row */}
-      <div style={{
+      <div data-dc="header-title-row" style={{
         display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
         gap: 24, marginBottom: 12, flexWrap: 'wrap',
       }}>
-        <h1 style={{ fontSize: 30, fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.15 }}>
-          Events Tracker
-        </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div data-dc="header-title-block" style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+          <h1 style={{ fontSize: 30, fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.15 }}>
+            Events Tracker
+          </h1>
+          <div data-dc="header-live-mobile" style={{ display: 'none', marginLeft: 'auto' }}>
+            <LivePill />
+          </div>
+        </div>
+        <div data-dc="header-controls" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <RegionDropdown
             activeRegion={activeRegion}
             activeType={activeType}
@@ -57,7 +62,9 @@ export default function EventsHeader({
             activeRegion={activeRegion}
             monthOptions={monthOptions}
           />
-          <LivePill />
+          <div data-dc="header-live-desktop">
+            <LivePill />
+          </div>
         </div>
       </div>
 

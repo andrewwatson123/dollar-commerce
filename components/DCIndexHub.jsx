@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
-  TrendingUp, TrendingDown, ChevronLeft, ChevronRight,
+  TrendingUp, TrendingDown, ChevronLeft, ChevronRight, ChevronDown,
   Store, ShoppingBag, Code2, Shirt, Scale, Weight,
 } from 'lucide-react';
 import { stockLogoUrl } from '@/lib/stock-domains';
@@ -89,6 +89,8 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
   const [weightMode, setWeightMode] = useState('equal');
   const [periodData, setPeriodData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [sentimentOpen, setSentimentOpen] = useState(false);
 
   const isMcap = weightMode === 'mcap';
   const overall = isMcap ? (dcIndex?.overallWeighted ?? dcIndex?.overall) : dcIndex?.overall;
@@ -210,7 +212,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
           {/* Right: controls */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {/* Weight toggle */}
-            <div style={{
+            <div data-dc="weight-toggle" style={{
               display: 'flex', background: '#fff', padding: 3,
               borderRadius: 999, border: '1px solid #E0E0E0',
             }}>
@@ -226,6 +228,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
                     style={{
                       padding: '6px 14px', borderRadius: 999, fontSize: 11, fontWeight: 700,
                       border: 'none', cursor: 'pointer', letterSpacing: 0.3,
+                      whiteSpace: 'nowrap',
                       background: active ? '#0F172A' : 'transparent',
                       color: active ? '#F59E0B' : '#999',
                       transition: 'all 150ms',
@@ -295,7 +298,11 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
                 {displayOverall.value != null ? fmtPct(displayOverall.change) : ''}
               </span>
             </div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 10, lineHeight: 1.5 }}>
+            <div style={{
+              fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 10,
+              lineHeight: 1.5, whiteSpace: 'nowrap', overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}>
               {dcIndex?.basketSize ?? 116} stocks
               <span style={{ margin: '0 6px', opacity: 0.4 }}>/</span>
               {isMcap ? 'Cap weighted' : 'Equal weighted'}
@@ -303,31 +310,56 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
               Base 100 on Jan 2, 2024
             </div>
           </div>
-          <div style={{ flex: 1, maxWidth: 420, paddingLeft: 32, minWidth: 200 }}>
+          <div data-dc="dc-index-chart" style={{ flex: 1, maxWidth: 420, paddingLeft: 32, minWidth: 200 }}>
             <MiniChart points={chartPoints} width={420} height={120} color="#F59E0B" fillOpacity={0.15} />
           </div>
         </div>
 
-        {/* What is the DC Index? — inside hero */}
+        {/* What is the DC Index? — collapsible */}
         <div style={{
           marginTop: 28, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.08)',
-          fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7,
         }}>
-          <strong style={{ color: 'rgba(255,255,255,0.85)' }}>What is the DC Index?</strong>{' '}
-          {isMcap ? (
-            <>
-              A market-cap weighted basket of {dcIndex?.basketSize ?? 116} publicly traded e-commerce and
-              commerce-infrastructure companies — larger companies carry proportionally more weight, like
-              the S&amp;P 500. Three sub-indexes — DC Brands Index, DC Marketplace Index, and DC Software Index —
-              each with their own index value. No single stock exceeds 15% weight. Prices may be delayed up to 15 min.
-            </>
-          ) : (
-            <>
-              An equal-weighted basket of {dcIndex?.basketSize ?? 116} publicly traded e-commerce and
-              commerce-infrastructure companies — every stock carries the same weight regardless of size. Three
-              sub-indexes — DC Brands Index, DC Marketplace Index, and DC Software Index — each with their own index value.
-              No single stock exceeds 15% weight. Prices may be delayed up to 15 min.
-            </>
+          <button
+            onClick={() => setAboutOpen((o) => !o)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, width: '100%',
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+              fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)',
+              textAlign: 'left', fontFamily: 'inherit',
+            }}
+            aria-expanded={aboutOpen}
+          >
+            What is the DC Index?
+            <ChevronDown
+              size={14}
+              color="rgba(255,255,255,0.6)"
+              style={{
+                transition: 'transform 180ms ease',
+                transform: aboutOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              }}
+            />
+          </button>
+          {aboutOpen && (
+            <div style={{
+              marginTop: 12, fontSize: 13,
+              color: 'rgba(255,255,255,0.55)', lineHeight: 1.7,
+            }}>
+              {isMcap ? (
+                <>
+                  A market-cap weighted basket of {dcIndex?.basketSize ?? 116} publicly traded e-commerce and
+                  commerce-infrastructure companies — larger companies carry proportionally more weight, like
+                  the S&amp;P 500. Three sub-indexes — DC Brands Index, DC Marketplace Index, and DC Software Index —
+                  each with their own index value. No single stock exceeds 15% weight. Prices may be delayed up to 15 min.
+                </>
+              ) : (
+                <>
+                  An equal-weighted basket of {dcIndex?.basketSize ?? 116} publicly traded e-commerce and
+                  commerce-infrastructure companies — every stock carries the same weight regardless of size. Three
+                  sub-indexes — DC Brands Index, DC Marketplace Index, and DC Software Index — each with their own index value.
+                  No single stock exceeds 15% weight. Prices may be delayed up to 15 min.
+                </>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -424,7 +456,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* CONSUMER SENTIMENT                                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 14, marginBottom: 44 }}>
+      <div data-dc="sentiment-row" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 14, marginBottom: 44 }}>
         <div style={{
           background: '#fff', border: '1px solid #E8E8E8', borderRadius: 10, padding: 18,
           borderTop: '3px solid #F59E0B',
@@ -446,15 +478,36 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
             </span>
           </div>
         </div>
-        <div style={{
+        <div data-dc="sentiment-explainer" style={{
           background: '#fff', border: '1px solid #E8E8E8', borderRadius: 10, padding: '14px 20px',
-          display: 'flex', alignItems: 'center',
         }}>
-          <p style={{ fontSize: 13, color: '#666', margin: 0, lineHeight: 1.6 }}>
-            Consumer spending drives ~70% of U.S. GDP and directly impacts e-commerce demand,
-            ad budgets, and DTC customer acquisition costs. Readings above 80 signal optimism;
-            below 60 signal pessimism.
-          </p>
+          <button
+            onClick={() => setSentimentOpen((o) => !o)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, width: '100%',
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+              fontSize: 13, fontWeight: 600, color: '#0F172A',
+              textAlign: 'left', fontFamily: 'inherit',
+            }}
+            aria-expanded={sentimentOpen}
+          >
+            What is Consumer Sentiment?
+            <ChevronDown
+              size={14}
+              color="#999"
+              style={{
+                transition: 'transform 180ms ease',
+                transform: sentimentOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              }}
+            />
+          </button>
+          {sentimentOpen && (
+            <p style={{ fontSize: 13, color: '#666', margin: '10px 0 0', lineHeight: 1.6 }}>
+              Consumer spending drives ~70% of U.S. GDP and directly impacts e-commerce demand,
+              ad budgets, and DTC customer acquisition costs. Readings above 80 signal optimism;
+              below 60 signal pessimism.
+            </p>
+          )}
         </div>
       </div>
 
@@ -462,7 +515,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* TOP MOVERS                                                         */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <SectionHeading>Top Movers Today</SectionHeading>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 48 }}>
+      <div data-dc="movers-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 48 }}>
         <MoverPanel title="Gainers" stocks={gainers} positive />
         <MoverPanel title="Losers" stocks={losers} />
       </div>
@@ -471,7 +524,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* E-COMMERCE ETFs                                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <SectionHeading>E-Commerce ETFs</SectionHeading>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 48 }}>
+      <div data-dc="etf-carousel" style={{ display: 'flex', gap: 10, marginBottom: 48 }}>
         {displayEtfs.map((s) => (
           <div key={s.symbol} style={{
             flex: 1, background: '#fff', border: '1px solid #E8E8E8', borderRadius: 10, padding: '14px 16px',
@@ -543,7 +596,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* RELATED STOCKS                                                     */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <SectionHeading>Related Stocks</SectionHeading>
-      <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8, marginBottom: 16 }}>
+      <div data-dc="related-carousel" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8, marginBottom: 16 }}>
         {displayWatchlist.map((s) => (
           <div key={s.symbol} style={{
             minWidth: 140, background: '#fff', borderRadius: 10, padding: '12px 14px',
