@@ -66,7 +66,7 @@ export default function EventsHeader({
       </p>
 
       {/* Stat cards */}
-      <div data-dc="grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <div data-dc="stats-carousel" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {statsCards.map((c, i) => {
           const icons = [
             { Icon: CalendarDays, color: '#6366F1' },
@@ -96,7 +96,7 @@ export default function EventsHeader({
         <div style={{ fontSize: 11, fontWeight: 700, color: '#666', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>
           Event type
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div data-dc="filter-carousel" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <FilterPill
             onClick={() => navTo(buildQuery({ region: activeRegion, month: activeMonth }))}
             label="All"

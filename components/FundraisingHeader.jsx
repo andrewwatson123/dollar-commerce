@@ -77,7 +77,7 @@ export default function FundraisingHeader({
       </p>
 
       {/* Stats cards */}
-      <div data-dc="grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <div data-dc="stats-carousel" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {statsCards.map((c, i) => {
           const { Icon, color } = STAT_ICONS[i] || {};
           return (
@@ -123,7 +123,7 @@ export default function FundraisingHeader({
         >
           Round
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div data-dc="filter-carousel" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <FilterPill
             onClick={() => navTo(buildQuery({ sector: activeSector, sort: activeSort }))}
             label="All"

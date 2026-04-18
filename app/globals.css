@@ -275,6 +275,31 @@ a, button {
   [data-dc="fundraising-cards-sort"] { display: flex !important; }
   [data-dc="fundraising-search"] input { font-size: 16px !important; }
 
+  /* --- Horizontal-scroll carousels on mobile
+         (stat cards + round/category filter pills) --- */
+  [data-dc="stats-carousel"],
+  [data-dc="filter-carousel"] {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 10px !important;
+    padding-bottom: 6px !important;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  [data-dc="stats-carousel"]::-webkit-scrollbar,
+  [data-dc="filter-carousel"]::-webkit-scrollbar { display: none; }
+  [data-dc="stats-carousel"] > * {
+    flex: 0 0 auto !important;
+    min-width: 200px;
+    scroll-snap-align: start;
+  }
+  [data-dc="filter-carousel"] > * {
+    flex: 0 0 auto !important;
+    scroll-snap-align: start;
+  }
+
   /* --- EventsTable: stack date chip on top --- */
   [data-dc="events-card"] {
     flex-direction: column !important;

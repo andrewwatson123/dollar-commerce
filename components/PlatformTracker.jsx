@@ -106,7 +106,7 @@ export default function PlatformTracker({
       </div>
 
       {/* Category filter pills */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 32, flexWrap: 'wrap' }}>
+      <div data-dc="filter-carousel" style={{ display: 'flex', gap: 6, marginBottom: 32, flexWrap: 'wrap' }}>
         <CategoryPill
           label="All"
           active={!activeCategory}
