@@ -1,10 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PLATFORMS, CATEGORIES, platformLogoUrl } from '@/lib/platforms';
 
 const PAGE_SIZE = 50;
+// Mobile-first: show fewer initially, expand in smaller chunks
+const INITIAL_MOBILE = 10;
+const PAGE_SIZE_MOBILE = 10;
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 599);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+}
 
 function buildQuery(next) {
   const params = new URLSearchParams();
@@ -66,8 +80,16 @@ export default function PlatformTracker({
   activeSort = 'date',
 }) {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const navTo = (href) => router.push(href, { scroll: false });
+
+  // Reset visible count when switching between mobile/desktop
+  useEffect(() => {
+    setVisibleCount(isMobile ? INITIAL_MOBILE : PAGE_SIZE);
+  }, [isMobile]);
+
+  const pageIncrement = isMobile ? PAGE_SIZE_MOBILE : PAGE_SIZE;
 
   const visibleUpdates = updates.slice(0, visibleCount);
   const hasMore = visibleCount < updates.length;
@@ -237,13 +259,18 @@ export default function PlatformTracker({
       {hasMore && (
         <div style={{ textAlign: 'center', marginTop: 16 }}>
           <button
-            onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+            onClick={() => setVisibleCount((c) => c + pageIncrement)}
             style={{
-              padding: '12px 32px', borderRadius: 8, fontSize: 14, fontWeight: 600,
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '12px 28px', borderRadius: 8, fontSize: 14, fontWeight: 600,
               border: '1px solid #E0E0E0', background: '#fff', color: '#0F172A', cursor: 'pointer',
             }}
           >
-            Load more ({updates.length - visibleCount} remaining)
+            Load more
+            <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 500 }}>
+              ({updates.length - visibleCount} remaining)
+            </span>
+            <span style={{ fontSize: 14, lineHeight: 1 }}>↓</span>
           </button>
         </div>
       )}

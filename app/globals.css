@@ -369,12 +369,12 @@ a, button {
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     gap: 12px !important;
-    margin: 0 -14px 32px !important;
-    padding: 0 14px 8px !important;
+    margin: 0 0 24px !important;
+    padding: 0 !important;
   }
   [data-dc="movers-row"]::-webkit-scrollbar { display: none; }
   [data-dc="movers-row"] > * {
-    flex: 0 0 calc(100% - 32px) !important;
+    flex: 0 0 100% !important;
     scroll-snap-align: start;
   }
 
@@ -385,18 +385,35 @@ a, button {
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    margin: 0 -14px 24px !important;
-    padding: 0 14px 8px !important;
+    margin: 0 0 20px !important;
+    padding: 0 0 6px !important;
   }
   [data-dc="etf-carousel"]::-webkit-scrollbar,
   [data-dc="related-carousel"]::-webkit-scrollbar { display: none; }
   [data-dc="etf-carousel"] > * {
-    flex: 0 0 180px !important;
+    flex: 0 0 170px !important;
     scroll-snap-align: start;
   }
   [data-dc="related-carousel"] > * {
-    flex: 0 0 150px !important;
+    flex: 0 0 140px !important;
     scroll-snap-align: start;
+  }
+
+  /* --- Chevron carousel controls: visible on phone --- */
+  [data-dc="carousel-controls"] {
+    display: flex !important;
+  }
+
+  /* --- DC Index controls row: stack so range tabs aren't cut --- */
+  [data-dc="dc-index-controls"] {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+  [data-dc="dc-index-range-tabs"] {
+    order: 2;
+    width: 100%;
   }
 
   /* --- Filter pills: horizontal scroll carousel on phone --- */
@@ -473,13 +490,58 @@ a, button {
   /* --- Article reading --- */
   [data-dc="article-body"]  { padding: 20px 16px 48px !important; }
   [data-dc="article-hero"]  {
-    height: 220px !important;
-    margin: 0 -16px 20px !important;
+    margin: 0 -16px 24px !important;
     border-radius: 0 !important;
+  }
+  [data-dc="article-hero"] img {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    max-height: 280px !important;
+    object-fit: cover !important;
+  }
+  [data-dc="article-hero"] figcaption {
+    padding: 10px 16px 0 !important;
+    font-size: 12px !important;
+    color: #94A3B8 !important;
+    text-align: left !important;
+    line-height: 1.4 !important;
   }
   [data-dc="article-title"] { font-size: 22px !important; line-height: 1.2 !important; text-align: left !important; }
   [data-dc="article-meta"]  { flex-wrap: wrap !important; font-size: 12px !important; }
-  [data-dc="article-body"] p { font-size: 16px !important; line-height: 1.65 !important; }
+  [data-dc="article-body"] p,
+  [data-dc="article-body"] li {
+    font-size: 16px !important;
+    line-height: 1.65 !important;
+    margin-top: 0 !important;
+    margin-bottom: 16px !important;
+  }
+  [data-dc="article-body"] h2 {
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+    margin: 28px 0 12px !important;
+    font-weight: 700 !important;
+  }
+  [data-dc="article-body"] h3 {
+    font-size: 17px !important;
+    line-height: 1.3 !important;
+    margin: 22px 0 10px !important;
+    font-weight: 700 !important;
+  }
+  [data-dc="article-body"] blockquote {
+    margin: 20px 0 !important;
+    padding: 12px 16px !important;
+    border-left: 3px solid #D2042D !important;
+    background: rgba(210,4,45,0.04) !important;
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+  }
+  [data-dc="article-body"] img {
+    width: 100% !important;
+    height: auto !important;
+    margin: 20px 0 !important;
+    border-radius: 6px !important;
+  }
 
   /* --- Profile --- */
   [data-dc="profile-wrap"]   { padding: 18px 14px !important; }

@@ -210,7 +210,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
           </div>
 
           {/* Right: controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div data-dc="dc-index-controls" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {/* Weight toggle */}
             <div data-dc="weight-toggle" style={{
               display: 'flex', background: '#fff', padding: 3,
@@ -514,7 +514,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* TOP MOVERS                                                         */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <SectionHeading>Top Movers Today</SectionHeading>
+      <SectionHeading carousel="movers-row">Top Movers Today</SectionHeading>
       <div data-dc="movers-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 48 }}>
         <MoverPanel title="Gainers" stocks={gainers} positive />
         <MoverPanel title="Losers" stocks={losers} />
@@ -523,7 +523,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* E-COMMERCE ETFs                                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <SectionHeading>E-Commerce ETFs</SectionHeading>
+      <SectionHeading carousel="etf-carousel">E-Commerce ETFs</SectionHeading>
       <div data-dc="etf-carousel" style={{ display: 'flex', gap: 10, marginBottom: 48 }}>
         {displayEtfs.map((s) => (
           <div key={s.symbol} style={{
@@ -595,7 +595,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* RELATED STOCKS                                                     */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      <SectionHeading>Related Stocks</SectionHeading>
+      <SectionHeading carousel="related-carousel">Related Stocks</SectionHeading>
       <div data-dc="related-carousel" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8, marginBottom: 16 }}>
         {displayWatchlist.map((s) => (
           <div key={s.symbol} style={{
@@ -623,15 +623,53 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
 
 /* ── sub-components ──────────────────────────────────────────────────────── */
 
-function SectionHeading({ children }) {
+function SectionHeading({ children, carousel }) {
+  const scroll = (dir) => {
+    if (!carousel) return;
+    const el = document.querySelector(`[data-dc="${carousel}"]`);
+    if (el) el.scrollBy({ left: dir * (el.clientWidth * 0.85), behavior: 'smooth' });
+  };
   return (
-    <h2 style={{
-      fontSize: 13, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase',
-      letterSpacing: 0.6, margin: '0 0 14px', paddingBottom: 10,
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      gap: 8, margin: '0 0 14px', paddingBottom: 10,
       borderBottom: '1px solid #E8E8E8',
     }}>
-      {children}
-    </h2>
+      <h2 style={{
+        fontSize: 13, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase',
+        letterSpacing: 0.6, margin: 0,
+      }}>
+        {children}
+      </h2>
+      {carousel && (
+        <div data-dc="carousel-controls" style={{ display: 'none', gap: 6 }}>
+          <button
+            onClick={() => scroll(-1)}
+            aria-label="Previous"
+            style={{
+              width: 30, height: 30, borderRadius: '50%',
+              border: '1px solid #E2E8F0', background: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', padding: 0,
+            }}
+          >
+            <ChevronLeft size={14} color="#64748B" />
+          </button>
+          <button
+            onClick={() => scroll(1)}
+            aria-label="Next"
+            style={{
+              width: 30, height: 30, borderRadius: '50%',
+              border: '1px solid #E2E8F0', background: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', padding: 0,
+            }}
+          >
+            <ChevronRight size={14} color="#64748B" />
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 

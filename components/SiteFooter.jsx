@@ -65,11 +65,6 @@ export default function SiteFooter() {
         justifyContent: 'space-between',
         alignItems: 'center',
       }}>
-        <span style={{ fontFamily: SERIF, fontSize: 18, color: 'rgba(255,255,255,0.5)' }}>
-          <span style={{ fontWeight: 400 }}>dollar</span>
-          <span style={{ color: '#D2042D', margin: '0 2px', fontSize: '110%' }}>·</span>
-          <span style={{ fontWeight: 700 }}>commerce</span>
-        </span>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
           © 2026 Dollar Commerce. All rights reserved.
         </span>
