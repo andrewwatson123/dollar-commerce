@@ -23,6 +23,14 @@ a, button {
   touch-action: manipulation;
 }
 
+/* Carousels: always hide horizontal scrollbar at every viewport */
+[data-dc="filter-carousel"],
+[data-dc="stats-carousel"] {
+  scrollbar-width: none;
+}
+[data-dc="filter-carousel"]::-webkit-scrollbar,
+[data-dc="stats-carousel"]::-webkit-scrollbar { display: none; }
+
 /* =================================================================
    Desktop sidebar layout (>=1024px)
    The SideNav is fixed at 260px on the left.

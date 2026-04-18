@@ -85,7 +85,7 @@ export default function PlatformTracker({
       </p>
 
       {/* Platform selector tabs */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20, overflowX: 'auto', paddingBottom: 4 }}>
+      <div data-dc="filter-carousel" style={{ display: 'flex', gap: 8, marginBottom: 20, overflowX: 'auto', paddingBottom: 4 }}>
         <PlatformTab
           label="All"
           count={total}
