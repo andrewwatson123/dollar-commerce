@@ -359,6 +359,17 @@ a, button {
     gap: 10px !important;
     margin-bottom: 32px !important;
   }
+  /* Mobile: show toggle button, hide the sentiment explainer as a flex column,
+     hide paragraph when closed */
+  [data-dc="sentiment-explainer"] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  [data-dc="sentiment-toggle"] { display: flex !important; }
+  [data-dc="sentiment-text"][data-open="false"] { display: none !important; }
+  [data-dc="sentiment-text"][data-open="true"] {
+    margin-top: 10px !important;
+  }
 
   /* --- Top Movers: horizontal carousel (snap, one tile per view) --- */
   [data-dc="movers-row"] {

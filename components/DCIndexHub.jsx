@@ -480,11 +480,14 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
         </div>
         <div data-dc="sentiment-explainer" style={{
           background: '#fff', border: '1px solid #E8E8E8', borderRadius: 10, padding: '14px 20px',
+          display: 'flex', alignItems: 'center',
         }}>
+          {/* Mobile toggle button (hidden on desktop via CSS) */}
           <button
+            data-dc="sentiment-toggle"
             onClick={() => setSentimentOpen((o) => !o)}
             style={{
-              display: 'flex', alignItems: 'center', gap: 6, width: '100%',
+              display: 'none', alignItems: 'center', gap: 6, width: '100%',
               background: 'none', border: 'none', padding: 0, cursor: 'pointer',
               fontSize: 13, fontWeight: 600, color: '#0F172A',
               textAlign: 'left', fontFamily: 'inherit',
@@ -501,13 +504,16 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
               }}
             />
           </button>
-          {sentimentOpen && (
-            <p style={{ fontSize: 13, color: '#666', margin: '10px 0 0', lineHeight: 1.6 }}>
-              Consumer spending drives ~70% of U.S. GDP and directly impacts e-commerce demand,
-              ad budgets, and DTC customer acquisition costs. Readings above 80 signal optimism;
-              below 60 signal pessimism.
-            </p>
-          )}
+          {/* Always-visible paragraph (on mobile, only shows when sentimentOpen) */}
+          <p
+            data-dc="sentiment-text"
+            data-open={sentimentOpen ? 'true' : 'false'}
+            style={{ fontSize: 13, color: '#666', margin: 0, lineHeight: 1.6 }}
+          >
+            Consumer spending drives ~70% of U.S. GDP and directly impacts e-commerce demand,
+            ad budgets, and DTC customer acquisition costs. Readings above 80 signal optimism;
+            below 60 signal pessimism.
+          </p>
         </div>
       </div>
 
