@@ -59,7 +59,6 @@ export default function DCHomepageDesktop({
   const [hoveredCard, setHoveredCard] = useState(null);
   const [burgerMenuOpen, setBurgerMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [expandedCategory, setExpandedCategory] = useState('E-Commerce');
   const [isPremium, setIsPremium] = useState(false);
   const [currentView, setCurrentView] = useState('home');
   const [profileSubView, setProfileSubView] = useState('main');
@@ -85,7 +84,6 @@ export default function DCHomepageDesktop({
   const [activeFundingType, setActiveFundingType] = useState('Seed');
   const [activeBrandNiche, setActiveBrandNiche] = useState('All');
   const [expandedFaq, setExpandedFaq] = useState(null);
-  const [legalView, setLegalView] = useState(null); // 'terms' or 'privacy'
   
   const handlePremiumFeatureClick = (featureName) => {
     if (PREMIUM_ENABLED && !isPremium) {
