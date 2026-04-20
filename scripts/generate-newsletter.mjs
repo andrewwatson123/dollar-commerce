@@ -283,6 +283,35 @@ function sectionHeading(title) {
   return `<div style="font-size:11px;font-weight:700;color:${C.red};text-transform:uppercase;letter-spacing:0.1em;padding-bottom:10px;border-bottom:2px solid ${C.navy};margin:32px 0 16px">${title}</div>`;
 }
 
+/* Top Article — featured DC editorial piece. Sits above Top News Headlines.
+   Pulls the newest article from Sanity by default. */
+function buildTopArticleSection(article, overrideImageUrl) {
+  if (!article) return '';
+  const url = article.substackUrl?.includes('dollarcommerce')
+    ? article.substackUrl
+    : `${SITE_URL}/article/${article.slug}`;
+  const date = article.publishedAt
+    ? new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : '';
+  const imageUrl = overrideImageUrl
+    || (article.imageUrl ? `${article.imageUrl}?w=1200&h=630&fit=crop` : null);
+
+  return `
+    ${sectionHeading('Top Article')}
+    <div style="background:${C.card};border:1px solid ${C.border};border-radius:12px;overflow:hidden;margin-bottom:16px">
+      ${imageUrl ? `<a href="${url}" style="display:block;text-decoration:none"><img src="${imageUrl}" alt="${article.title}" style="width:100%;display:block" /></a>` : ''}
+      <div style="padding:22px 22px 24px">
+        ${article.category ? `<div style="font-size:10px;font-weight:700;color:${C.red};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">${article.category}</div>` : ''}
+        <a href="${url}" style="font-size:22px;font-weight:800;color:${C.navy};text-decoration:none;line-height:1.25;display:block;margin-bottom:8px">${article.title}</a>
+        ${article.excerpt ? `<p style="font-size:14px;color:${C.grey};line-height:1.5;margin:0 0 14px">${article.excerpt}</p>` : ''}
+        <div style="font-size:12px;color:${C.light};margin-bottom:14px">
+          ${article.author || ''}${date ? ` &middot; ${date}` : ''}
+        </div>
+        <a href="${url}" style="display:inline-block;padding:10px 22px;background:${C.navy};color:#fff;font-size:13px;font-weight:700;text-decoration:none;border-radius:8px;letter-spacing:0.02em">Read the article &rarr;</a>
+      </div>
+    </div>`;
+}
+
 /* Top News Headlines — e-commerce news from across the web (NOT DC editorial).
    Auto-fills the first 2 slots from the platform-tracker scraper; leaves a
    manual placeholder for the editor to paste a story + link each morning. */
@@ -692,12 +721,14 @@ function buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData, platfo
 
       ${buildTopStory(quotes)}
 
+      ${buildTopArticleSection(articles?.[0])}
+
       ${buildTopNewsSection(platformNews)}
 
       ${buildIndexSection(dcIndex, quotes, ytdData)}
       ${buildMoversSection(quotes, ytdData)}
       ${buildFundraisingSection(fundraising)}
-      ${buildArticlesSection(articles)}
+      ${buildArticlesSection(articles?.slice(1))}
 
     </div>`,
   };
