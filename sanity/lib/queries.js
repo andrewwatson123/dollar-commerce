@@ -28,6 +28,13 @@ const ARTICLE_FULL_PROJECTION = `{
   substackUrl,
   body,
   heroImage,
+  "heroImageUrl": heroImage.asset->url,
+  seo {
+    seoTitle,
+    metaDescription,
+    ogImage,
+    "ogImageUrl": ogImage.asset->url
+  },
   "likeCount": coalesce(likeCount, 0),
   "viewCount": coalesce(viewCount, 0),
   "category": category->{title, "slug": slug.current, color},

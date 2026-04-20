@@ -22,17 +22,25 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const article = await getArticleBySlug(params.slug);
   if (!article) return { title: 'Not found' };
-  const description = article.excerpt || article.subtitle ||
-    `${article.title} — e-commerce analysis on Dollar Commerce.`;
+
+  // SEO fields: prefer manual overrides from Studio, fall back to sensible defaults
+  const title = article.seo?.seoTitle || article.title;
+  const description = article.seo?.metaDescription
+    || article.excerpt
+    || article.subtitle
+    || `${article.title} — e-commerce analysis on Dollar Commerce.`;
+
+  // OG image: prefer manual ogImage, fall back to heroImage
+  const imageUrl = article.seo?.ogImageUrl || article.heroImageUrl;
   const canonical = `/article/${params.slug}`;
-  const imageUrl = article.mainImage?.asset?.url || article.imageUrl;
+
   return {
-    title: article.title,
+    title,
     description,
     alternates: { canonical },
     authors: article.author?.name ? [{ name: article.author.name }] : undefined,
     openGraph: {
-      title: article.title,
+      title,
       description,
       url: `https://dollarcommerce.co${canonical}`,
       type: 'article',
@@ -43,7 +51,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: 'summary_large_image',
-      title: article.title,
+      title,
       description,
       images: imageUrl ? [imageUrl] : undefined,
     },

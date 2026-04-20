@@ -107,6 +107,43 @@ export default {
       rows: 3,
       description: 'Short summary shown on cards. Auto-generated from body on import.',
     },
+    /* ─── SEO / Social ─────────────────────────────────────────────
+       All three fields below are OPTIONAL. If left blank, the site
+       auto-generates sensible defaults from title / excerpt / heroImage. */
+    {
+      name: 'seo',
+      title: 'SEO & Social sharing',
+      type: 'object',
+      description: 'Override the auto-generated title, description and preview image for Google + social shares. Leave blank to use smart defaults.',
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        {
+          name: 'seoTitle',
+          title: 'SEO title',
+          type: 'string',
+          description: 'Shows in Google results + browser tab. Ideal length: 50-60 characters. Leave blank to use the article title.',
+          validation: (R) => R.max(70).warning('Over 70 chars — may truncate in Google'),
+        },
+        {
+          name: 'metaDescription',
+          title: 'Meta description',
+          type: 'text',
+          rows: 3,
+          description: 'Shows in Google results + social previews. Ideal length: 120-160 characters. Leave blank to use the excerpt.',
+          validation: (R) => R.max(180).warning('Over 180 chars — may truncate'),
+        },
+        {
+          name: 'ogImage',
+          title: 'Share preview image (OG image)',
+          type: 'image',
+          options: { hotspot: true },
+          description: 'Shown when the article is shared on LinkedIn, X, Facebook, iMessage, etc. Ideal size: 1200x630. Leave blank to use the hero image.',
+          fields: [
+            { name: 'alt', title: 'Alt text', type: 'string' },
+          ],
+        },
+      ],
+    },
     {
       name: 'body',
       title: 'Body',
