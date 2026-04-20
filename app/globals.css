@@ -528,6 +528,11 @@ a, button {
     line-height: 1.4 !important;
   }
   [data-dc="article-title"] { font-size: 22px !important; line-height: 1.2 !important; text-align: left !important; }
+  [data-dc="article-title-row"] { gap: 10px !important; }
+  [data-dc="article-title-row"] > div button {
+    padding: 5px 10px !important;
+    font-size: 12px !important;
+  }
   [data-dc="article-meta"]  { flex-wrap: wrap !important; font-size: 12px !important; }
   [data-dc="article-body"] p,
   [data-dc="article-body"] li {

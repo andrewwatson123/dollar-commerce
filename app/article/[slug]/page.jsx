@@ -7,6 +7,7 @@ import PortableArticleBody from '@/components/PortableArticleBody';
 import SiteHeader from '@/components/SiteHeader';
 import BookmarkButton from '@/components/BookmarkButton';
 import LikeButton from '@/components/LikeButton';
+import ShareButton from '@/components/ShareButton';
 import Comments from '@/components/Comments';
 import ViewTracker from '@/components/ViewTracker';
 import { getTopBarData } from '@/lib/topbar-data';
@@ -103,18 +104,31 @@ export default async function ArticlePage({ params }) {
           </Link>
         )}
 
-        <h1
-          data-dc="article-title"
+        <div
+          data-dc="article-title-row"
           style={{
-            fontSize: 34,
-            lineHeight: 1.2,
-            fontWeight: 700,
-            margin: '16px 0 16px',
-            color: '#0F172A',
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+            gap: 20, margin: '16px 0',
           }}
         >
-          {article.title}
-        </h1>
+          <h1
+            data-dc="article-title"
+            style={{
+              fontSize: 34,
+              lineHeight: 1.2,
+              fontWeight: 700,
+              margin: 0,
+              color: '#0F172A',
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            {article.title}
+          </h1>
+          <div style={{ flexShrink: 0, paddingTop: 4 }}>
+            <ShareButton title={article.title} url={`/article/${params.slug}`} />
+          </div>
+        </div>
 
         {article.subtitle && (
           <p style={{ fontSize: 20, lineHeight: 1.5, color: '#555', margin: '0 0 24px' }}>
