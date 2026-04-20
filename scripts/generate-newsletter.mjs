@@ -118,6 +118,55 @@ async function getLatestArticles(limit = 4) {
   );
 }
 
+// Latest platform-tracker news (e-commerce headlines scraped from around the web).
+// Used for the "Top News Headlines" section — independent of DC editorial.
+// Prefers official sources and excludes stock-commentary noise.
+async function getLatestPlatformNews(limit = 2) {
+  try {
+    // Pull a wider window, then filter/sort client-side
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const raw = await sanity.fetch(
+      `*[_type=="platformUpdate" && approved == true && reportedAt >= $since]
+        | order(reportedAt desc)[0...60]{
+          _id, platform, title, summary, category, heat, reportedAt, sourceUrl, sourceName
+        }`,
+      { since }
+    );
+    // Reject stock-commentary noise + listicles.
+    // Allow "product stock" / "in stock" / "out of stock" (inventory context).
+    const bad = (s) => {
+      if (!s) return false;
+      const t = s.toLowerCase();
+      // Listicles / clickbait
+      if (/^\d+\s+(profitable|best|top|ways|things|ideas)/.test(t)) return true;
+      if (/\bbusiness ideas\b|\bprofitable tech\b/.test(t)) return true;
+      // Stock commentary
+      if (/\bis\s+\w+\s+stock\s+(a\s+)?(buy|sell|good)/i.test(s)) return true;
+      if (/stock\s+(is\s+)?(a\s+)?(buy|sell|candidate|pick)/i.test(s)) return true;
+      if (/\b(buy|sell|hold)\s+(now|right\s+now|the\s+dip)\b/.test(t)) return true;
+      if (/\b(short|long)\s+candidate\b/.test(t)) return true;
+      if (/\bprice\s+target|analyst\s+(upgrade|downgrade|rating)/.test(t)) return true;
+      if (/\bdividend\b|\bearnings\s+(miss|beat|report|call)|quarterly results/.test(t)) return true;
+      if (/\bshares?\s+(surge|plunge|drop|fall|rise|jump)/.test(t)) return true;
+      // Generic comparison listicles
+      if (/\bvs\.\b|\bvs\s+/.test(t) && /stock|better|candidate/.test(t)) return true;
+      return false;
+    };
+    const filtered = (raw || []).filter((x) => x.title && !bad(x.title) && !bad(x.summary));
+    // Prefer official sources, then by heat/date
+    filtered.sort((a, b) => {
+      const aOfficial = /Official/i.test(a.sourceName || '') ? 1 : 0;
+      const bOfficial = /Official/i.test(b.sourceName || '') ? 1 : 0;
+      if (aOfficial !== bOfficial) return bOfficial - aOfficial;
+      if ((b.heat || 1) !== (a.heat || 1)) return (b.heat || 1) - (a.heat || 1);
+      return new Date(b.reportedAt) - new Date(a.reportedAt);
+    });
+    return filtered.slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
 async function getRecentFundraising() {
   // Get last 7 days of fundraising
   const since = new Date();
@@ -234,6 +283,51 @@ function sectionHeading(title) {
   return `<div style="font-size:11px;font-weight:700;color:${C.red};text-transform:uppercase;letter-spacing:0.1em;padding-bottom:10px;border-bottom:2px solid ${C.navy};margin:32px 0 16px">${title}</div>`;
 }
 
+/* Top News Headlines — e-commerce news from across the web (NOT DC editorial).
+   Auto-fills the first 2 slots from the platform-tracker scraper; leaves a
+   manual placeholder for the editor to paste a story + link each morning. */
+function buildTopNewsSection(newsItems) {
+  const picks = (newsItems || []).slice(0, 2);
+
+  const renderItem = (item, isLast) => {
+    const date = item.reportedAt
+      ? new Date(item.reportedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      : '';
+    const summary = (item.summary || '').replace(/<[^>]+>/g, '').slice(0, 170);
+    return `
+      <div style="padding:16px 18px;border-bottom:${isLast ? 'none' : `1px solid ${C.border}`}">
+        <div style="font-size:10px;font-weight:700;color:${C.red};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">${item.platform || 'News'}</div>
+        <a href="${item.sourceUrl || '#'}" style="font-size:15px;font-weight:700;color:${C.navy};text-decoration:none;line-height:1.35;display:block;margin-bottom:6px">${item.title}</a>
+        ${summary ? `<p style="font-size:13px;color:${C.grey};line-height:1.5;margin:0 0 8px">${summary}${summary.length >= 170 ? '&hellip;' : ''}</p>` : ''}
+        <div style="font-size:11px;color:${C.light}">
+          ${item.sourceName || ''}${date ? ` &middot; ${date}` : ''}
+          ${item.sourceUrl ? `<a href="${item.sourceUrl}" style="color:${C.red};text-decoration:none;font-weight:600;margin-left:10px">Read &rarr;</a>` : ''}
+        </div>
+      </div>`;
+  };
+
+  // Manual placeholder slot — editor pastes the 3rd story each morning
+  const placeholder = `
+    <div style="padding:16px 18px;border-bottom:none;background:#FDFCF8">
+      <div style="font-size:10px;font-weight:700;color:#CBD5E1;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">[ CATEGORY ]</div>
+      <a href="#MANUAL_HEADLINE_URL" style="font-size:15px;font-weight:700;color:#94A3B8;text-decoration:none;line-height:1.35;display:block;margin-bottom:6px">[ Paste your 3rd headline here ]</a>
+      <p style="font-size:13px;color:#CBD5E1;line-height:1.5;margin:0 0 8px">[ Quick summary of the story &mdash; 1-2 sentences that explain what happened and why it matters. ]</p>
+      <div style="font-size:11px;color:#CBD5E1">
+        [ Source ]
+        <a href="#MANUAL_HEADLINE_URL" style="color:#D2042D;text-decoration:none;font-weight:600;margin-left:10px">Read &rarr;</a>
+      </div>
+    </div>`;
+
+  const autoRows = picks.map((item, i) => renderItem(item, false)).join('');
+
+  return `
+    ${sectionHeading('Top News Headlines')}
+    <div style="background:${C.card};border:1px solid ${C.border};border-radius:10px;overflow:hidden;margin-bottom:16px">
+      ${autoRows}
+      ${placeholder}
+    </div>`;
+}
+
 function buildIndexSection(dcIndex, quotes, ytdData) {
   if (!dcIndex?.overallWeighted) return '';
 
@@ -260,36 +354,57 @@ function buildIndexSection(dcIndex, quotes, ytdData) {
     avg1D = allChanges.reduce((s, q) => s + q.changePercent, 0) / allChanges.length;
   }
 
+  // Helper: compute a weighted average for a given set of stocks over a value-fn.
+  // Uses the passed-in weights map; falls back to simple average if no weights.
+  const weightedAvg = (stocks, weights, valueFn) => {
+    const valid = stocks.filter((s) => valueFn(s) != null);
+    if (valid.length === 0) return null;
+    if (weights && Object.keys(weights).length > 0) {
+      const filtered = valid.filter((s) => weights[s.symbol] != null);
+      const totalW = filtered.reduce((a, s) => a + (weights[s.symbol] ?? 0), 0);
+      if (totalW > 0) {
+        return filtered.reduce((a, s) => a + (weights[s.symbol] ?? 0) * valueFn(s), 0) / totalW;
+      }
+    }
+    return valid.reduce((a, s) => a + valueFn(s), 0) / valid.length;
+  };
+
+  // Overall YTD — cap-weighted across all stocks that have YTD data
   let ytdPct = null;
   if (ytdData) {
-    const ytdChanges = Object.values(ytdData).filter(d => d?.periodChangePct != null);
-    if (ytdChanges.length > 0) {
-      ytdPct = ytdChanges.reduce((s, d) => s + d.periodChangePct, 0) / ytdChanges.length;
-    }
+    const stocksWithYtd = quotes.map((q) => ({
+      symbol: q.symbol,
+      ytd: ytdData[q.symbol]?.periodChangePct,
+    }));
+    ytdPct = weightedAvg(stocksWithYtd, overall.weights || {}, (s) => s.ytd);
   }
 
   const bucketRows = buckets.map(b => {
     const stocks = bucketMap[b.bucket] || [];
-    // Compute cap-weighted 1D change per bucket
-    let avgChange = 0;
-    if (b.weights && Object.keys(b.weights).length > 0) {
-      const valid = stocks.filter(s => s.changePercent != null && b.weights[s.symbol]);
-      const totalW = valid.reduce((acc, s) => acc + (b.weights[s.symbol] ?? 0), 0);
-      if (totalW > 0) {
-        avgChange = valid.reduce((acc, s) => acc + (b.weights[s.symbol] ?? 0) * s.changePercent, 0) / totalW;
-      }
-    } else if (stocks.length > 0) {
-      avgChange = stocks.reduce((s, q) => s + q.changePercent, 0) / stocks.length;
+    // Cap-weighted 1D change per bucket
+    const avgChange = weightedAvg(stocks, b.weights || {}, (s) => s.changePercent) ?? 0;
+    // Cap-weighted YTD change per bucket
+    let avgYtd = null;
+    if (ytdData) {
+      const stocksWithYtd = stocks.map((q) => ({
+        symbol: q.symbol,
+        ytd: ytdData[q.symbol]?.periodChangePct,
+      }));
+      avgYtd = weightedAvg(stocksWithYtd, b.weights || {}, (s) => s.ytd);
     }
     const icon = BUCKET_ICONS[b.bucket] || '';
     const label = BUCKET_LABELS[b.bucket] || b.bucket;
     const bColor = BUCKET_COLORS[b.bucket] || C.navy;
+    const ytdCell = avgYtd != null
+      ? `<td style="padding:12px 14px 12px 4px;font-size:13px;font-weight:600;color:${pctColor(avgYtd)};border-bottom:1px solid ${C.border};text-align:right;vertical-align:middle;white-space:nowrap">${fmtPct(avgYtd)}</td>`
+      : `<td style="padding:12px 14px 12px 4px;font-size:13px;color:${C.light};border-bottom:1px solid ${C.border};text-align:right;vertical-align:middle">&mdash;</td>`;
     return `<tr>
-      <td style="padding:12px 14px;font-size:14px;font-weight:600;color:${C.navy};border-bottom:1px solid ${C.border};vertical-align:middle">
+      <td style="padding:12px 12px;font-size:14px;font-weight:600;color:${C.navy};border-bottom:1px solid ${C.border};vertical-align:middle">
         <span style="color:${bColor};margin-right:8px">${icon}</span>${label}
       </td>
-      <td style="padding:12px 14px;font-size:16px;font-weight:700;color:${C.navy};border-bottom:1px solid ${C.border};text-align:right;vertical-align:middle">${Number(b.value).toFixed(1)}</td>
-      <td style="padding:12px 14px;font-size:14px;font-weight:600;color:${pctColor(avgChange)};border-bottom:1px solid ${C.border};text-align:right;vertical-align:middle">${fmtPct(avgChange)}</td>
+      <td style="padding:12px 4px;font-size:15px;font-weight:700;color:${C.navy};border-bottom:1px solid ${C.border};text-align:right;vertical-align:middle;white-space:nowrap">${Number(b.value).toFixed(1)}</td>
+      <td style="padding:12px 4px;font-size:13px;font-weight:600;color:${pctColor(avgChange)};border-bottom:1px solid ${C.border};text-align:right;vertical-align:middle;white-space:nowrap">${fmtPct(avgChange)}</td>
+      ${ytdCell}
     </tr>`;
   }).join('');
 
@@ -309,43 +424,80 @@ function buildIndexSection(dcIndex, quotes, ytdData) {
       <div style="margin-top:12px"><a href="${SITE_URL}/dc-index" style="font-size:11px;color:rgba(255,255,255,0.35);text-decoration:none">View full index &rarr;</a></div>
     </div>
 
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:${C.card};border:1px solid ${C.border};border-radius:10px;overflow:hidden;margin-bottom:16px">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:${C.card};border:1px solid ${C.border};border-radius:10px;overflow:hidden;margin-bottom:16px;table-layout:fixed">
+      <colgroup>
+        <col />
+        <col style="width:58px" />
+        <col style="width:82px" />
+        <col style="width:82px" />
+      </colgroup>
       <thead>
         <tr style="background:#F8FAFC">
-          <th style="padding:10px 14px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:left;border-bottom:1px solid ${C.border}">Index</th>
-          <th style="padding:10px 14px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:right;border-bottom:1px solid ${C.border}">Value</th>
-          <th style="padding:10px 14px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:right;border-bottom:1px solid ${C.border}">1D</th>
+          <th style="padding:10px 12px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:left;border-bottom:1px solid ${C.border}">Index</th>
+          <th style="padding:10px 4px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:right;border-bottom:1px solid ${C.border}">Value</th>
+          <th style="padding:10px 4px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:right;border-bottom:1px solid ${C.border}">1D</th>
+          <th style="padding:10px 14px 10px 4px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:right;border-bottom:1px solid ${C.border}">YTD</th>
         </tr>
       </thead>
       <tbody>${bucketRows}</tbody>
     </table>`;
 }
 
-function buildMoversSection(quotes) {
+function buildMoversSection(quotes, ytdData) {
   if (quotes.length === 0) return '';
 
   const sorted = [...quotes].sort((a, b) => b.changePercent - a.changePercent);
   const gainers = sorted.slice(0, 5);
   const losers = sorted.slice(-5).reverse();
 
+  // Wider 1D/YTD columns so percentages don't clip; compress logo+ticker+name
+  // to make room. Widths out of 600px container:
+  //   logo 32 + ticker 56 + name flex + 1D 82 + YTD 82 = 252 + name
+  const COLGROUP = `
+    <colgroup>
+      <col style="width:32px" />
+      <col style="width:56px" />
+      <col />
+      <col style="width:82px" />
+      <col style="width:82px" />
+    </colgroup>`;
+
   function moverRow(q, isLast) {
     const border = isLast ? 'none' : `1px solid ${C.border}`;
+    const ytd = ytdData?.[q.symbol]?.periodChangePct;
+    const ytdCell = ytd != null
+      ? `<td style="padding:12px 14px 12px 4px;border-bottom:${border};font-size:13px;font-weight:700;color:${pctColor(ytd)};text-align:right;vertical-align:middle;white-space:nowrap">${fmtPct(ytd)}</td>`
+      : `<td style="padding:12px 14px 12px 4px;border-bottom:${border};font-size:13px;color:${C.light};text-align:right;vertical-align:middle">&mdash;</td>`;
     return `<tr>
-      <td width="28" style="padding:10px 0 10px 14px;border-bottom:${border};vertical-align:middle">${logoImg(q.symbol, 20)}</td>
-      <td style="padding:10px 8px;border-bottom:${border};font-size:14px;color:${C.navy};vertical-align:middle"><strong>${q.symbol}</strong></td>
-      <td style="padding:10px 8px;border-bottom:${border};font-size:13px;color:${C.grey};vertical-align:middle">${q.name}</td>
-      <td style="padding:10px 14px 10px 8px;border-bottom:${border};font-size:14px;font-weight:700;color:${pctColor(q.changePercent)};text-align:right;vertical-align:middle;white-space:nowrap">${fmtPct(q.changePercent)}</td>
+      <td style="padding:12px 0 12px 12px;border-bottom:${border};vertical-align:middle;width:32px">${logoImg(q.symbol, 20)}</td>
+      <td style="padding:12px 4px 12px 6px;border-bottom:${border};font-size:14px;font-weight:700;color:${C.navy};vertical-align:middle;white-space:nowrap">${q.symbol}</td>
+      <td style="padding:12px 4px;border-bottom:${border};font-size:13px;color:${C.grey};vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q.name}</td>
+      <td style="padding:12px 4px;border-bottom:${border};font-size:13px;font-weight:700;color:${pctColor(q.changePercent)};text-align:right;vertical-align:middle;white-space:nowrap">${fmtPct(q.changePercent)}</td>
+      ${ytdCell}
     </tr>`;
   }
 
+  const tableHead = `
+    <thead>
+      <tr style="background:#F8FAFC">
+        <th colspan="3" style="padding:10px 12px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:left;border-bottom:1px solid ${C.border}">Ticker</th>
+        <th style="padding:10px 4px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:right;border-bottom:1px solid ${C.border}">1D</th>
+        <th style="padding:10px 14px 10px 4px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:right;border-bottom:1px solid ${C.border}">YTD</th>
+      </tr>
+    </thead>`;
+
   return `
     <div style="font-size:10px;font-weight:700;color:${C.green};text-transform:uppercase;letter-spacing:0.06em;margin:16px 0 8px">&#9650; TOP MOVERS</div>
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:${C.card};border:1px solid ${C.border};border-radius:8px;overflow:hidden;margin-bottom:16px">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:${C.card};border:1px solid ${C.border};border-radius:10px;overflow:hidden;margin-bottom:16px;table-layout:fixed">
+      ${COLGROUP}
+      ${tableHead}
       <tbody>${gainers.map((q, i) => moverRow(q, i === gainers.length - 1)).join('')}</tbody>
     </table>
 
     <div style="font-size:10px;font-weight:700;color:${C.redDown};text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">&#9660; TOP FALLERS</div>
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:${C.card};border:1px solid ${C.border};border-radius:8px;overflow:hidden;margin-bottom:16px">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:${C.card};border:1px solid ${C.border};border-radius:10px;overflow:hidden;margin-bottom:16px;table-layout:fixed">
+      ${COLGROUP}
+      ${tableHead}
       <tbody>${losers.map((q, i) => moverRow(q, i === losers.length - 1)).join('')}</tbody>
     </table>`;
 }
@@ -511,7 +663,7 @@ function generateIntro(dcIndex, quotes, fundraising, articles) {
 
 /* ── Full newsletter ────────────────────────────── */
 
-function buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData) {
+function buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData, platformNews) {
   const hero = articles[0];
 
   // Intro paragraph — 3-sentence editorial overview, Exec Sum style
@@ -540,8 +692,10 @@ function buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData) {
 
       ${buildTopStory(quotes)}
 
+      ${buildTopNewsSection(platformNews)}
+
       ${buildIndexSection(dcIndex, quotes, ytdData)}
-      ${buildMoversSection(quotes)}
+      ${buildMoversSection(quotes, ytdData)}
       ${buildFundraisingSection(fundraising)}
       ${buildArticlesSection(articles)}
 
@@ -603,11 +757,12 @@ async function main() {
 
   console.log('   Fetching articles, DC Index, fundraising, stock quotes, YTD...');
 
-  const [articles, dcIndex, fundraising, ytdData] = await Promise.all([
+  const [articles, dcIndex, fundraising, ytdData, platformNews] = await Promise.all([
     getLatestArticles(4),
     getDcIndexData(),
     getRecentFundraising(),
     getYtdData(),
+    getLatestPlatformNews(2),
   ]);
 
   // Get stock quotes from DC Index API response (all 116 in one call)
@@ -617,9 +772,10 @@ async function main() {
   console.log(`   DC Index (cap-weighted): ${dcIndex?.overallWeighted?.value || 'unavailable'}`);
   console.log(`   ${fundraising.length} fundraising deals`);
   console.log(`   ${quotes.length} stock quotes`);
+  console.log(`   ${platformNews.length} platform news headlines`);
   console.log(`   YTD data: ${ytdData ? Object.keys(ytdData).length + ' symbols' : 'unavailable'}`);
 
-  const { subject, html } = buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData);
+  const { subject, html } = buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData, platformNews);
 
   console.log(`\n   Subject: ${subject}`);
 
