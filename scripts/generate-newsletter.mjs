@@ -450,13 +450,13 @@ function buildMoversSection(quotes, ytdData) {
   const gainers = sorted.slice(0, 5);
   const losers = sorted.slice(-5).reverse();
 
-  // Wider 1D/YTD columns so percentages don't clip; compress logo+ticker+name
-  // to make room. Widths out of 600px container:
-  //   logo 32 + ticker 56 + name flex + 1D 82 + YTD 82 = 252 + name
+  // Wider ticker column + generous left padding on name so the stock name
+  // gets clear breathing room from the ticker. Out of 600px:
+  //   logo 32 + ticker 72 + name flex + 1D 82 + YTD 82 = 268 + name
   const COLGROUP = `
     <colgroup>
       <col style="width:32px" />
-      <col style="width:56px" />
+      <col style="width:72px" />
       <col />
       <col style="width:82px" />
       <col style="width:82px" />
@@ -471,7 +471,7 @@ function buildMoversSection(quotes, ytdData) {
     return `<tr>
       <td style="padding:12px 0 12px 12px;border-bottom:${border};vertical-align:middle;width:32px">${logoImg(q.symbol, 20)}</td>
       <td style="padding:12px 4px 12px 6px;border-bottom:${border};font-size:14px;font-weight:700;color:${C.navy};vertical-align:middle;white-space:nowrap">${q.symbol}</td>
-      <td style="padding:12px 4px;border-bottom:${border};font-size:13px;color:${C.grey};vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q.name}</td>
+      <td style="padding:12px 4px 12px 16px;border-bottom:${border};font-size:13px;color:${C.grey};vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q.name}</td>
       <td style="padding:12px 4px;border-bottom:${border};font-size:13px;font-weight:700;color:${pctColor(q.changePercent)};text-align:right;vertical-align:middle;white-space:nowrap">${fmtPct(q.changePercent)}</td>
       ${ytdCell}
     </tr>`;
