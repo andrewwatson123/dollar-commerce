@@ -53,26 +53,10 @@ export default function Comments({ term }) {
     ref.current.appendChild(script);
   }, [repo, repoId, category, categoryId, term]);
 
-  if (!repo || !repoId) {
-    return (
-      <div
-        style={{
-          marginTop: 48,
-          padding: 24,
-          background: '#fff',
-          border: '1px dashed #ccc',
-          borderRadius: 8,
-          color: '#666',
-          fontSize: 14,
-        }}
-      >
-        <strong style={{ color: '#0F172A' }}>Comments coming soon.</strong> Comments use
-        GitHub-backed Giscus once the repo is published. See{' '}
-        <code style={{ background: '#f5f5f5', padding: '2px 6px' }}>components/Comments.jsx</code>{' '}
-        for activation steps.
-      </div>
-    );
-  }
+  // Hide the component entirely until Giscus env vars are set.
+  // Once NEXT_PUBLIC_GISCUS_REPO + NEXT_PUBLIC_GISCUS_REPO_ID are added to
+  // Vercel, comments will appear automatically with no code change.
+  if (!repo || !repoId) return null;
 
   return <div ref={ref} style={{ marginTop: 48 }} />;
 }
