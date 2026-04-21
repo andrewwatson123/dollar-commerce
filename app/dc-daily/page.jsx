@@ -332,8 +332,6 @@ function buildMosaic(seed = 7) {
 
 export default function DCDailyLanding() {
   const tiles = buildMosaic(7);
-  const today = new Date();
-  const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
 
   return (
     <div
@@ -429,13 +427,6 @@ export default function DCDailyLanding() {
             </div>
           </section>
 
-          <footer className="dcdaily-footer">
-            <span>ISSUE №1284 · {dateStr}</span>
-            <span className="dots">
-              <i className="on" /><i /><i /><i />&nbsp;&nbsp;READ BY 42,000+ OPERATORS
-            </span>
-            <span>DOLLARCOMMERCE.CO</span>
-          </footer>
         </div>
       </main>
     </div>
