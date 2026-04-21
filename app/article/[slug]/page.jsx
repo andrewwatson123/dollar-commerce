@@ -8,7 +8,6 @@ import SiteHeader from '@/components/SiteHeader';
 import BookmarkButton from '@/components/BookmarkButton';
 import LikeButton from '@/components/LikeButton';
 import ShareButton from '@/components/ShareButton';
-import Comments from '@/components/Comments';
 import ViewTracker from '@/components/ViewTracker';
 import { getTopBarData } from '@/lib/topbar-data';
 import SiteFooter from '@/components/SiteFooter';
@@ -232,7 +231,6 @@ export default async function ArticlePage({ params }) {
           </div>
         )}
 
-        <Comments term={article.slug} />
       </article>
       <SiteFooter />
     </div>
