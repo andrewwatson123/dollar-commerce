@@ -31,6 +31,35 @@ a, button {
 [data-dc="filter-carousel"]::-webkit-scrollbar,
 [data-dc="stats-carousel"]::-webkit-scrollbar { display: none; }
 
+/* Fullscreen landing pages — remove the 260px sidebar padding and hide nav */
+body:has([data-dc="fullscreen"]) {
+  padding-left: 0 !important;
+}
+body:has([data-dc="fullscreen"]) [data-dc="side-nav"] {
+  display: none !important;
+}
+
+/* Fullscreen pages: let their own inline styles drive typography
+   (override the phone h1/h2 rules that force left-aligned + small) */
+@media (max-width: 599px) {
+  [data-dc="fullscreen"] h1 {
+    font-size: 44px !important;
+    text-align: center !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1px !important;
+  }
+  [data-dc="fullscreen"] h2 {
+    text-align: center !important;
+  }
+  [data-dc="fullscreen"] p {
+    text-align: center !important;
+  }
+  /* Keep the benefits list left-aligned */
+  [data-dc="fullscreen"] ul {
+    text-align: left !important;
+  }
+}
+
 /* =================================================================
    Desktop sidebar layout (>=1024px)
    The SideNav is fixed at 260px on the left.
