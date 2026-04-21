@@ -19,7 +19,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { X, ChevronDown, ChevronUp, User, LogIn } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, User, LogIn, Mail, ArrowRight } from 'lucide-react';
 
 export default function BurgerDrawer({ onClose }) {
   const router = useRouter();
@@ -155,6 +155,42 @@ export default function BurgerDrawer({ onClose }) {
             />
           ))}
         </div>
+
+        {/* DC Daily — subscribe CTA (above profile) */}
+        <button
+          onClick={() => go('/dc-daily')}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 12, width: '100%',
+            background: '#0F172A', border: 'none', borderRadius: 12,
+            padding: '14px 16px', cursor: 'pointer', textAlign: 'left',
+            marginBottom: 16, color: '#fff',
+            boxShadow: '0 8px 24px -12px rgba(15,23,42,0.6)',
+          }}
+        >
+          <div style={{
+            width: 36, height: 36, borderRadius: 10,
+            background: 'rgba(210,4,45,0.15)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <Mail size={16} color="#F6B41A" />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, color: '#F6B41A',
+              textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 2,
+            }}>
+              The Daily Briefing
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', lineHeight: 1.3 }}>
+              Subscribe to DC Daily
+            </div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 1 }}>
+              Every weekday, 8am
+            </div>
+          </div>
+          <ArrowRight size={14} color="rgba(255,255,255,0.6)" />
+        </button>
 
         {/* Profile / Sign out */}
         <div style={{ borderTop: '1px solid #E0E0E0', paddingTop: 24 }}>

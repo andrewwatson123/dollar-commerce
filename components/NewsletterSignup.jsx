@@ -46,19 +46,28 @@ export default function NewsletterSignup({ variant = 'dark' }) {
         border: isDark ? 'none' : '1px solid #E2E8F0',
       }}
     >
+      <div style={{
+        fontSize: '10px', fontWeight: '700',
+        color: isDark ? '#F6B41A' : '#D2042D',
+        textTransform: 'uppercase', letterSpacing: '1.5px',
+        margin: '0 0 6px',
+      }}>
+        The Daily Briefing
+      </div>
       <h4 style={{
-        fontSize: '18px', fontWeight: '700',
+        fontSize: '20px', fontWeight: '800',
         color: isDark ? '#fff' : '#0F172A',
-        marginBottom: '12px', margin: '0 0 12px',
+        letterSpacing: '-0.01em',
+        margin: '0 0 8px',
       }}>
         DC Daily
       </h4>
       <p style={{
         fontSize: '14px',
         color: isDark ? '#cbd5e1' : '#64748B',
-        marginBottom: '16px', margin: '0 0 16px', lineHeight: '1.5',
+        margin: '0 0 16px', lineHeight: '1.5',
       }}>
-        Get the top stories delivered to your inbox every morning.
+        All things e-commerce, for founders and operators who prefer straight talk over buzzwords.
       </p>
       <form onSubmit={handleSubmit}>
         <input

@@ -187,6 +187,33 @@ export default async function ArticlePage({ params }) {
 
         <PortableArticleBody value={article.body} />
 
+        {/* Discrete DC Daily CTA — end of article */}
+        <Link
+          href="/dc-daily"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 14,
+            marginTop: 48, padding: '18px 22px',
+            background: '#F4F1EA', border: '1px solid #E2E8F0',
+            borderRadius: 12, textDecoration: 'none',
+            transition: 'border-color 150ms',
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, color: '#D2042D',
+              textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 2,
+            }}>
+              The Daily Briefing
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', lineHeight: 1.35 }}>
+              Get e-commerce news like this in your inbox every weekday morning.
+            </div>
+          </div>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            Learn more →
+          </span>
+        </Link>
+
         {article.substackUrl && (
           <div
             style={{

@@ -9,6 +9,47 @@ export default function SiteFooter() {
       color: '#fff',
       marginTop: 80,
     }}>
+      {/* DC Daily strip — discrete signup CTA at top of footer */}
+      <div data-dc="footer-cta" style={{
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+      }}>
+        <Link
+          href="/dc-daily"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: 24, flexWrap: 'wrap',
+            maxWidth: 1400, margin: '0 auto',
+            padding: '24px 40px',
+            textDecoration: 'none',
+          }}
+        >
+          <div style={{ minWidth: 0 }}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, color: '#F6B41A',
+              textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 2,
+            }}>
+              The Daily Briefing
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.3 }}>
+              Subscribe to DC Daily
+            </div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>
+              All things e-commerce, every weekday at 8am.
+            </div>
+          </div>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '10px 18px',
+            background: '#D2042F', color: '#fff',
+            fontSize: 13, fontWeight: 700, letterSpacing: '0.02em',
+            borderRadius: 999, whiteSpace: 'nowrap',
+            boxShadow: '0 8px 20px -6px rgba(214,4,47,0.55)',
+          }}>
+            Subscribe →
+          </span>
+        </Link>
+      </div>
+
       <div data-dc="footer-grid" style={{
         maxWidth: 1400,
         margin: '0 auto',

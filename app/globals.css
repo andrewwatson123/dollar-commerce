@@ -274,6 +274,10 @@ body:has([data-dc="fullscreen"]) [data-dc="side-nav"] {
     gap: 24px !important;
     padding: 28px 18px 16px !important;
   }
+  [data-dc="footer-cta"] > a {
+    padding: 18px 18px !important;
+    gap: 14px !important;
+  }
   [data-dc="footer-bottom"] {
     flex-direction: column !important;
     gap: 10px !important;
