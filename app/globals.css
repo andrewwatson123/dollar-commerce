@@ -39,24 +39,19 @@ body:has([data-dc="fullscreen"]) [data-dc="side-nav"] {
   display: none !important;
 }
 
-/* Fullscreen pages: let their own inline styles drive typography
-   (override the phone h1/h2 rules that force left-aligned + small) */
+/* Fullscreen pages: their own stylesheets drive typography.
+   Only neutralise the phone-global h1/h2/p left-align + small-size rules
+   so inline styles from the page stylesheet win. */
 @media (max-width: 599px) {
-  [data-dc="fullscreen"] h1 {
-    font-size: 44px !important;
-    text-align: center !important;
-    line-height: 1.05 !important;
-    letter-spacing: -1px !important;
-  }
-  [data-dc="fullscreen"] h2 {
-    text-align: center !important;
-  }
+  [data-dc="fullscreen"] h1,
+  [data-dc="fullscreen"] h2,
+  [data-dc="fullscreen"] h3,
   [data-dc="fullscreen"] p {
-    text-align: center !important;
-  }
-  /* Keep the benefits list left-aligned */
-  [data-dc="fullscreen"] ul {
-    text-align: left !important;
+    font-size: unset !important;
+    text-align: unset !important;
+    line-height: unset !important;
+    letter-spacing: unset !important;
+    margin-left: unset !important;
   }
 }
 

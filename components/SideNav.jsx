@@ -174,8 +174,33 @@ export default function SideNav() {
         ))}
       </div>
 
-      {/* Profile / Help / Sign out — pinned to bottom */}
-      <div style={{ paddingTop: 16, marginTop: 'auto' }}>
+      {/* DC Daily — subscribe CTA (above profile, pinned near bottom) */}
+      <button
+        onClick={() => go('/dc-daily')}
+        style={{
+          display: 'block', width: '100%', textAlign: 'left',
+          marginTop: 'auto',
+          background: '#0F172A', border: 'none', borderRadius: 10,
+          padding: '14px 14px', cursor: 'pointer', color: '#fff',
+          boxShadow: '0 6px 20px -10px rgba(15,23,42,0.6)',
+        }}
+      >
+        <div style={{
+          fontSize: 9, fontWeight: 700, color: '#F6B41A',
+          textTransform: 'uppercase', letterSpacing: '1.4px', marginBottom: 3,
+        }}>
+          The Daily Briefing
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', lineHeight: 1.3, marginBottom: 3 }}>
+          Subscribe to DC Daily →
+        </div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)' }}>
+          Every weekday, 8am
+        </div>
+      </button>
+
+      {/* Profile / Help / Sign out — pinned below DC Daily box */}
+      <div style={{ paddingTop: 12 }}>
         {session ? (
           <>
             <button
