@@ -23,20 +23,59 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata = {
-  title: 'DC Daily — The daily e-commerce briefing',
+  title: 'DC Daily — The E-Commerce Briefing for Founders & Operators',
   description:
-    'All things e-commerce, for founders and operators who prefer straight talk over buzzwords. Delivered every weekday at 8am.',
+    'Join thousands of e-commerce operators who start their day with DC Daily. Top stories, fundraising rounds, platform updates, and the DC Index — delivered every weekday at 8am. Free forever, no spam.',
+  keywords: [
+    'DC Daily',
+    'e-commerce newsletter',
+    'ecommerce news',
+    'DTC newsletter',
+    'e-commerce briefing',
+    'Dollar Commerce',
+    'Shopify news',
+    'Amazon seller news',
+    'e-commerce fundraising',
+    'DC Index',
+    'platform updates',
+    'daily ecommerce email',
+  ],
   alternates: { canonical: '/dc-daily' },
   openGraph: {
-    title: 'DC Daily — Dollar Commerce',
-    description: 'All things e-commerce, for founders and operators who prefer straight talk over buzzwords.',
+    title: 'DC Daily — The E-Commerce Briefing',
+    description:
+      'All things e-commerce, for founders and operators who prefer straight talk over buzzwords. Delivered every weekday at 8am.',
     url: 'https://dollarcommerce.co/dc-daily',
+    siteName: 'Dollar Commerce',
     type: 'website',
+    locale: 'en_US',
+    images: [
+      {
+        url: 'https://dollarcommerce.co/api/og/newsletter-card',
+        width: 1200,
+        height: 630,
+        alt: 'DC Daily — The daily e-commerce briefing',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DC Daily — Dollar Commerce',
-    description: 'All things e-commerce, for founders and operators who prefer straight talk over buzzwords.',
+    title: 'DC Daily — The E-Commerce Briefing',
+    description:
+      'The e-commerce industry, in 3 minutes. Delivered every weekday at 8am. Free forever, no spam.',
+    site: '@dollarcommerce',
+    creator: '@dollarcommerce',
+    images: ['https://dollarcommerce.co/api/og/newsletter-card'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
