@@ -39,7 +39,7 @@ const AUTHORS = [
   {
     slug: 'jesse-horwitz',
     name: 'Jesse Horwitz',
-    bio: 'Co-founder and CEO of Mangrove. Previously co-founded Hubble Contacts (acquired), Mockingbird Strollers, and Agora Brands. Started his career in research at Bridgewater. Author of "Selling Naked", an e-commerce favourite on building DTC brands without paid ads. Based in New York.',
+    bio: 'Co-founder of Mangrove. Previously co-founded Hubble Contacts (acquired), Mockingbird Strollers, and Agora Brands. Started his career in research at Bridgewater. Author of "Selling Naked", an e-commerce favourite on building DTC brands without paid ads. Based in New York.',
     twitter: null,
     linkedin: 'https://www.linkedin.com/in/jesse-horwitz/',
     file: 'public/writers/jesse-horwitz.png',

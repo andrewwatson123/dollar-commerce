@@ -76,10 +76,8 @@ export default function SiteFooter() {
           <FooterDisabled>Brand Leaderboard</FooterDisabled>
         </div>
         <div>
-          <h4 style={headingStyle}>Support</h4>
+          <h4 style={headingStyle}>Subscribe</h4>
           <FooterLink href="/dc-daily">DC Daily Newsletter</FooterLink>
-          <FooterLink href="/profile">Help Center</FooterLink>
-          <FooterLink href="/profile">Contact</FooterLink>
         </div>
         <div>
           <h4 style={headingStyle}>Follow</h4>
