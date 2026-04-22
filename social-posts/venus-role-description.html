@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venus — Role Description | Dollar Commerce</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --cream: #F4F1EA;
+  --ink: #0F172A;
+  --ink-soft: #1E293B;
+  --red: #D2042D;
+  --red-soft: #FEE2E7;
+  --green: #10B981;
+  --green-soft: #D1FAE5;
+  --amber: #F59E0B;
+  --amber-soft: #FEF3C7;
+  --blue: #3B82F6;
+  --blue-soft: #DBEAFE;
+  --text: #1E293B;
+  --text-muted: #64748B;
+  --text-dim: #94A3B8;
+  --border: #E2E8F0;
+  --radius: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  min-height: 100vh;
+}
+
+/* ─── ACTIONS BAR (screen only) ─── */
+.actions {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--ink);
+  color: white;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.actions-brand {
+  font-family: 'PT Serif', serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+.actions-brand span { color: var(--red); }
+.actions button {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.actions button:hover { background: #B00023; }
+
+/* ─── HEADER ─── */
+.header {
+  padding: 56px 56px 32px;
+  border-bottom: 1px solid var(--border);
+}
+.kicker {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.header h1 {
+  font-family: 'PT Serif', serif;
+  font-size: 42px;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.header .sub {
+  font-size: 18px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+.meta-item { font-size: 12px; }
+.meta-item .label {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+.meta-item .val {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ─── CONTENT ─── */
+.content { padding: 40px 56px; }
+.section { margin-bottom: 40px; page-break-inside: avoid; }
+
+h2 {
+  font-family: 'PT Serif', serif;
+  font-size: 24px;
+  color: var(--ink);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+h2::before {
+  content: '';
+  width: 4px;
+  height: 22px;
+  background: var(--red);
+  border-radius: 2px;
+}
+.section-sub {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding-left: 16px;
+}
+
+h3 {
+  font-family: 'PT Serif', serif;
+  font-size: 16px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+p { color: var(--text); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 14px;
+}
+.card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+/* ─── RESPONSIBILITY CARDS ─── */
+.resp-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--red);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 12px;
+}
+.resp-card h3 { margin-bottom: 4px; }
+.resp-card .freq {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--red-soft);
+  color: var(--red);
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.resp-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
+.resp-card ul { margin-top: 8px; padding-left: 18px; }
+.resp-card li { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+
+/* ─── PLATFORM CARDS ─── */
+.plat-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.plat-card .p-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.plat-card h3 { margin-bottom: 0; font-size: 15px; }
+.plat-card .badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.badge-red { background: var(--red-soft); color: var(--red); }
+.badge-blue { background: var(--blue-soft); color: var(--blue); }
+.badge-green { background: var(--green-soft); color: var(--green); }
+.badge-amber { background: var(--amber-soft); color: var(--amber); }
+.plat-card ul { list-style: none; padding: 0; }
+.plat-card li {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 0;
+  padding-left: 14px;
+  position: relative;
+}
+.plat-card li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 10px;
+  width: 4px; height: 4px;
+  background: var(--red);
+  border-radius: 50%;
+}
+
+/* ─── POST MOCKUP ─── */
+.mockup {
+  background: var(--ink);
+  color: white;
+  border-radius: 14px;
+  padding: 32px;
+  font-family: 'PT Serif', serif;
+  margin: 20px 0;
+}
+.mockup .mock-tag {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.mockup .mock-main {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 18px;
+}
+.mockup .mock-main .pct-up { color: var(--green); }
+.mockup .mock-main .pct-down { color: var(--red); }
+.mockup .mock-subindex {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 14px;
+}
+.mockup .mock-subindex:last-of-type { border-bottom: none; margin-bottom: 18px; }
+.mockup .mock-subindex span.name { color: rgba(255,255,255,0.7); font-family: 'Inter', sans-serif; font-weight: 500; }
+.mockup .mock-subindex span.val { font-weight: 700; }
+.mockup .mock-mover {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 10px;
+}
+.mockup .mock-mover strong { color: white; font-weight: 700; }
+.mockup .mock-footer {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 18px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ─── DAY SCHEDULE ─── */
+.schedule {
+  list-style: none;
+  padding: 0;
+}
+.sched-item {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+.sched-item:last-child { border-bottom: none; }
+.sched-time {
+  font-family: 'PT Serif', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--red);
+}
+.sched-desc h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.sched-desc p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+/* ─── KPI GRID ─── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.kpi-grid .kpi-card { page-break-inside: avoid; }
+.kpi-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+.kpi-card .kpi-val {
+  font-family: 'PT Serif', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--red);
+  margin-bottom: 2px;
+}
+.kpi-card .kpi-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.kpi-card .kpi-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ─── CHECKLIST ─── */
+.checklist { list-style: none; padding: 0; }
+.checklist li {
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--text);
+  padding-left: 26px;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 12px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  background: white;
+}
+
+/* ─── FOOTER ─── */
+.footer {
+  padding: 24px 56px;
+  border-top: 1px solid var(--border);
+  font-family: 'PT Serif', serif;
+  color: var(--text-dim);
+  font-size: 12px;
+  text-align: center;
+}
+.footer span { color: var(--red); }
+
+/* ─── PRINT ─── */
+@media print {
+  body { background: white; }
+  .actions { display: none; }
+  .page { box-shadow: none; max-width: 100%; }
+  .header { padding: 32px 40px 24px; }
+  .content { padding: 24px 40px; }
+  .footer { padding: 16px 40px; }
+  .section { page-break-inside: avoid; }
+  .resp-card { page-break-inside: avoid; }
+  .mockup { page-break-inside: avoid; }
+  h2 { page-break-after: avoid; }
+  .card-grid-2, .card-grid-3 { page-break-inside: avoid; }
+}
+
+@media (max-width: 720px) {
+  .header, .content, .footer { padding-left: 24px; padding-right: 24px; }
+  .header h1 { font-size: 32px; }
+  .meta-grid { grid-template-columns: 1fr 1fr; }
+  .card-grid-2, .card-grid-3, .kpi-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<div class="actions">
+  <div class="actions-brand">dollar <span>&middot;</span> commerce</div>
+  <button onclick="window.print()">&#128424; Export to PDF</button>
+</div>
+
+<div class="header">
+  <div class="kicker">Role Description &mdash; Internal</div>
+  <h1>Social Media &amp; Community Lead</h1>
+  <div class="sub">Venus &mdash; Dollar Commerce</div>
+  <div class="meta-grid">
+    <div class="meta-item"><div class="label">Reports To</div><div class="val">Andrew Watson</div></div>
+    <div class="meta-item"><div class="label">Effective</div><div class="val">April 2026</div></div>
+    <div class="meta-item"><div class="label">Platforms</div><div class="val">IG Stories, X, Substack</div></div>
+    <div class="meta-item"><div class="label">Focus</div><div class="val">Engagement &amp; Volume</div></div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- OVERVIEW -->
+<div class="section">
+  <h2>Role Overview</h2>
+  <p>Venus owns the day-to-day execution of Dollar Commerce's social media presence across Instagram, X (Twitter), and Substack. Her focus is <strong>admin and volume</strong> &mdash; running consistent daily output, engagement, and community building.</p>
+  <p>The core mission: grow the DC community across three platforms by posting daily market updates on DC Index performance and top movers in the e-commerce space, amplifying new DC articles on publish, and driving outbound engagement that builds a high-quality following in our target demographic.</p>
+  <p>She is not responsible for design work or Instagram feed posts anymore. Design assets and templates will be provided; her job is to populate, publish to Stories / X / Substack, engage, and grow.</p>
+</div>
+
+<!-- SAMPLE POST -->
+<div class="section">
+  <h2>Daily Market Update Post</h2>
+  <p class="section-sub">Sample format for the daily DC Index update. Post as a thread on X, as a Note on Substack. On Instagram, share as a Story (no feed post).</p>
+
+  <div class="mockup">
+    <div class="mock-tag">DC Index &mdash; Daily Update</div>
+    <div class="mock-main">DC Index (weighted) <span class="pct-up">+2.3%</span> today.</div>
+
+    <div class="mock-subindex"><span class="name">DC Software</span><span class="val pct-up" style="color:#10B981;">+1.0%</span></div>
+    <div class="mock-subindex"><span class="name">DC Brands</span><span class="val pct-down" style="color:#D2042D;">-4.0%</span></div>
+    <div class="mock-subindex"><span class="name">DC Marketplaces</span><span class="val pct-up" style="color:#10B981;">+1.10%</span></div>
+
+    <div class="mock-mover"><strong>Biggest mover (up):</strong> Allbirds (BIRD) +582% on news of its pivot to AI infrastructure, two weeks after selling its shoe business for $39M.</div>
+    <div class="mock-mover"><strong>Biggest mover (down):</strong> Warby Parker (WRBY) -8% after missing Q1 revenue estimates and guiding lower for the year.</div>
+
+    <div class="mock-footer">Data as of close &middot; April 17, 2026</div>
+  </div>
+
+  <div class="card">
+    <h3>Post Structure Rules</h3>
+    <ul style="padding-left:18px;font-size:13px;color:var(--text-muted);">
+      <li>Open with the weighted DC Index move (always lead with this)</li>
+      <li>List all three sub-indexes with colored % (green up, red down)</li>
+      <li>One biggest winner, one biggest loser &mdash; always with the <em>why</em></li>
+      <li>"Why" must reference actual news or earnings, never speculation</li>
+      <li>Close with data timestamp &mdash; never post without it</li>
+      <li>If markets closed flat (&lt;0.3% move), lead with the most interesting individual mover instead</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PLATFORM BREAKDOWN -->
+<div class="section">
+  <h2>Platform Responsibilities</h2>
+  <p class="section-sub">Each platform has a distinct job. No feed posts on Instagram &mdash; Stories only. Feed content is handled separately.</p>
+
+  <div class="card-grid-3">
+    <div class="plat-card">
+      <div class="p-head">
+        <h3>Instagram</h3>
+        <span class="badge badge-red">Stories Only</span>
+      </div>
+      <ul>
+        <li>2-3 Stories daily (no feed posts)</li>
+        <li>Daily Story link to DC Daily page</li>
+        <li>Share links to previous DC articles</li>
+        <li>Reply to every comment / DM within 1hr</li>
+        <li>Engage 10-15 accounts daily</li>
+      </ul>
+    </div>
+
+    <div class="plat-card">
+      <div class="p-head">
+        <h3>X / Twitter</h3>
+        <span class="badge badge-blue">Volume</span>
+      </div>
+      <ul>
+        <li>Daily market update thread</li>
+        <li>New article snippet + link on publish</li>
+        <li>3-5 additional posts (quick takes)</li>
+        <li>Reply to 15-20 accounts daily</li>
+        <li>Jump into breaking news convos</li>
+      </ul>
+    </div>
+
+    <div class="plat-card">
+      <div class="p-head">
+        <h3>Substack</h3>
+        <span class="badge badge-amber">Engage &amp; Grow</span>
+      </div>
+      <ul>
+        <li>Daily market update as a Note</li>
+        <li>Restack 1-2 relevant posts daily</li>
+        <li>Comment on other writers daily</li>
+        <li>Cross-post new DC articles</li>
+        <li>Grow via Notes, not just email</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY RESPONSIBILITIES -->
+<div class="section">
+  <h2>Core Responsibilities</h2>
+  <p class="section-sub">Six recurring deliverables. The daily market update is non-negotiable &mdash; everything else flexes around it.</p>
+
+  <div class="resp-card">
+    <span class="freq">Daily &middot; Every market day</span>
+    <h3>DC Index Market Update (X &amp; Substack)</h3>
+    <p>Pull the daily performance data from the DC Index dashboard after market close. Post the standardized market update (see sample above) as a thread on X and a Note on Substack. On Instagram, share as a Story only.</p>
+    <ul>
+      <li>Pull data from DC Index after market close</li>
+      <li>Identify top 1 gainer and top 1 loser with news hook</li>
+      <li>Research the "why" &mdash; check earnings releases, press releases, news</li>
+      <li>Post as X thread + Substack Note + IG Story by 5:30pm ET</li>
+    </ul>
+  </div>
+
+  <div class="resp-card">
+    <span class="freq">Daily &middot; 2-3 Stories</span>
+    <h3>Instagram Stories</h3>
+    <p>Venus does not post to the Instagram feed. Her IG output is Stories only &mdash; 2-3 per day. This keeps the account active in followers' trays and drives traffic to DC content without adding to the grid.</p>
+    <ul>
+      <li>1 daily Story with a link to the DC Daily page (non-negotiable)</li>
+      <li>1-2 additional Stories sharing links to previous DC articles (from the archive)</li>
+      <li>Mix in polls, questions, or reshared content occasionally to drive engagement signals</li>
+      <li>Use the DC branded Story template (provided)</li>
+      <li>Tag relevant brands, people, or publications when sharing article links</li>
+    </ul>
+  </div>
+
+  <div class="resp-card">
+    <span class="freq">On publish &middot; New articles</span>
+    <h3>New Article Launch (X)</h3>
+    <p>Any time DC publishes a new article, Venus posts a short snippet on X with an excerpt and a link back to the full piece. This is the primary social amplifier for new content.</p>
+    <ul>
+      <li>Pull a punchy 1-2 line excerpt from the article (hook, stat, or strong line)</li>
+      <li>Add context in her own words &mdash; not just a repost of the headline</li>
+      <li>Include link to the full article</li>
+      <li>Tag relevant people/brands mentioned in the article</li>
+      <li>Post within 1 hour of article going live</li>
+      <li>Also share the article link as an Instagram Story that day</li>
+    </ul>
+  </div>
+
+  <div class="resp-card">
+    <span class="freq">Daily</span>
+    <h3>Engagement &amp; Outbound</h3>
+    <p>Active engagement across all three platforms to drive follower growth and algorithmic reach. Quality over quantity &mdash; no engagement pods, no hustle-grind accounts.</p>
+    <ul>
+      <li>Comment on 10-15 relevant Instagram accounts per day</li>
+      <li>Reply to 15-20 conversations on X per day</li>
+      <li>Restack 1-2 relevant Substack posts per day (with commentary)</li>
+      <li>Comment on other Substack writers' Notes daily</li>
+      <li>Follow 5-10 quality accounts per day (see approved accounts list)</li>
+      <li>Reply to every comment / DM on our content within 1 hour</li>
+    </ul>
+  </div>
+
+  <div class="resp-card">
+    <span class="freq">Daily</span>
+    <h3>News Monitoring &amp; Rapid Response</h3>
+    <p>Stay on top of e-commerce, DTC, and commerce platform news throughout the day. Breaking stories should be reacted to on X within a few hours.</p>
+    <ul>
+      <li>Morning scan of approved news sources (see source list)</li>
+      <li>Flag breaking stories to Andrew for approval if sensitive</li>
+      <li>Draft and publish rapid-response X posts within the day</li>
+      <li>Monitor X for breaking news from founders and journalists</li>
+    </ul>
+  </div>
+
+  <div class="resp-card">
+    <span class="freq">Weekly</span>
+    <h3>Reporting &amp; Admin</h3>
+    <p>Weekly snapshot of growth, engagement, and top-performing content across all three platforms.</p>
+    <ul>
+      <li>Friday EOD report: follower growth, top post, engagement rate per platform</li>
+      <li>Flag content that overperformed for replication</li>
+      <li>Maintain running list of engaged-with accounts (avoid repeat spam)</li>
+      <li>Log which archive articles are being reshared to Stories (avoid repetition)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="section">
+  <h2>Key Performance Indicators</h2>
+  <p class="section-sub">Success metrics reviewed weekly. Targets ramp over first 90 days.</p>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-val">+8%</div>
+      <div class="kpi-label">Weekly Follower Growth</div>
+      <div class="kpi-sub">Combined across 3 platforms</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">100%</div>
+      <div class="kpi-label">Market Update Consistency</div>
+      <div class="kpi-sub">Every trading day, all platforms</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">14+</div>
+      <div class="kpi-label">Weekly IG Stories</div>
+      <div class="kpi-sub">2-3 per day, incl. DC Daily link</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">&lt;1hr</div>
+      <div class="kpi-label">Comment Response Time</div>
+      <div class="kpi-sub">On our posts / DMs</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">35+</div>
+      <div class="kpi-label">Daily Engagements</div>
+      <div class="kpi-sub">Outbound comments/replies</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">100%</div>
+      <div class="kpi-label">New Article Amplification</div>
+      <div class="kpi-sub">X + IG Story within 1hr of publish</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">7-14</div>
+      <div class="kpi-label">Weekly Substack Restacks</div>
+      <div class="kpi-sub">1-2 per day with commentary</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">5+</div>
+      <div class="kpi-label">Archive Articles Resurfaced</div>
+      <div class="kpi-sub">Weekly via IG Stories</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLS & ACCESS -->
+<div class="section">
+  <h2>Tools &amp; Access</h2>
+  <div class="card-grid-2">
+    <div class="card">
+      <h3>Publishing &amp; Analytics</h3>
+      <ul style="padding-left:18px;font-size:13px;color:var(--text-muted);">
+        <li>Instagram Business Account (DC handle)</li>
+        <li>X / Twitter (DC handle)</li>
+        <li>Substack (DC publication &mdash; writer access)</li>
+        <li>Meta Business Suite (for Stories &amp; insights)</li>
+        <li>Buffer or similar (scheduling backup only)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Content &amp; Data</h3>
+      <ul style="padding-left:18px;font-size:13px;color:var(--text-muted);">
+        <li>DC Index dashboard (market data)</li>
+        <li>Notion or Google Drive (content calendar)</li>
+        <li>Canva (for minor graphic edits only)</li>
+        <li>DC article CMS (read access for publishing updates)</li>
+        <li>Shared inbox for DMs and press</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- GUARDRAILS -->
+<div class="section">
+  <h2>Guardrails</h2>
+  <p class="section-sub">Hard rules. When in doubt, flag to Andrew before posting.</p>
+
+  <ul class="checklist">
+    <li>Never post speculative "why" for market moves &mdash; always tie to actual news/earnings</li>
+    <li>Never engage with hustle-grind accounts ("make $10K/month") or engagement pods</li>
+    <li>Never post crime content, partisan politics, or culture-war topics</li>
+    <li>Never take political sides in replies &mdash; keep all engagement brand-safe</li>
+    <li>Always credit data sources (DC Index, WHOOP, Bloomberg, etc.)</li>
+    <li>Always flag sensitive news stories to Andrew before posting</li>
+    <li>Always check DC article calendar before planning the day &mdash; new articles take priority</li>
+    <li>Never share internal metrics, revenue, or private founder conversations</li>
+  </ul>
+</div>
+
+</div>
+
+<div class="footer">
+  dollar <span>&middot;</span> commerce &nbsp;&middot;&nbsp; Role Description v1.0 &nbsp;&middot;&nbsp; Confidential
+</div>
+
+</div>
+
+</body>
+</html>

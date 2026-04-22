@@ -325,10 +325,17 @@ function cleanCompany(raw) {
     'platform', 'indian', 'chinese', 'american', 'african', 'egyptian', 'nigerian',
     'pakistani', 'kenyan', 'saudi', 'dutch', 'french', 'german', 'uk-based', 'us-based',
     'paris-based', 'london-based', 'dubai-based', 'singapore', 'philippine', 'vietnamese',
-    'korean', 'japanese', 'babycare', 'baby care', 'babycare', 'full-stack', 'b2b quick commerce',
+    'korean', 'japanese', 'australian', 'british', 'canadian', 'israeli', 'brazilian',
+    'babycare', 'baby care', 'babycare', 'full-stack', 'b2b quick commerce',
     'fashion quick commerce', 'baby care quick commerce', 'social commerce', 'try and buy',
     'three-year-old', 'two-year-old', 'four-year-old', 'drone', 'electric vehicle',
     'electronics', 'kim kardashian\'s', 'kim kardashian', 'quality-first',
+    // NEW
+    'gaming', 'crypto', 'web3', 'blockchain', 'healthtech', 'medtech', 'edtech',
+    'insurtech', 'proptech', 'climatetech', 'cleantech', 'biotech', 'deeptech',
+    'quantum', 'defense', 'aerospace', 'space', 'chip', 'semiconductor',
+    'ai-powered', 'ai agents', 'generative ai', 'genai', 'llm', 'robotics',
+    'coding startup', 'coding',
   ];
   const leadingRx = new RegExp(
     `^(?:${leadingPhrases.map((p) => p.replace(/[.\-\\^$*+?()|[\]{}]/g, '\\$&')).join('|')})\\s+`,
@@ -351,6 +358,19 @@ function cleanCompany(raw) {
   if (s.length > 60) return null;
   const badWords = /^(startup|company|platform|marketplace|commerce|firm|brand)$/i;
   if (badWords.test(s)) return null;
+
+  // Reject sentence fragments masquerading as company names.
+  // If the extracted "company" contains narrative verbs or trailing filler,
+  // the title wasn't a clean "X raises $Y" pattern and we shouldn't trust
+  // the extraction. Example: "ATMOS wants build a space cargo highway. It just"
+  const sentenceSignals = /\b(wants?|announces?|plans?|says?|told|is\s+set\s+to|will|could|aims?|seeks?|hopes?|expects?|looks?\s+to|goes?\s+public|files?\s+for)\b/i;
+  if (sentenceSignals.test(s)) return null;
+  if (/\bit\s+just\b/i.test(s)) return null;
+
+  // Max 5 words — real company names are short. Descriptors are already
+  // stripped, so anything longer is almost certainly a title fragment.
+  const wordCount = s.split(/\s+/).length;
+  if (wordCount > 5) return null;
 
   return s;
 }

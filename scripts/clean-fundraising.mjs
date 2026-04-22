@@ -43,6 +43,12 @@ const BLOCKLIST = [
   /^exclusive\s*\|/i,
   /^startup in spotlight/i,
   /^quick-?commerce battle/i,
+  // Sentence-fragment garbage (title parsed as company by mistake)
+  /\b(wants?|announces?|plans?|says?|told|will|could|aims?|seeks?|hopes?|expects?|looks?\s+to)\b/i,
+  /\bit\s+just\b/i,
+  /\s{2,}/,                                      // multiple consecutive spaces signal messy parse
+  /^\s*$/,
+  /^.{61,}$/,                                    // anything >60 chars is not a clean company name
 ];
 
 // Normalize a company name for dedup comparison. We're aggressive here —
@@ -51,6 +57,17 @@ const BLOCKLIST = [
 function normalize(name) {
   if (!name) return '';
   let s = name.toLowerCase();
+
+  // Truncate at trailing clauses that leak in from the headline
+  //   "NeoCognition, led by Ohio State's Yu Su" → "NeoCognition"
+  //   "Syenta, which makes chips" → "Syenta"
+  s = s.split(/,\s*(?:led by|which|backed by|a |an |the |previously)/i)[0];
+  s = s.split(/\s+(?:led\s+by|backed\s+by|raises|raised|closes|files)\b/i)[0];
+
+  // Drop possessive country/region prefixes: "australia's X" → "X"
+  //   "britain's X" / "india's X" / "ohio's X" / "u.s. X"
+  s = s.replace(/^(?:[a-z][a-z.\-]+?)['’]s\s+/i, '');
+
   s = s.replace(/['’`"]/g, '');
   s = s.replace(/[,.!?:;()\[\]{}]/g, ' ');
 
@@ -62,9 +79,20 @@ function normalize(name) {
     'indian', 'chinese', 'american', 'african', 'egyptian', 'pakistani',
     'kenyan', 'kuwaiti', 'nigerian', 'saudi', 'singapore', 'philippine',
     'vietnamese', 'korean', 'japanese', 'british', 'french', 'german',
+    'australian', 'canadian', 'israeli', 'brazilian', 'dutch', 'mexican',
+    'australia', 'india', 'britain', 'canada', 'israel', 'brazil',
     'full-stack', 'three-year-old', 'two-year-old', 'four-year-old',
     'drone', 'electric vehicle', 'logistics', 'solutions', 'wellness',
     'motorbike-based', 'ride-hailing and',
+    // NEW — sector/category descriptors that create dupes
+    'gaming', 'crypto', 'web3', 'blockchain', 'healthtech', 'medtech',
+    'edtech', 'insurtech', 'proptech', 'climatetech', 'cleantech', 'biotech',
+    'deeptech', 'quantum', 'defense', 'aerospace', 'space', 'chip',
+    'semiconductor', 'ai', 'ai-powered', 'generative', 'genai', 'llm',
+    'robotics', 'coding', 'tech', 'technology',
+    // NEW — trade descriptors ("maker", "giant", "firm") and common headline words
+    'maker', 'giant', 'group', 'inc', 'ltd', 'corp', 'plc',
+    'raises', 'raised', 'closes', 'closed', 'secures', 'lands', 'bags',
   ];
   for (const p of strip) {
     s = s.replace(new RegExp(`\\b${p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g'), '');

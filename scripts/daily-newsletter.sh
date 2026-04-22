@@ -35,6 +35,10 @@ node --env-file=.env.local scripts/scrape-platform-news.mjs >> "$LOG" 2>&1 || tr
 echo "$(date) — Running newsletter scraper..." >> "$LOG"
 node --env-file=.env.local scripts/scrape-newsletters.mjs >> "$LOG" 2>&1 || true
 
+# 2b. Dedupe + blocklist pass — collapses same-round dupes from different outlets
+echo "$(date) — Cleaning fundraising duplicates..." >> "$LOG"
+node --env-file=.env.local scripts/clean-fundraising.mjs >> "$LOG" 2>&1 || true
+
 # 3. Generate newsletter (copies to clipboard + emails draft)
 echo "$(date) — Generating newsletter..." >> "$LOG"
 node --env-file=.env.local scripts/generate-newsletter.mjs >> "$LOG" 2>&1
