@@ -291,7 +291,9 @@ async function main() {
   }
 
   // Search for Exec Sum emails from the last 3 days
-  const query = 'from:execsum OR from:litquidity subject:(exec sum) newer_than:3d';
+  // Exec Sum arrives from `news@execsum.co` with varying subject lines
+  // (e.g. "Ken Griffin vs Jamie Dimon"). Match by sender domain only.
+  const query = 'from:execsum.co newer_than:7d';
 
   const list = await gmail.users.messages.list({
     userId: 'me',
