@@ -234,7 +234,12 @@ export async function getPlatformStats() {
 
 export async function getAllAuthors() {
   return sanityClient.fetch(
-    `*[_type=="author"] | order(name asc){name, "slug": slug.current, bio, avatar}`,
+    `*[_type=="author"] | order(name asc){
+      name, "slug": slug.current, bio, avatar, role, location,
+      email, twitter, linkedin, website,
+      "avatarUrl": avatar.asset->url,
+      "articleCount": count(*[_type=="article" && references(^._id)])
+    }`,
     {},
     { next: { revalidate: 300 } }
   );
