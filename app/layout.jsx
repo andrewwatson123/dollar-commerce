@@ -1,6 +1,7 @@
 import './globals.css';
 import AuthProvider from '@/components/AuthProvider';
 import BookmarkSync from '@/components/BookmarkSync';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const viewport = {
   width: 'device-width',
@@ -67,6 +68,9 @@ export default function RootLayout({ children }) {
           <BookmarkSync />
           {children}
         </AuthProvider>
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+        )}
       </body>
     </html>
   );

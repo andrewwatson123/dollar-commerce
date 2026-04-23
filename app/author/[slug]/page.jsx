@@ -127,7 +127,7 @@ export default async function AuthorPage({ params }) {
                 src={avatarSrc}
                 alt={author.name}
                 fill
-                sizes="128px"
+                sizes="(max-width: 599px) 96px, 128px"
                 style={{ objectFit: 'cover' }}
                 priority
               />

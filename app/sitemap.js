@@ -13,6 +13,7 @@ export default async function sitemap() {
     { url: `${BASE}/platform-tracker`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE}/events`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE}/top-articles`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${BASE}/dc-daily`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
   ];
 
   // Dynamic routes from Sanity

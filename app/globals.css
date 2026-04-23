@@ -608,4 +608,36 @@ body:has([data-dc="fullscreen"]) [data-dc="side-nav"] {
     flex-wrap: nowrap !important;
     -webkit-overflow-scrolling: touch;
   }
+
+  /* --- Author/Writer page --- */
+  [data-dc="author-profile"] {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 16px !important;
+    padding: 22px 18px !important;
+    margin-bottom: 24px !important;
+    border-radius: 12px !important;
+  }
+  [data-dc="author-avatar"] {
+    width: 96px !important;
+    height: 96px !important;
+  }
+  [data-dc="author-profile"] h1 {
+    text-align: center !important;
+  }
+  [data-dc="author-profile"] p {
+    text-align: left !important;
+    font-size: 14px !important;
+    margin: 0 0 14px !important;
+    max-width: 100% !important;
+  }
+  [data-dc="author-profile"] > div:last-child > div:last-child {
+    justify-content: center !important;
+    gap: 6px !important;
+  }
+  [data-dc="author-profile"] > div:last-child > div:last-child > * {
+    font-size: 11px !important;
+    padding: 5px 10px !important;
+  }
 }
