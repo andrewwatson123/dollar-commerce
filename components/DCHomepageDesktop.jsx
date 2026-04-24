@@ -832,16 +832,26 @@ export default function DCHomepageDesktop({
                         flexShrink: 0
                       }} />
                     )}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        fontSize: '11px',
-                        fontWeight: '700',
-                        color: item.category?.color || '#D2042D',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
+                    <div data-dc="latest-card-body" style={{ flex: 1, minWidth: 0 }}>
+                      <div data-dc="latest-card-top" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '8px',
                         marginBottom: '6px'
                       }}>
-                        {item.category?.title}
+                        <div style={{
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          color: item.category?.color || '#D2042D',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px'
+                        }}>
+                          {item.category?.title}
+                        </div>
+                        <div data-dc="latest-card-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#999' }}>
+                          <LikeButton slug={item.slug} initialCount={item.likeCount || 0} size={16} color="#999" />
+                        </div>
                       </div>
                       <h3 style={{
                         fontSize: '18px',
@@ -852,20 +862,18 @@ export default function DCHomepageDesktop({
                       }}>
                         {item.title}
                       </h3>
-                      <div style={{
+                      <div data-dc="latest-card-meta" style={{
                         fontSize: '13px',
                         color: '#666',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '12px'
+                        gap: '8px',
+                        flexWrap: 'wrap'
                       }}>
                         <span style={{ fontWeight: '600', color: '#0F172A' }}>{item.author?.name}</span>
                         <span>•</span>
                         <Clock size={12} />
-                        <span>{formatTimeAgo(item.publishedAt)}</span>
-                        <div style={{ flex: 1 }} />
-                        <LikeButton slug={item.slug} initialCount={item.likeCount || 0} size={16} color="#999" />
-                        <BookmarkButton article={item} size={16} color="#999" />
+                        <span style={{ whiteSpace: 'nowrap' }}>{formatTimeAgo(item.publishedAt)}</span>
                       </div>
                     </div>
                   </div>
