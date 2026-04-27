@@ -348,10 +348,29 @@ function cleanCompany(raw) {
     if (s === before) break;
   }
 
+  // Generic location/sponsor prefix: catches "Lille-based Axomove",
+  // "Bezos-Backed Prometheus", "London-based Foo", "VC-backed Bar", etc.
+  // Any single token followed by "-based" / "-backed" / "-led" gets dropped.
+  for (let i = 0; i < 5; i++) {
+    const before = s;
+    s = s.replace(/^[A-Za-z][\w'']*-(based|backed|led|funded|owned)\s+/i, '');
+    if (s === before) break;
+  }
+
   // Strip trailing clauses that leaked in from the title split
   s = s.replace(/\s*,\s+(not yet public|a .+|based in .+|an? .+-based .+)$/i, '');
   s = s.replace(/\s+(?:expands? to .+|files? for .+|plans? to .+)$/i, '');
   s = s.replace(/[,.]$/, '').trim();
+
+  // Strip trailing descriptor nouns. "Bezos-Backed Prometheus Startup" → "Prometheus".
+  // "creator tools startup ComfyUI" — handled by leading strip; this catches the
+  // mirror case where descriptors trail the actual name.
+  for (let i = 0; i < 3; i++) {
+    const before = s;
+    s = s.replace(/\s+(startup|startups|company|companies|firm|firms|platform|platforms|brand|brands|maker|makers|group|inc|ltd|corp|plc|tech|technology|technologies|labs|lab)$/i, '');
+    if (s === before) break;
+  }
+  s = s.trim();
 
   // Reject if what's left is too generic
   if (!s || s.length < 2) return null;

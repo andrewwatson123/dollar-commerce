@@ -49,6 +49,15 @@ const BLOCKLIST = [
   /\s{2,}/,                                      // multiple consecutive spaces signal messy parse
   /^\s*$/,
   /^.{61,}$/,                                    // anything >60 chars is not a clean company name
+  // Mojibake guard: UTF-8 bytes mis-decoded as Mac-Roman / cp1252 produce these
+  // marker characters. Examples we've seen leak through:
+  //   "Frankfurt,Äôs QuoIntelligence"  (apostrophe → ,Äô)
+  //   "Seapoint: ,Ç¨7.5 Million"        (euro sign → ,Ç¨)
+  // Anything carrying these markers is unsafe to ship to the newsletter.
+  /[ÄÅÇÑÖÜâäåçèéêëîïôöûü][¨ô°§•ºπ£¢∞§¶•ªº]/,
+  /,Ä[ôöÅùúû]/,
+  /,Ç[¨°£¢]/,
+  /Ã[©¨¶®]/,
 ];
 
 // Normalize a company name for dedup comparison. We're aggressive here —
