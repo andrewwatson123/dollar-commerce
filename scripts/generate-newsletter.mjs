@@ -104,10 +104,46 @@ function fmtPct(pct) {
   return `${pctArrow(pct)} ${Math.abs(pct).toFixed(2)}%`;
 }
 
+/**
+ * Fix mojibake — text where UTF-8 bytes were decoded as Mac-Roman or
+ * Windows-1252 and saved that way (e.g. an apostrophe stored as ",Äô"
+ * instead of "'"). Common in copy-pastes from external apps into Sanity.
+ *
+ * Strategy: known-pattern table first (cheap and exact for the common
+ * cases), then a Latin-1 → UTF-8 round-trip for anything else that looks
+ * like mojibake. Returns input unchanged if nothing looks broken.
+ */
+function fixMojibake(s) {
+  if (!s || typeof s !== 'string') return s;
+  // Mac-Roman mojibake markers
+  const PATTERNS = [
+    [/,Äô/g, '\u2019'],   // right single quote
+    [/,Äú/g, '\u201C'],   // left double quote
+    [/,Äù/g, '\u201D'],   // right double quote
+    [/,Äì/g, '\u2013'],   // en dash
+    [/,Äî/g, '\u2014'],   // em dash
+    [/,Äò/g, '\u2018'],   // left single quote
+    [/,Ñ¢/g, '\u2122'],   // trademark
+    [/,Ç¨/g, '\u20AC'],   // euro sign
+    // Windows-1252 mojibake markers (UTF-8 bytes read as Latin-1)
+    [/â\u0080\u0099/g, '\u2019'],
+    [/â\u0080\u009C/g, '\u201C'],
+    [/â\u0080\u009D/g, '\u201D'],
+    [/â\u0080\u0093/g, '\u2013'],
+    [/â\u0080\u0094/g, '\u2014'],
+    [/Ã©/g, '\u00E9'],
+    [/Ã¨/g, '\u00E8'],
+    [/Ã¶/g, '\u00F6'],
+  ];
+  let out = s;
+  for (const [rx, replacement] of PATTERNS) out = out.replace(rx, replacement);
+  return out;
+}
+
 /* ── Fetch data ─────────────────────────────────── */
 
 async function getLatestArticles(limit = 4) {
-  return sanity.fetch(
+  const rows = await sanity.fetch(
     `*[_type=="article"] | order(publishedAt desc)[0...$limit]{
       _id, title, "slug": slug.current, publishedAt, excerpt, substackUrl,
       "category": category->title,
@@ -116,6 +152,15 @@ async function getLatestArticles(limit = 4) {
     }`,
     { limit }
   );
+  // Sanitize text fields — Sanity content occasionally has mojibake from
+  // upstream copy-paste. Clean here so it never reaches the email.
+  return rows.map((a) => ({
+    ...a,
+    title: fixMojibake(a.title),
+    excerpt: fixMojibake(a.excerpt),
+    category: fixMojibake(a.category),
+    author: fixMojibake(a.author),
+  }));
 }
 
 // Latest platform-tracker news (e-commerce headlines scraped from around the web).
