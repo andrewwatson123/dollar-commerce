@@ -149,7 +149,7 @@ export default function FundraisingTable({ events, currentSort = 'date_desc', ac
             border: '1px solid #E0E0E0', textDecoration: 'none',
           }}
         >
-          Amount <AmountArrow size={12} />
+          Amount <AmountArrow size={18} strokeWidth={2.5} style={{ flexShrink: 0 }} />
         </a>
         <a
           href={makeSortHref(nextDateSort, activeRound, activeSector)}
@@ -160,7 +160,7 @@ export default function FundraisingTable({ events, currentSort = 'date_desc', ac
             border: '1px solid #E0E0E0', textDecoration: 'none',
           }}
         >
-          Date <DateArrow size={12} />
+          Date <DateArrow size={18} strokeWidth={2.5} style={{ flexShrink: 0 }} />
         </a>
       </div>
 
@@ -182,13 +182,13 @@ export default function FundraisingTable({ events, currentSort = 'date_desc', ac
                 <a
                   href={makeSortHref(nextAmountSort, activeRound, activeSector)}
                   style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
                     padding: '14px 16px', color: amountActive ? '#0F172A' : '#666',
                     textDecoration: 'none', cursor: 'pointer', width: '100%',
                     fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
                   }}
                 >
-                  Amount <AmountArrow size={12} />
+                  Amount <AmountArrow size={18} strokeWidth={2.5} style={{ flexShrink: 0 }} />
                 </a>
               </th>
               <th style={th}>Round</th>
@@ -197,13 +197,13 @@ export default function FundraisingTable({ events, currentSort = 'date_desc', ac
                 <a
                   href={makeSortHref(nextDateSort, activeRound, activeSector)}
                   style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
                     padding: '14px 16px', color: dateActive ? '#0F172A' : '#666',
                     textDecoration: 'none', cursor: 'pointer', width: '100%',
                     fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
                   }}
                 >
-                  Date <DateArrow size={12} />
+                  Date <DateArrow size={18} strokeWidth={2.5} style={{ flexShrink: 0 }} />
                 </a>
               </th>
               <th style={th}>Source</th>
@@ -263,7 +263,7 @@ export default function FundraisingTable({ events, currentSort = 'date_desc', ac
                     rel="noreferrer"
                     title={e.brandWebsite ? 'Visit brand website' : 'Search for brand'}
                     style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      display: 'inline-flex', alignItems: 'center', gap: 8,
                       padding: '4px 10px', border: '1px solid #E0E0E0', borderRadius: 999,
                       fontSize: 11, fontWeight: 600, color: '#0F172A',
                       textDecoration: 'none', background: '#fff', whiteSpace: 'nowrap',
