@@ -160,19 +160,15 @@ export default function DCHomepageDesktop({
             <Menu size={24} color="#0F172A" />
           </button>
 
-          <div data-dc="site-title" onClick={() => setCurrentView('home')} aria-label="Dollar Commerce" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            cursor: 'pointer',
-            lineHeight: 0,
+          <div data-dc="site-title" onClick={() => setCurrentView('home')} style={{
+            fontFamily: "Georgia, 'Times New Roman', serif",
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#0F172A',
+            letterSpacing: '0.3px',
+            cursor: 'pointer'
           }}>
-            <img
-              src="/dc-icon-navy.svg"
-              alt="Dollar Commerce"
-              width={44}
-              height={44}
-              style={{ display: 'block', borderRadius: 10 }}
-            />
+            <span style={{ fontWeight: 400 }}>dollar</span><span style={{ color: '#D2042D', margin: '0 3px', fontSize: '110%' }}>·</span><span style={{ fontWeight: 700 }}>commerce</span>
           </div>
 
           <div data-dc="header-actions" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>

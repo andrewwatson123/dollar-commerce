@@ -65,21 +65,16 @@ export default function SiteHeader({ dcIndexValue, dcIndexChange, latestArticle 
           <Link
             data-dc="site-title"
             href="/"
-            aria-label="Dollar Commerce"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              fontSize: 24,
+              fontWeight: 700,
+              color: '#0F172A',
+              letterSpacing: 0.3,
               textDecoration: 'none',
-              lineHeight: 0,
             }}
           >
-            <img
-              src="/dc-icon-navy.svg"
-              alt="Dollar Commerce"
-              width={44}
-              height={44}
-              style={{ display: 'block', borderRadius: 10 }}
-            />
+            <span style={{ fontWeight: 400 }}>dollar</span><span style={{ color: '#D2042D', margin: '0 3px', fontSize: '110%' }}>·</span><span style={{ fontWeight: 700 }}>commerce</span>
           </Link>
           <div data-dc="header-actions" style={{ display: 'flex', gap: 16 }}>
             <button
