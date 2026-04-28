@@ -213,15 +213,51 @@ async function getLatestPlatformNews(limit = 2) {
 }
 
 async function getRecentFundraising() {
-  // Get last 7 days of fundraising
-  const since = new Date();
-  since.setDate(since.getDate() - 7);
-  return sanity.fetch(
-    `*[_type=="fundraisingEvent" && announcedAt >= $since] | order(announcedAt desc, amountUsd desc)[0...10]{
-      company, amountUsd, amountText, round, sector, sourceUrl, sourceName, announcedAt
-    }`,
-    { since: since.toISOString() }
-  );
+  // "This week" runs Mon 00:00 → Sun 23:59 in the user's local TZ. We want
+  // calendar weeks, not rolling 7-day windows.
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun, 1=Mon, ... 6=Sat
+  const daysSinceMonday = day === 0 ? 6 : day - 1;
+  const monday = new Date(now);
+  monday.setHours(0, 0, 0, 0);
+  monday.setDate(monday.getDate() - daysSinceMonday);
+
+  // "Today" = anything *scraped* since midnight today (uses _createdAt, not
+  // announcedAt, so a deal announced last week but scraped this morning still
+  // counts as "new today" in the freshness sense).
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+
+  const [events, weekCount, todayCount, weekTotalUsd] = await Promise.all([
+    // Display rows: top 10 of the week, ordered by recency then size
+    sanity.fetch(
+      `*[_type=="fundraisingEvent" && announcedAt >= $monday] | order(announcedAt desc, amountUsd desc)[0...10]{
+        company, amountUsd, amountText, round, sector, sourceUrl, sourceName, announcedAt, _createdAt
+      }`,
+      { monday: monday.toISOString() }
+    ),
+    // Real weekly total (not capped at 10)
+    sanity.fetch(
+      `count(*[_type=="fundraisingEvent" && announcedAt >= $monday])`,
+      { monday: monday.toISOString() }
+    ),
+    // Newly-scraped-today total
+    sanity.fetch(
+      `count(*[_type=="fundraisingEvent" && _createdAt >= $todayStart])`,
+      { todayStart: todayStart.toISOString() }
+    ),
+    // Sum of every weekly row (not just displayed) for the "$X raised" stat
+    sanity.fetch(
+      `math::sum(*[_type=="fundraisingEvent" && announcedAt >= $monday].amountUsd)`,
+      { monday: monday.toISOString() }
+    ),
+  ]);
+
+  // Attach counts to the array so buildFundraisingSection can read them
+  events.weekCount = weekCount;
+  events.todayCount = todayCount;
+  events.weekTotalUsd = weekTotalUsd || 0;
+  return events;
 }
 
 async function getDcIndexData() {
@@ -583,12 +619,16 @@ function buildFundraisingSection(events) {
       <p style="font-size:13px;color:${C.light};text-align:center;padding:20px 0"><em>No new deals this week &mdash; check back tomorrow.</em></p>`;
   }
 
-  const totalRaised = events.reduce((s, e) => s + (e.amountUsd || 0), 0);
-  const todayISO = new Date().toISOString().slice(0, 10);
-  const todayCount = events.filter(e => e.announcedAt?.slice(0, 10) === todayISO).length;
-  const timeLabel = todayCount > 0
-    ? `${todayCount} new today &middot; ${events.length} this week`
-    : `${events.length} deal${events.length !== 1 ? 's' : ''} this week`;
+  // Counts come from getRecentFundraising — see that function for sources.
+  // Falls back to the displayed-rows count if the new fields aren't present.
+  const weekCount = events.weekCount ?? events.length;
+  const todayCount = events.todayCount ?? 0;
+  const totalRaised = events.weekTotalUsd ?? events.reduce((s, e) => s + (e.amountUsd || 0), 0);
+
+  const parts = [];
+  if (todayCount > 0) parts.push(`${todayCount} new today`);
+  parts.push(`${weekCount} this week`);
+  const timeLabel = parts.join(' &middot; ');
 
   const rows = events.map(ev => {
     const company = ev.sourceUrl
