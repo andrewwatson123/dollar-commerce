@@ -13,7 +13,7 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 html, body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 img, svg, video {
   max-width: 100%;
@@ -290,6 +290,9 @@ body:has([data-dc="fullscreen"]) [data-dc="side-nav"] {
   [data-dc="hero-image"]   { height: 200px !important; }
   [data-dc="hero-title"]   { font-size: 22px !important; text-align: left !important; }
   [data-dc="hero-excerpt"] { font-size: 14px !important; text-align: left !important; }
+
+  /* --- DCIndexHub: sticky bar offset matches mobile header height --- */
+  [data-dc="dc-index-sticky"] { top: 68px !important; }
 
   /* --- DCIndexHub --- */
   [data-dc="dc-index-overall"] {

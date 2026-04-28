@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="64" fill="#0F172A"/>
-  <text x="256" y="295" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="200" fill="#fff" letter-spacing="-8">
-    <tspan font-weight="400">d</tspan><tspan fill="#D2042D" font-size="100" dy="-20">·</tspan><tspan font-weight="700" dy="20">c</tspan>
+  <rect width="512" height="512" rx="96" fill="#0F172A"/>
+  <text x="256" y="256" text-anchor="middle" dominant-baseline="central" font-family="Georgia, 'Times New Roman', serif" font-size="240" fill="#fff" letter-spacing="-4">
+    <tspan font-weight="400">d</tspan><tspan fill="#D2042D" dx="6" dy="-20" font-size="120">·</tspan><tspan dx="6" dy="20" font-weight="700">c</tspan>
   </text>
 </svg>

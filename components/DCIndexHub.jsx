@@ -189,9 +189,10 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* STICKY CONTROL BAR                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <div
+        data-dc="dc-index-sticky"
         onClick={(e) => e.stopPropagation()}
         style={{
-          position: 'sticky', top: 81, zIndex: 50,
+          position: 'sticky', top: 79, zIndex: 50,
           background: '#F4F1EA',
           padding: '14px 0',
           marginBottom: 20,

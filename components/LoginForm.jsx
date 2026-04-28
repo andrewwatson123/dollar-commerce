@@ -34,10 +34,14 @@ export default function LoginForm() {
       padding: '48px 40px', textAlign: 'center',
     }}>
       {/* Logo */}
-      <div style={{ fontFamily: SERIF, fontSize: 24, marginBottom: 8 }}>
-        <span style={{ fontWeight: 400, color: '#0F172A' }}>dollar</span>
-        <span style={{ color: '#D2042D', margin: '0 2px', fontSize: '110%' }}>·</span>
-        <span style={{ fontWeight: 700, color: '#0F172A' }}>commerce</span>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+        <img
+          src="/dc-icon-navy.svg"
+          alt="Dollar Commerce"
+          width={56}
+          height={56}
+          style={{ display: 'block', borderRadius: 12 }}
+        />
       </div>
 
       <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', margin: '24px 0 8px' }}>
