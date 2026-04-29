@@ -38,9 +38,62 @@
 import { createClient } from '@sanity/client';
 import * as cheerio from 'cheerio';
 import { createHash } from 'node:crypto';
+import Anthropic from '@anthropic-ai/sdk';
 
 const FORCE = process.argv.includes('--force');
 const VERBOSE = process.argv.includes('--verbose');
+const NO_LLM = process.argv.includes('--no-llm');
+
+// LLM-backed company name extractor. Falls back to regex parseCompany() if
+// ANTHROPIC_API_KEY is missing, the call fails, or --no-llm is passed.
+// Haiku 4.5 is fast and cheap (~$0.005-0.01/day at current scrape volume).
+const anthropic = process.env.ANTHROPIC_API_KEY && !NO_LLM
+  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  : null;
+
+const llmStats = { calls: 0, ok: 0, failed: 0, cached: 0, rejected: 0 };
+const llmCache = new Map(); // headline → name (in-process; scrape is short-lived)
+
+async function extractCompanyLLM(title) {
+  if (!anthropic) return null;
+  if (llmCache.has(title)) {
+    llmStats.cached++;
+    return llmCache.get(title);
+  }
+  llmStats.calls++;
+  try {
+    const res = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 32,
+      messages: [
+        {
+          role: 'user',
+          content:
+            `Extract the company name that received funding from this fundraising headline. ` +
+            `Reply with ONLY the company name, nothing else. ` +
+            `If the headline is not a real fundraising announcement (a roundup, listicle, generic news, etc.), reply with the single word: NONE.\n\n` +
+            `Headline: "${title}"`,
+        },
+      ],
+    });
+    let name = res.content?.[0]?.type === 'text' ? res.content[0].text.trim() : '';
+    // Strip wrapping quotes the model occasionally adds
+    name = name.replace(/^["'`]+|["'`]+$/g, '').trim();
+    if (!name || name === 'NONE' || name.length > 60 || name.length < 2) {
+      llmStats.rejected++;
+      llmCache.set(title, null);
+      return null;
+    }
+    llmStats.ok++;
+    llmCache.set(title, name);
+    return name;
+  } catch (e) {
+    llmStats.failed++;
+    if (VERBOSE) console.warn(`  ⚠️  LLM extract failed: ${e.message}`);
+    llmCache.set(title, null);
+    return null;
+  }
+}
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -557,9 +610,9 @@ async function main() {
   const stats = { total: raw.length, noise: 0, noVerb: 0, notEcom: 0, noCompany: 0, kept: 0 };
   const events = [];
 
+  // First pass: filter noise/non-funding so we don't waste LLM calls on garbage
+  const candidates = [];
   for (const it of raw) {
-    const combined = `${it.title} ${it.description}`;
-
     if (isNoise(it.title)) {
       stats.noise++;
       if (VERBOSE) console.log(`  ~noise: ${it.title.slice(0, 80)}`);
@@ -569,12 +622,40 @@ async function main() {
       stats.noVerb++;
       continue;
     }
-    // Scope is now all tech/finance/commerce — no sector gate. We still keep
-    // the ecommerce keyword helper around for sector inference below.
+    candidates.push(it);
+  }
 
+  // Second pass: extract company names. LLM in concurrent batches if available,
+  // regex fallback otherwise. Batch size of 8 keeps API parallelism reasonable.
+  if (anthropic) {
+    console.log(`  🤖 Extracting names via Haiku 4.5 for ${candidates.length} candidates...`);
+  }
+  const extracted = new Array(candidates.length);
+  const BATCH = 8;
+  for (let i = 0; i < candidates.length; i += BATCH) {
+    const slice = candidates.slice(i, i + BATCH);
+    const names = await Promise.all(
+      slice.map(async (it) => {
+        const llmName = await extractCompanyLLM(it.title);
+        if (llmName) {
+          // Pass the LLM result through cleanCompany() for the trailing-descriptor
+          // / hyphen-prefix safety nets we already wrote. LLM rarely needs it but
+          // belt-and-braces is cheap.
+          const cleaned = cleanCompany(llmName);
+          if (cleaned) return cleaned;
+        }
+        return parseCompany(it.title); // regex fallback
+      })
+    );
+    for (let j = 0; j < slice.length; j++) extracted[i + j] = names[j];
+  }
+
+  for (let idx = 0; idx < candidates.length; idx++) {
+    const it = candidates[idx];
+    const combined = `${it.title} ${it.description}`;
     const { amountUsd, amountText } = parseAmount(it.title);
     const round = parseRound(combined);
-    const company = parseCompany(it.title);
+    const company = extracted[idx];
     const sector = inferSector(combined);
 
     if (!company || company.length < 2 || company.length > 80) {
@@ -607,6 +688,13 @@ async function main() {
     `\nFilter: ${stats.total} total → ${stats.kept} kept ` +
       `(${stats.noise} noise, ${stats.noVerb} no-verb, ${stats.notEcom} not-ecom, ${stats.noCompany} no-co)`
   );
+  if (anthropic) {
+    console.log(
+      `LLM (Haiku 4.5): ${llmStats.calls} calls, ${llmStats.ok} ok, ${llmStats.rejected} rejected, ${llmStats.failed} failed, ${llmStats.cached} cached`
+    );
+  } else {
+    console.log('LLM extractor: disabled (set ANTHROPIC_API_KEY to enable)');
+  }
 
   // Upsert
   let created = 0;
