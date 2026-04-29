@@ -258,7 +258,12 @@ function parseFundraisingFromEmail(body, htmlBody, emailDate) {
     const sector = inferSector(section);
     const description = section.slice(0, 500);
 
-    const urlHash = crypto.createHash('sha1').update(sourceUrl).digest('hex').slice(0, 20);
+    // Hash the URL plus company+date so multiple signals from the same email
+    // (which all share the execsum.co fallback URL) get distinct ids and
+    // don't collapse into one record. Without the suffix, every Exec Sum
+    // signal after the first one we ever scraped gets treated as a duplicate.
+    const dedupKey = `${sourceUrl}|${company || ''}|${emailDate || ''}`;
+    const urlHash = crypto.createHash('sha1').update(dedupKey).digest('hex').slice(0, 20);
 
     events.push({
       _id: `fundraising-nl-${urlHash}`,
@@ -347,10 +352,11 @@ async function main() {
         continue;
       }
 
-      // Check if already exists
+      // Dedup by _id (which now includes company+date), not by sourceUrl, so
+      // multiple Exec Sum signals from the same email don't get collapsed.
       const exists = await sanity.fetch(
-        `count(*[_type=="fundraisingEvent" && sourceUrl==$url])`,
-        { url: ev.sourceUrl }
+        `count(*[_id==$id])`,
+        { id: ev._id }
       );
 
       if (exists > 0) {
