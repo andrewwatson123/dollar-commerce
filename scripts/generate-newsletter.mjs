@@ -105,6 +105,62 @@ function fmtPct(pct) {
 }
 
 /**
+ * Strict validator for fundraising-row company names.
+ *
+ * Returns true only for names confident enough to ship in the email.
+ * Anything failing here gets dropped from the Deal Flow section and
+ * logged so we can review and tighten the upstream parser. Also see
+ * `cleanCompany()` in scripts/scrape-fundraising.mjs which runs at
+ * ingest; this is the render-time safety net.
+ *
+ * Rules:
+ *   - 2-40 chars, max 4 words
+ *   - No mojibake markers
+ *   - No descriptor nouns anywhere (startup/company/firm/platform/etc.)
+ *   - No leading hyphenated descriptor ("Foo-based Bar", "Foo-backed Bar")
+ *   - No leading sentence-verb fragments ("raises", "lands", "to ...")
+ *   - At least one capital letter (rejects "the bar")
+ */
+function isCleanCompanyName(name) {
+  if (!name || typeof name !== 'string') return false;
+  const s = name.trim();
+  if (s.length < 2 || s.length > 40) return false;
+
+  // Mojibake markers (Mac-Roman / cp1252 mis-decodes)
+  if (/[ÄÅÇÑÖÜ][¨ô°§•ºπ£¢]/.test(s)) return false;
+  if (/,Ä[ôöÅùúû]|,Ç[¨°£¢]|Ã[©¨¶®]/.test(s)) return false;
+
+  // Descriptor nouns never belong in a clean company name
+  const descriptorRx = /\b(startups?|companies|company|firms?|platforms?|brands?|makers?|coding\s+startup|tech\s+startup|gaming\s+startup|security\s+startup|founded\s+by)\b/i;
+  if (descriptorRx.test(s)) return false;
+
+  // Leading hyphenated descriptors the scraper missed
+  if (/^\w+-(based|backed|led|funded|owned|founded)\b/i.test(s)) return false;
+
+  // Sentence-fragment leading words and question words
+  if (/^(raises?|raised|lands?|landed|secures?|closed?|files?|plans?|wants?|aims?|seeks?|expands?|to\s|how\b|why\b|what\b|when\b|who\b|which\b)/i.test(s)) return false;
+
+  // Possessive ('s, ’s) — almost always a person's name + company, not the company itself
+  if (/['’]s\b/.test(s)) return false;
+
+  // Trailing hyphen / dash signals the parser truncated mid-word
+  if (/[-–—]$/.test(s)) return false;
+
+  // Trailing standalone "AI" with multiple words ahead is usually a descriptor
+  // ("Ex-Twitter CEO's AI", "Indian AI"), not a company name like "FORMAS.AI" or "Liquid AI"
+  const words = s.split(/\s+/);
+  if (words.length >= 3 && /AI$/.test(words[words.length - 1])) return false;
+
+  // Must have at least one capital letter
+  if (!/[A-Z]/.test(s)) return false;
+
+  // Word count cap
+  if (words.length > 4) return false;
+
+  return true;
+}
+
+/**
  * Fix mojibake — text where UTF-8 bytes were decoded as Mac-Roman or
  * Windows-1252 and saved that way (e.g. an apostrophe stored as ",Äô"
  * instead of "'"). Common in copy-pastes from external apps into Sanity.
@@ -213,50 +269,37 @@ async function getLatestPlatformNews(limit = 2) {
 }
 
 async function getRecentFundraising() {
-  // "This week" runs Mon 00:00 → Sun 23:59 in the user's local TZ. We want
-  // calendar weeks, not rolling 7-day windows.
+  // Counter scope: only yesterday's deals (announcedAt within yesterday's
+  // calendar day in local TZ). Keeps the header simple — "X new today, $Y raised"
+  // referring to the previous day's activity, since the newsletter ships in
+  // the morning and recaps what happened the day before.
   const now = new Date();
-  const day = now.getDay(); // 0=Sun, 1=Mon, ... 6=Sat
-  const daysSinceMonday = day === 0 ? 6 : day - 1;
-  const monday = new Date(now);
-  monday.setHours(0, 0, 0, 0);
-  monday.setDate(monday.getDate() - daysSinceMonday);
-
-  // "Today" = anything *scraped* since midnight today (uses _createdAt, not
-  // announcedAt, so a deal announced last week but scraped this morning still
-  // counts as "new today" in the freshness sense).
+  const yesterdayStart = new Date(now);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+  yesterdayStart.setHours(0, 0, 0, 0);
   const todayStart = new Date(now);
   todayStart.setHours(0, 0, 0, 0);
 
-  const [events, weekCount, todayCount, weekTotalUsd] = await Promise.all([
-    // Display rows: top 10 of the week, ordered by recency then size
+  const [events, dayCount, dayTotalUsd] = await Promise.all([
+    // Display rows: yesterday's deals, ordered by size then recency
     sanity.fetch(
-      `*[_type=="fundraisingEvent" && announcedAt >= $monday] | order(announcedAt desc, amountUsd desc)[0...10]{
+      `*[_type=="fundraisingEvent" && announcedAt >= $start && announcedAt < $end] | order(amountUsd desc, announcedAt desc)[0...10]{
         company, amountUsd, amountText, round, sector, sourceUrl, sourceName, announcedAt, _createdAt
       }`,
-      { monday: monday.toISOString() }
+      { start: yesterdayStart.toISOString(), end: todayStart.toISOString() }
     ),
-    // Real weekly total (not capped at 10)
     sanity.fetch(
-      `count(*[_type=="fundraisingEvent" && announcedAt >= $monday])`,
-      { monday: monday.toISOString() }
+      `count(*[_type=="fundraisingEvent" && announcedAt >= $start && announcedAt < $end])`,
+      { start: yesterdayStart.toISOString(), end: todayStart.toISOString() }
     ),
-    // Newly-scraped-today total
     sanity.fetch(
-      `count(*[_type=="fundraisingEvent" && _createdAt >= $todayStart])`,
-      { todayStart: todayStart.toISOString() }
-    ),
-    // Sum of every weekly row (not just displayed) for the "$X raised" stat
-    sanity.fetch(
-      `math::sum(*[_type=="fundraisingEvent" && announcedAt >= $monday].amountUsd)`,
-      { monday: monday.toISOString() }
+      `math::sum(*[_type=="fundraisingEvent" && announcedAt >= $start && announcedAt < $end].amountUsd)`,
+      { start: yesterdayStart.toISOString(), end: todayStart.toISOString() }
     ),
   ]);
 
-  // Attach counts to the array so buildFundraisingSection can read them
-  events.weekCount = weekCount;
-  events.todayCount = todayCount;
-  events.weekTotalUsd = weekTotalUsd || 0;
+  events.dayCount = dayCount;
+  events.dayTotalUsd = dayTotalUsd || 0;
   return events;
 }
 
@@ -619,18 +662,26 @@ function buildFundraisingSection(events) {
       <p style="font-size:13px;color:${C.light};text-align:center;padding:20px 0"><em>No new deals this week &mdash; check back tomorrow.</em></p>`;
   }
 
-  // Counts come from getRecentFundraising — see that function for sources.
-  // Falls back to the displayed-rows count if the new fields aren't present.
-  const weekCount = events.weekCount ?? events.length;
-  const todayCount = events.todayCount ?? 0;
-  const totalRaised = events.weekTotalUsd ?? events.reduce((s, e) => s + (e.amountUsd || 0), 0);
+  // Counts come from getRecentFundraising — yesterday's calendar day only.
+  // Newsletter ships in the morning recapping the previous day's activity.
+  const dayCount = events.dayCount ?? events.length;
+  const totalRaised = events.dayTotalUsd ?? events.reduce((s, e) => s + (e.amountUsd || 0), 0);
+  const timeLabel = `${dayCount} new today`;
 
-  const parts = [];
-  if (todayCount > 0) parts.push(`${todayCount} new today`);
-  parts.push(`${weekCount} this week`);
-  const timeLabel = parts.join(' &middot; ');
+  // Render-time safety net: drop any row whose company name fails strict
+  // validation. The unfiltered counts above still reflect reality; only
+  // the displayed table is filtered. Logged so we can fix upstream.
+  const cleanEvents = events.filter((ev) => {
+    if (isCleanCompanyName(ev.company)) return true;
+    console.warn(`  ⚠️  Deal Flow: dropped row with unclean company name: "${ev.company}"`);
+    return false;
+  });
+  if (cleanEvents.length === 0) {
+    console.warn('  ⚠️  Deal Flow: every row failed validation — falling back to raw events to avoid empty section.');
+  }
+  const displayEvents = cleanEvents.length > 0 ? cleanEvents : events;
 
-  const rows = events.map(ev => {
+  const rows = displayEvents.map(ev => {
     const company = ev.sourceUrl
       ? `<a href="${ev.sourceUrl}" style="color:${C.navy};text-decoration:none;font-weight:600">${ev.company}</a>`
       : `<span style="font-weight:600">${ev.company}</span>`;
