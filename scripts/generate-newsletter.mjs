@@ -18,7 +18,11 @@ import { createClient } from '@sanity/client';
 const DRY_RUN = process.argv.includes('--dry-run');
 const VERBOSE = process.argv.includes('--verbose');
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://dollarcommerce.substack.com';
+// Internal links must point at the dollarcommerce.co site, NOT the substack
+// mirror. Substack lacks our /article/<slug>, /fundraising-tracker, /dc-index
+// routes, so anything keyed off SITE_URL would 404 if we let it default to
+// the substack domain.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.dollarcommerce.co';
 const RECIPIENT = 'acw1996@googlemail.com';
 
 /* ── Gmail ──────────────────────────────────────── */
@@ -222,7 +226,7 @@ async function getLatestArticles(limit = 4) {
 // Latest platform-tracker news (e-commerce headlines scraped from around the web).
 // Used for the "Top News Headlines" section — independent of DC editorial.
 // Prefers official sources and excludes stock-commentary noise.
-async function getLatestPlatformNews(limit = 2) {
+async function getLatestPlatformNews(limit = 5) {
   try {
     // Pull a wider window, then filter/sort client-side
     const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
@@ -280,13 +284,21 @@ async function getRecentFundraising() {
   const todayStart = new Date(now);
   todayStart.setHours(0, 0, 0, 0);
 
+  // Counter scope: yesterday only (the newsletter recaps the previous day).
+  // Display scope: last 3 days, top 30. The validator will drop garbage names
+  // and the section then slices to top 10 — querying 30 raw gives the filter
+  // enough headroom that we still hit the "minimum 10 visible" target on
+  // days when many parsed names are unclean.
+  const displayStart = new Date(now);
+  displayStart.setDate(displayStart.getDate() - 3);
+  displayStart.setHours(0, 0, 0, 0);
+
   const [events, dayCount, dayTotalUsd] = await Promise.all([
-    // Display rows: yesterday's deals, ordered by size then recency
     sanity.fetch(
-      `*[_type=="fundraisingEvent" && announcedAt >= $start && announcedAt < $end] | order(amountUsd desc, announcedAt desc)[0...10]{
+      `*[_type=="fundraisingEvent" && announcedAt >= $displayStart] | order(announcedAt desc, amountUsd desc)[0...30]{
         company, amountUsd, amountText, round, sector, sourceUrl, sourceName, announcedAt, _createdAt
       }`,
-      { start: yesterdayStart.toISOString(), end: todayStart.toISOString() }
+      { displayStart: displayStart.toISOString() }
     ),
     sanity.fetch(
       `count(*[_type=="fundraisingEvent" && announcedAt >= $start && announcedAt < $end])`,
@@ -411,9 +423,10 @@ function sectionHeading(title) {
    Pulls the newest article from Sanity by default. */
 function buildTopArticleSection(article, overrideImageUrl) {
   if (!article) return '';
-  const url = article.substackUrl?.includes('dollarcommerce')
-    ? article.substackUrl
-    : `${SITE_URL}/article/${article.slug}`;
+  // Always prefer our canonical URL on dollarcommerce.co. The substackUrl
+  // field exists for legacy reasons; substack's slug pattern differs from
+  // ours so blindly trusting it 404s.
+  const url = `${SITE_URL}/article/${article.slug}`;
   const date = article.publishedAt
     ? new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : '';
@@ -436,11 +449,13 @@ function buildTopArticleSection(article, overrideImageUrl) {
     </div>`;
 }
 
-/* Top News Headlines — e-commerce news from across the web (NOT DC editorial).
-   Auto-fills the first 2 slots from the platform-tracker scraper; leaves a
-   manual placeholder for the editor to paste a story + link each morning. */
+/* Top News Headlines — news from across the web (NOT DC editorial).
+   Renders up to 5 stories from the platform-tracker scraper. The editor
+   can swap any item before sending; placeholder slots are not rendered
+   to avoid shipping "[ Paste your 3rd headline here ]" by accident. */
 function buildTopNewsSection(newsItems) {
-  const picks = (newsItems || []).slice(0, 2);
+  const picks = (newsItems || []).slice(0, 5);
+  if (picks.length === 0) return '';
 
   const renderItem = (item, isLast) => {
     const date = item.reportedAt
@@ -459,25 +474,12 @@ function buildTopNewsSection(newsItems) {
       </div>`;
   };
 
-  // Manual placeholder slot — editor pastes the 3rd story each morning
-  const placeholder = `
-    <div style="padding:16px 18px;border-bottom:none;background:#FDFCF8">
-      <div style="font-size:10px;font-weight:700;color:#CBD5E1;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">[ CATEGORY ]</div>
-      <a href="#MANUAL_HEADLINE_URL" style="font-size:15px;font-weight:700;color:#94A3B8;text-decoration:none;line-height:1.35;display:block;margin-bottom:6px">[ Paste your 3rd headline here ]</a>
-      <p style="font-size:13px;color:#CBD5E1;line-height:1.5;margin:0 0 8px">[ Quick summary of the story &mdash; 1-2 sentences that explain what happened and why it matters. ]</p>
-      <div style="font-size:11px;color:#CBD5E1">
-        [ Source ]
-        <a href="#MANUAL_HEADLINE_URL" style="color:#D2042D;text-decoration:none;font-weight:600;margin-left:10px">Read &rarr;</a>
-      </div>
-    </div>`;
-
-  const autoRows = picks.map((item, i) => renderItem(item, false)).join('');
+  const rows = picks.map((item, i) => renderItem(item, i === picks.length - 1)).join('');
 
   return `
     ${sectionHeading('Top News Headlines')}
     <div style="background:${C.card};border:1px solid ${C.border};border-radius:10px;overflow:hidden;margin-bottom:16px">
-      ${autoRows}
-      ${placeholder}
+      ${rows}
     </div>`;
 }
 
@@ -679,7 +681,12 @@ function buildFundraisingSection(events) {
   if (cleanEvents.length === 0) {
     console.warn('  ⚠️  Deal Flow: every row failed validation — falling back to raw events to avoid empty section.');
   }
-  const displayEvents = cleanEvents.length > 0 ? cleanEvents : events;
+  // Cap displayed rows at 10. The query already pulled up to 30 candidates,
+  // so after the validator drops bad names we still typically have ≥10 clean.
+  const displayEvents = (cleanEvents.length > 0 ? cleanEvents : events).slice(0, 10);
+  if (displayEvents.length < 10) {
+    console.warn(`  ⚠️  Deal Flow: only ${displayEvents.length} clean rows available — section will be short of the 10-row target.`);
+  }
 
   const rows = displayEvents.map(ev => {
     const company = ev.sourceUrl
@@ -717,7 +724,7 @@ function buildArticlesSection(articles) {
   if (!articles || articles.length === 0) return '';
 
   const cards = articles.map((a, i) => {
-    const url = a.substackUrl || `${SITE_URL}/article/${a.slug}`;
+    const url = `${SITE_URL}/article/${a.slug}`;
     const date = a.publishedAt
       ? new Date(a.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       : '';
@@ -757,7 +764,7 @@ function buildArticlesSection(articles) {
       ${cards}
     </div>
     <div style="margin-top:8px">
-      <a href="https://dollarcommerce.substack.com" style="font-size:12px;color:${C.red};text-decoration:none;font-weight:600">Read more on Dollar Commerce &rarr;</a>
+      <a href="${SITE_URL}" style="font-size:12px;color:${C.red};text-decoration:none;font-weight:600">Read more on Dollar Commerce &rarr;</a>
     </div>`;
 }
 
@@ -864,7 +871,7 @@ function buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData, platfo
       ${buildIndexSection(dcIndex, quotes, ytdData)}
       ${buildMoversSection(quotes, ytdData)}
       ${buildFundraisingSection(fundraising)}
-      ${buildArticlesSection(articles?.slice(1))}
+      ${buildArticlesSection(articles?.slice(0, 6))}
 
     </div>`,
   };
@@ -925,11 +932,12 @@ async function main() {
   console.log('   Fetching articles, DC Index, fundraising, stock quotes, YTD...');
 
   const [articles, dcIndex, fundraising, ytdData, platformNews] = await Promise.all([
-    getLatestArticles(4),
+    // Top Article (newest) + 6 for Featured section
+    getLatestArticles(7),
     getDcIndexData(),
     getRecentFundraising(),
     getYtdData(),
-    getLatestPlatformNews(2),
+    getLatestPlatformNews(5),
   ]);
 
   // Get stock quotes from DC Index API response (all 116 in one call)
