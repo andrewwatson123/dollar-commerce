@@ -2,9 +2,9 @@ import Link from 'next/link';
 import WorkshopSignupForm from '@/components/WorkshopSignupForm';
 
 export const metadata = {
-  title: 'Reserve a seat — Jesse Horwitz Founder Workshop',
+  title: 'Reserve a seat — Jesse Horwitz Founder Workshop · May 18',
   description:
-    'Apply for a free seat at the Igloo Media × Dollar Commerce founder workshop with Jesse Horwitz.',
+    'Apply for a free seat at the Igloo Media × Dollar Commerce founder workshop with Jesse Horwitz on May 18 at 12:00 PM ET.',
   alternates: { canonical: '/workshops/jesse-w1/apply' },
   robots: { index: false, follow: false },
 };
@@ -37,8 +37,13 @@ export default function ApplyPage() {
           <h1 className="iga-h1">Reserve your seat.</h1>
           <p className="iga-lede">
             A small cohort of DTC founders. Tell us who you are and what you&apos;re
-            building &mdash; we&apos;ll send a Zoom link to selected applicants.
+            building &mdash; we&apos;ll send a Google Meet link to selected applicants.
           </p>
+          <div className="iga-detail">
+            <span><strong>Mon, May 18</strong> · 12:00 PM ET</span>
+            <span className="iga-detail-sep">·</span>
+            <span>Google Meet · 1 hour</span>
+          </div>
         </div>
       </section>
 
@@ -123,8 +128,9 @@ export default function ApplyPage() {
           gap: 8px;
           padding: 7px 14px;
           border-radius: 999px;
-          background: #DCEFFB;
-          color: #0E7FBF;
+          background: #F1F4F7;
+          color: #2F3942;
+          border: 1px solid #E1E7EC;
           font-size: 12px;
           letter-spacing: 0.06em;
           text-transform: uppercase;
@@ -136,6 +142,18 @@ export default function ApplyPage() {
           border-radius: 50%;
           background: #1AA3F0;
         }
+        .iga-detail {
+          margin-top: 18px;
+          font-size: 14px;
+          color: #4A5560;
+          display: inline-flex;
+          gap: 10px;
+          align-items: center;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .iga-detail strong { color: #0A0A0A; font-weight: 700; }
+        .iga-detail-sep { color: #B0B8C2; }
         .iga-root h1.iga-h1 {
           font-family: 'Georgia', 'Times New Roman', serif;
           font-size: clamp(36px, 5vw, 56px);

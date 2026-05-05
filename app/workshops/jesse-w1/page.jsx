@@ -4,12 +4,12 @@ import Link from 'next/link';
 export const metadata = {
   title: 'Building & Selling DTC — A Founder Workshop with Jesse Horwitz',
   description:
-    'A free 90-minute Zoom workshop for DTC founders. Hosted by Andrew Watson and Alex Knight, with guest Jesse Horwitz (Hubble Contacts). E-commerce, venture capital, team building, and lessons learned. Co-sponsored by Igloo Media and Dollar Commerce.',
+    'A free 1-hour Google Meet workshop for DTC founders on May 18 at 12:00 PM ET. Hosted by Andrew Watson, Alex Knight, and Ben Cogan with guest Jesse Horwitz (Hubble Contacts). Co-sponsored by Igloo Media and Dollar Commerce.',
   alternates: { canonical: '/workshops/jesse-w1' },
   openGraph: {
-    title: 'Founder Workshop with Jesse Horwitz',
+    title: 'Founder Workshop with Jesse Horwitz · May 18',
     description:
-      'Free 90-minute Zoom workshop for DTC founders. Hosted by Igloo Media and Dollar Commerce.',
+      'Free 1-hour Google Meet workshop for DTC founders. Hosted by Igloo Media and Dollar Commerce.',
     type: 'website',
   },
   robots: { index: false, follow: false },
@@ -43,8 +43,7 @@ export default function Page() {
             <span className="ig-brand-meta">in partnership with Dollar Commerce</span>
           </div>
           <nav className="ig-nav-links">
-            <a href="#about">About</a>
-            <a href="#agenda">Agenda</a>
+            <a href="#about">Hosts</a>
             <Link href="/workshops/jesse-w1/apply" className="ig-nav-cta">Reserve seat</Link>
           </nav>
         </div>
@@ -65,15 +64,19 @@ export default function Page() {
             </h1>
 
             <p className="ig-lede">
-              A 90-minute Zoom session with <strong>Jesse Horwitz</strong>, co-founder of
-              Hubble Contacts, on what it actually takes to build, scale, raise, and exit a
-              direct-to-consumer brand. Hosted by Andrew Watson and Alex Knight.
+              A 1-hour Google Meet session with <strong>Jesse Horwitz</strong>, co-founder
+              of Hubble Contacts, on what it actually takes to build, scale, raise, and
+              exit a direct-to-consumer brand.
             </p>
 
             <div className="ig-meta">
               <div className="ig-meta-item">
+                <div className="ig-meta-label">Date</div>
+                <div className="ig-meta-value">Mon, May 18 · 12:00 PM ET</div>
+              </div>
+              <div className="ig-meta-item">
                 <div className="ig-meta-label">Format</div>
-                <div className="ig-meta-value">Zoom · 60 min talk + 30 min Q&amp;A</div>
+                <div className="ig-meta-value">Google Meet · 1 hour</div>
               </div>
               <div className="ig-meta-item">
                 <div className="ig-meta-label">Cohort</div>
@@ -82,10 +85,6 @@ export default function Page() {
               <div className="ig-meta-item">
                 <div className="ig-meta-label">Cost</div>
                 <div className="ig-meta-value">Free · Application required</div>
-              </div>
-              <div className="ig-meta-item">
-                <div className="ig-meta-label">Recording</div>
-                <div className="ig-meta-value">Sent to attendees only</div>
               </div>
             </div>
 
@@ -136,7 +135,7 @@ export default function Page() {
                 <li>Raising venture capital (and when not to)</li>
                 <li>Sourcing and structuring the right team</li>
                 <li>Lessons learned, including the ones that cost</li>
-                <li>30-minute live Q&amp;A with founders</li>
+                <li>Live Q&amp;A with founders</li>
               </ul>
             </div>
           </aside>
@@ -153,20 +152,6 @@ export default function Page() {
             <span>Alex Knight</span>
             <span className="ig-hosts-sep">·</span>
             <span>Ben Cogan</span>
-          </p>
-        </div>
-      </section>
-
-      {/* Agenda — subtle */}
-      <section className="ig-agenda-soft" id="agenda">
-        <div className="ig-agenda-soft-inner">
-          <div className="ig-eyebrow">What we&apos;ll cover</div>
-          <p className="ig-agenda-copy">
-            Ninety minutes, loosely structured. Jesse opens with what it actually
-            took to build, finance, and exit Hubble, with honest detours into team,
-            capital, and the things he&apos;d do differently. The back half is a live
-            Q&amp;A &mdash; founders only, bring the questions you actually need
-            answered.
           </p>
         </div>
       </section>
@@ -323,8 +308,9 @@ export default function Page() {
           gap: 8px;
           padding: 7px 14px;
           border-radius: 999px;
-          background: var(--ig-blue-tint);
-          color: var(--ig-blue-dark);
+          background: #F1F4F7;
+          color: #2F3942;
+          border: 1px solid #E1E7EC;
           font-size: 12px;
           letter-spacing: 0.06em;
           text-transform: uppercase;
@@ -409,10 +395,9 @@ export default function Page() {
           font-size: 20px;
           font-weight: 800;
           letter-spacing: -0.01em;
+          color: var(--ig-text);
         }
-        .ig-cohost-igloo { color: var(--ig-blue); }
-        .ig-cohost-dc { color: var(--ig-text); }
-        .ig-cohost-x { color: var(--ig-text-mute); font-size: 14px; }
+        .ig-cohost-x { color: var(--ig-text-mute); font-size: 14px; font-weight: 400; }
 
         .ig-guest-card {
           background: var(--ig-surface);
@@ -430,8 +415,9 @@ export default function Page() {
           gap: 8px;
           padding: 7px 14px;
           border-radius: 999px;
-          background: var(--ig-blue-tint);
-          color: var(--ig-blue-dark);
+          background: #F1F4F7;
+          color: #2F3942;
+          border: 1px solid #E1E7EC;
           font-size: 11px;
           letter-spacing: 0.1em;
           text-transform: uppercase;
@@ -512,7 +498,7 @@ export default function Page() {
           left: 0; top: 7px;
           width: 6px; height: 6px;
           border-radius: 50%;
-          background: var(--ig-blue);
+          background: var(--ig-text);
         }
 
         .ig-section {
@@ -539,7 +525,7 @@ export default function Page() {
           font-size: 11px;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: var(--ig-blue);
+          color: var(--ig-text-mute);
           font-weight: 700;
           margin-bottom: 12px;
         }
@@ -589,23 +575,6 @@ export default function Page() {
         .ig-hosts-sep {
           color: var(--ig-text-mute);
           font-weight: 400;
-        }
-
-        .ig-agenda-soft {
-          background: var(--ig-bg-alt);
-          border-bottom: 1px solid var(--ig-border);
-        }
-        .ig-agenda-soft-inner {
-          max-width: 760px;
-          margin: 0 auto;
-          padding: 64px 28px;
-        }
-        .ig-agenda-copy {
-          margin: 14px 0 0;
-          font-size: 18px;
-          line-height: 1.65;
-          color: var(--ig-text-soft);
-          font-family: var(--ig-serif);
         }
 
         .ig-cta-section {
@@ -675,6 +644,9 @@ export default function Page() {
           color: var(--ig-text-mute);
         }
 
+        /* Override eyebrow inside agenda-soft (now removed) — keep for safety */
+        .ig-cta-section .ig-eyebrow { color: var(--ig-text-mute); }
+
         /* ---- Mobile ----
            Site-wide globals.css forces h1/h2 to small sizes on phones with
            !important. The .ig-root scope and !important flags below opt this
@@ -727,9 +699,6 @@ export default function Page() {
 
           .ig-root .ig-hosts-inner { padding: 18px; gap: 10px; }
           .ig-root .ig-hosts-line { font-size: 14px; gap: 6px; }
-
-          .ig-root .ig-agenda-soft-inner { padding: 44px 18px; }
-          .ig-root .ig-agenda-copy { font-size: 16px; line-height: 1.6; }
 
           .ig-root .ig-cta-section { padding: 56px 18px 72px; }
           .ig-root .ig-cta-section h2.ig-h2 { text-align: center !important; }
