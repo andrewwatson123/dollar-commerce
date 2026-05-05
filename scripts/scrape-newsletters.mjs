@@ -185,7 +185,7 @@ function extractLinks(html) {
   return links;
 }
 
-function parseFundraisingFromEmail(body, htmlBody, emailDate) {
+function parseFundraisingFromEmail(body, htmlBody, emailDate, newsletterSrc = null) {
   const events = [];
   const text = stripHtml(htmlBody || body);
   const links = extractLinks(htmlBody || '');
@@ -252,8 +252,8 @@ function parseFundraisingFromEmail(body, htmlBody, emailDate) {
       }
     }
 
-    if (!sourceUrl) sourceUrl = 'https://www.execsum.co';
-    if (!sourceName) sourceName = 'Exec Sum';
+    if (!sourceUrl) sourceUrl = newsletterSrc?.fallbackUrl || 'https://www.execsum.co';
+    if (!sourceName) sourceName = newsletterSrc?.sourceName || 'Exec Sum';
 
     const sector = inferSector(section);
     const description = section.slice(0, 500);
@@ -287,38 +287,56 @@ function parseFundraisingFromEmail(body, htmlBody, emailDate) {
 
 /* ── Main ─────────────────────────────────────── */
 
+// Each entry defines a newsletter we want to scrape fundraising signals from.
+// `gmailQuery` is a Gmail search filter; `sourceName` and `fallbackUrl` are
+// stamped onto every event we parse from this newsletter so they show up
+// correctly in the Deal Flow tracker.
+//
+// To add a new newsletter: append an object here and run the scraper. The
+// parsing logic is shared (it splits the email body into sections and looks
+// for "Company raises $X" patterns), so most beehiiv-style fundraising
+// digests should work out of the box.
+const NEWSLETTER_SOURCES = [
+  {
+    name: 'Exec Sum',
+    sourceName: 'Exec Sum',
+    gmailQuery: 'from:execsum.co newer_than:7d',
+    fallbackUrl: 'https://www.execsum.co',
+  },
+  {
+    name: 'This Week in CPG',
+    sourceName: 'This Week in CPG',
+    gmailQuery: 'from:thisweekincpg@mail.beehiiv.com newer_than:7d',
+    fallbackUrl: 'https://thisweekincpg.beehiiv.com/',
+  },
+];
+
 async function main() {
-  console.log(DRY_RUN ? '🔍 DRY RUN\n' : '📬 Scraping Exec Sum newsletters...\n');
+  console.log(DRY_RUN ? '🔍 DRY RUN\n' : '📬 Scraping fundraising newsletters...\n');
 
   if (!process.env.GMAIL_REFRESH_TOKEN) {
     console.error('❌ Missing GMAIL_REFRESH_TOKEN. Run: node --env-file=.env.local scripts/gmail-auth.mjs');
     process.exit(1);
   }
 
-  // Search for Exec Sum emails from the last 3 days
-  // Exec Sum arrives from `news@execsum.co` with varying subject lines
-  // (e.g. "Ken Griffin vs Jamie Dimon"). Match by sender domain only.
-  const query = 'from:execsum.co newer_than:7d';
-
-  const list = await gmail.users.messages.list({
-    userId: 'me',
-    q: query,
-    maxResults: 5,
-  });
-
-  const messages = list.data.messages || [];
-  console.log(`Found ${messages.length} Exec Sum email(s) from the last 3 days\n`);
-
-  if (messages.length === 0) {
-    console.log('No new newsletters to process.');
-    return;
-  }
-
   let totalEvents = 0;
   let newEvents = 0;
   let skipped = 0;
 
-  for (const msg of messages) {
+  for (const src of NEWSLETTER_SOURCES) {
+    console.log(`\n══ ${src.name} ══`);
+    const list = await gmail.users.messages.list({
+      userId: 'me',
+      q: src.gmailQuery,
+      maxResults: 5,
+    });
+
+    const messages = list.data.messages || [];
+    console.log(`Found ${messages.length} ${src.name} email(s) in last 7 days\n`);
+
+    if (messages.length === 0) continue;
+
+    for (const msg of messages) {
     const full = await gmail.users.messages.get({
       userId: 'me',
       id: msg.id,
@@ -337,7 +355,7 @@ async function main() {
     const htmlBody = body.includes('<') ? body : '';
     const plainBody = htmlBody ? stripHtml(htmlBody) : body;
 
-    const events = parseFundraisingFromEmail(plainBody, htmlBody, emailDate);
+    const events = parseFundraisingFromEmail(plainBody, htmlBody, emailDate, src);
     console.log(`   Found ${events.length} fundraising signal(s)`);
     totalEvents += events.length;
 
@@ -371,6 +389,7 @@ async function main() {
     }
 
     console.log('');
+    }
   }
 
   console.log('─'.repeat(40));
