@@ -86,7 +86,7 @@ function generateChartPoints(basePrice, currentPrice, n = 24) {
 
 export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlistStocks, sentiment }) {
   const [activeRange, setActiveRange] = useState('1D');
-  const [weightMode, setWeightMode] = useState('equal');
+  const [weightMode, setWeightMode] = useState('mcap');
   const [periodData, setPeriodData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
