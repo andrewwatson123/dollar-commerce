@@ -125,7 +125,7 @@ export default async function DCIndexPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#F4F1EA', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <SiteHeader dcIndexValue={topBar.dcIndexValue} dcIndexChange={topBar.dcIndexChange} latestArticle={topBar.latestArticle} />
-      <main style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 40px 80px' }}>
+      <main data-dc="page-main" style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 40px 80px' }}>
         <DCIndexHub
           dcIndex={dcIndex}
           basketStocks={basketStocks}
