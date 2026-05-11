@@ -147,7 +147,19 @@ function isCleanCompanyName(name) {
   if (/^\w+-(based|backed|led|funded|owned|founded)\b/i.test(s)) return false;
 
   // Sentence-fragment leading words and question words
-  if (/^(raises?|raised|lands?|landed|secures?|closed?|files?|plans?|wants?|aims?|seeks?|expands?|to\s|how\b|why\b|what\b|when\b|who\b|which\b)/i.test(s)) return false;
+  if (/^(raises?|raised|lands?|landed|secures?|closed?|files?|plans?|wants?|aims?|seeks?|expands?|to\s|how\b|why\b|what\b|when\b|who\b|which\b|with\b)/i.test(s)) return false;
+
+  // "Xx-based YYY", "Uber-backed XXX" etc — the description prefix leaked
+  // into the company name. Reject any value that starts with these adjectival
+  // suffix patterns at all (not just standalone). Use \S+ to catch non-ASCII
+  // prefixes like "Würzburg-based" or "São Paulo-based".
+  if (/^\S+-(based|backed|led|funded|owned|founded)\s+/i.test(s)) return false;
+
+  // "Dishio: $2.5 Million Seed Funding" — colon followed by amount/round = headline leak
+  if (/:\s*\$?[\d,.]+\s*[BMK]/i.test(s)) return false;
+
+  // Generic phrase fragments we keep seeing in Google News titles
+  if (/^(sales|marketing|tech|ai|startup|industry|product|crypto|fintech)\s/i.test(s)) return false;
 
   // Possessive ('s, ’s) — almost always a person's name + company, not the company itself
   if (/['’]s\b/.test(s)) return false;
@@ -301,7 +313,7 @@ async function getRecentFundraising() {
   const [events, dayCount, dayTotalUsd] = await Promise.all([
     sanity.fetch(
       `*[_type=="fundraisingEvent" && announcedAt >= $displayStart] | order(announcedAt desc, amountUsd desc)[0...30]{
-        company, amountUsd, amountText, round, sector, sourceUrl, sourceName, announcedAt, _createdAt
+        company, amountUsd, amountText, round, sector, sourceUrl, sourceName, description, investors, announcedAt, _createdAt
       }`,
       { displayStart: displayStart.toISOString() }
     ),
@@ -694,28 +706,17 @@ function buildFundraisingSection(events) {
   }
 
   // ── Option B: bolded company + editorial sentence ───────────────
-  // Builds a 1-sentence summary from each deal's structured fields,
-  // falling back gracefully when amount/round/investors are missing.
-  // Example: "Blitzy raised $200M Series C led by Northzone (AI)."
+  // Prefer each deal's actual description (scraped from the source
+  // article or newsletter) as the narrative. Fall back to a composed
+  // sentence when description is missing or too thin to read.
   const items = displayEvents.map((ev) => {
     const company = ev.sourceUrl
       ? `<a href="${ev.sourceUrl}" style="color:${C.navy};text-decoration:none;font-weight:700">${ev.company}</a>`
       : `<strong style="color:${C.navy};font-weight:700">${ev.company}</strong>`;
 
-    const amount = ev.amountText && !/undisclosed/i.test(ev.amountText) ? ev.amountText : null;
-    const round = ev.round && ev.round !== 'Unknown' ? ev.round : null;
-    const investors = Array.isArray(ev.investors) ? ev.investors.filter(Boolean) : [];
-    const lead = investors[0];
-    const sector = ev.sector && ev.sector !== 'Tech' ? ev.sector : null;
+    const sentence = composeDealSentence(ev);
 
-    // Compose the sentence based on round category.
-    const middle = composeMiddle(round, amount);
-
-    let tail = '';
-    if (lead) tail += ` led by <strong style="color:${C.navy}">${lead}</strong>`;
-    if (sector) tail += ` (${sector})`;
-
-    return `<li style="font-size:14px;line-height:1.6;color:${C.grey};margin-bottom:14px">${company} ${middle}${tail}.</li>`;
+    return `<li style="font-size:14px;line-height:1.6;color:${C.grey};margin-bottom:14px">${company} ${sentence}</li>`;
   }).join('');
 
   return `
@@ -724,10 +725,99 @@ function buildFundraisingSection(events) {
       <span style="font-size:13px;color:${C.grey};font-weight:500">${timeLabel}</span>
       ${totalRaised > 0 ? `<span style="font-size:13px;color:${C.grey}"> &middot; ${fmtUsd(totalRaised)} raised</span>` : ''}
     </div>
-    <div style="background:${C.card};border:1px solid ${C.border};border-radius:10px;padding:18px 22px 4px;margin-bottom:8px">
+    <div style="background:${C.bg};border:1px solid ${C.border};border-radius:10px;padding:18px 22px 4px;margin-bottom:8px">
       <ul style="margin:0;padding-left:20px">${items}</ul>
     </div>
     <a href="${SITE_URL}/fundraising-tracker" style="font-size:12px;color:${C.red};text-decoration:none;font-weight:600">View all deals &rarr;</a>`;
+}
+
+// Build the editorial sentence for one deal. Strategy:
+//   1. Try to extract a clean 1-sentence summary from the scraped
+//      description field (Sanity's `description`). This is what
+//      EU-Startups, Tech.eu, PYMNTS, Traded VC, Exec Sum all give us.
+//   2. If the description is missing, just a headline, or shorter
+//      than 20 words, fall back to composeMiddle (verb + amount + round).
+//   3. Strip the trailing source name Google News appends and the
+//      company name prefix if it's the first word (avoids "Company
+//      Company raised..." style stutter when we prepend the bolded link).
+function composeDealSentence(ev) {
+  const desc = (ev.description || '').replace(/\s+/g, ' ').trim();
+  const company = ev.company || '';
+  const amount = ev.amountText && !/undisclosed/i.test(ev.amountText) ? ev.amountText : null;
+  const round = ev.round && ev.round !== 'Unknown' ? ev.round : null;
+
+  const composedFallback = composeMiddle(round, amount) + '.';
+
+  // Drop the trailing source name Google News tacks on. Two patterns:
+  //   "...detection to the food industry  Tech.eu"   (double space)
+  //   "...Funding Round afrotech.com"                (single space)
+  // The list of common suffixes is finite enough to enumerate.
+  const sourceTail = /\s+(Tech\.eu|TechCrunch|SmartCompany|Construction\s+World|citybiz|afrotech\.com|Pulse\s+2\.0|PPC\s+Land|The\s+Business\s+Journals|EU-Startups|Tech\s+Funding\s+News|PYMNTS(?:\.com)?|Reuters|Bloomberg|Forbes|Fortune|CNBC|Axios|Sifted|Crunchbase\s+News|FT|Financial\s+Times|Yahoo\s+Finance|Business\s+Insider|VentureBeat|TechRadar|The\s+Verge|TechFundingNews)\s*$/i;
+
+  const cleaned = desc
+    .replace(sourceTail, '')
+    // Also collapse leftover double-spaces
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^[\*\-•]\s*/, '')
+    .trim();
+
+  // Split into sentences and pick the most useful one.
+  const sentences = cleaned.split(/(?<=[.!?])\s+/).filter(Boolean);
+
+  // 1) Find a sentence that names the company AND the round/amount
+  //    (the editorial gold). Prefer it.
+  let narrative = sentences.find((s) => {
+    return s.length > 40
+      && s.length < 260
+      && (s.toLowerCase().includes(company.toLowerCase().slice(0, 8))
+          || /raise|rais|raised|closed|secured|landed/i.test(s))
+      && /\$[\d.,]+\s*[BMK]|\bSeries\s+[A-F]\b|\bSeed\b|\bIPO\b|million|billion/i.test(s);
+  });
+
+  // 2) Otherwise grab the first sentence over 40 chars
+  if (!narrative) narrative = sentences.find((s) => s.length > 40) || sentences[0] || '';
+
+  // Strip leading "Company X " / "X, a/the ..." so we can prepend our own bolded link
+  if (narrative && company) {
+    const escaped = company.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Also strip leading "AI-Powered Grocery Startup CompanyName " etc.
+    const descriptorPrefix = /^(?:AI|AI-Powered|AI-Native|Voice\s+AI|Grocery|Healthcare|Crypto|Fintech|Startup|Company)[\w\s-]*?\s+/i;
+    narrative = narrative
+      .replace(descriptorPrefix, '')
+      .replace(new RegExp(`^${escaped}[,:\\s]*(a |the |an )?`, 'i'), '')
+      .replace(/^(Raises?|Raised|Lands?|Landed|Closes?|Closed|Secures?|Secured|Files?|Filed|Bags?|Bagged|Nabs?|Nabbed)\b/, (m) => m.toLowerCase())
+      .trim();
+  }
+
+  // Ensure terminal period
+  if (narrative && !/[.!?]$/.test(narrative)) narrative += '.';
+
+  // Trim ultra-long sentences (skim-friendly)
+  if (narrative.length > 220) {
+    const cut = narrative.slice(0, 220);
+    const lastEnd = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf(', '));
+    const lastSpace = cut.lastIndexOf(' ');
+    const stop = lastEnd > 160 ? lastEnd + 1 : (lastSpace > 180 ? lastSpace : 220);
+    narrative = cut.slice(0, stop).replace(/[,;:]?\s*$/, '') + (lastEnd > 160 ? '' : '.');
+  }
+
+  // 3) If the narrative is a product blurb that doesn't mention the
+  //    round, prepend the round info so the funding event is obvious.
+  //    Example output: "raised $250M Growth. Develops ANG003..."
+  if (
+    narrative
+    && round
+    && !/\braise|rais|raised|closed|secured|landed|filed|million|billion|funding\b|Series|Seed|IPO/i.test(narrative)
+  ) {
+    narrative = `${composeMiddle(round, amount)}. ${narrative.charAt(0).toUpperCase()}${narrative.slice(1)}`;
+  }
+
+  // 4) If we still have nothing usable, return the composed template
+  if (!narrative || narrative.split(/\s+/).length < 5) {
+    return composedFallback;
+  }
+
+  return narrative;
 }
 
 // Compose the verb + amount + round phrase for an editorial sentence.
@@ -898,9 +988,14 @@ function buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData, platfo
   // we don't want to skip it from Featured either.
   const skipTopArticle =
     process.argv.includes('--skip-top-article') || process.env.DC_SKIP_TOP_ARTICLE === '1';
+  // Always cap Featured at 5 with the newest article rendered as the hero
+  // (with image). When --skip-top-article is set the Top Article section
+  // is omitted, so the newest article serves as Featured hero. Otherwise
+  // it already appears as the Top Article, so Featured starts at the
+  // 2nd-newest and the hero is the 2nd-newest article.
   const featuredArticles = skipTopArticle
-    ? articles?.slice(0, 6)
-    : articles?.slice(1, 7);
+    ? articles?.slice(0, 5)
+    : articles?.slice(1, 6);
 
   // Intro paragraph — 3-sentence editorial overview, Exec Sum style
   const introPara = generateIntro(dcIndex, quotes, fundraising, articles);
