@@ -288,6 +288,7 @@ const MARKET_LINKS = [
 
 const WRITERS = [
   { name: 'Andrew Watson',  slug: 'andrew-watson' },
+  { name: 'Alex Knight',    slug: 'alex-knight' },
   { name: 'Benjamin Cogan', slug: 'benjamin-cogan' },
   { name: 'Jesse Horwitz',  slug: 'jesse-horwitz' },
 ];
