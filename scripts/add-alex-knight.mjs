@@ -24,7 +24,7 @@ const AUTHOR = {
   location: 'Tampa, FL',
   twitter: null,
   linkedin: null,
-  file: 'public/writers/alex-knight.jpeg',
+  file: 'public/writers/alex-knight.png',
 };
 
 async function uploadImage(filePath) {
