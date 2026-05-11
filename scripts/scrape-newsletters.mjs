@@ -186,6 +186,13 @@ function extractLinks(html) {
 }
 
 function parseFundraisingFromEmail(body, htmlBody, emailDate, newsletterSrc = null) {
+  // Traded VC has a clean pipe-delimited format that the generic
+  // parser only catches partially. Use a dedicated parser when we
+  // recognize this newsletter so we capture all 30+ deals per email.
+  if (newsletterSrc?.name === 'Traded VC') {
+    return parseTradedVcEmail(body, htmlBody, emailDate, newsletterSrc);
+  }
+
   const events = [];
   const text = stripHtml(htmlBody || body);
   const links = extractLinks(htmlBody || '');
@@ -285,6 +292,130 @@ function parseFundraisingFromEmail(body, htmlBody, emailDate, newsletterSrc = nu
   return events;
 }
 
+/* ── Traded VC parser ─────────────────────────────
+ *
+ * Traded VC's "Dopamine Dealflow" body is rigorously structured:
+ *
+ *   ## Series B+ & Growth      (or Series A / Seed & Early / Strategic /
+ *                               IPOs / VC Funds Raised & Raising)
+ *
+ *   * **Company | $Amount | Round | City, Region**
+ *
+ *     One-paragraph description. Often ends with "**Lead** led, joined by ..."
+ *
+ * The pipe-delimited deal header makes extraction trivial. We pull
+ * company, amount, round and location directly, and keep the next
+ * non-empty paragraph as the description.
+ * ────────────────────────────────────────────────── */
+function parseTradedVcEmail(body, htmlBody, emailDate, newsletterSrc) {
+  const events = [];
+  const text = stripHtml(htmlBody || body);
+
+  // Match deal headers: bullet, optional [link wrapping], **Name | $X | Round | Location**
+  // Examples seen in the wild:
+  //   * **Anagram Therapeutics | $250M | Growth | Natick, MA**
+  //   * [**Blitzy **](https://...)**| $200M | Series C | Cambridge, MA**
+  //   * **QuTwo | $29M (€25M) | Angel | Helsinki, Finland**
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Strip markdown link wrapping around the company name. Traded VC
+    // emits several variants, all of which need to collapse down to
+    // **Name | $X | Round | Location**:
+    //   [**Name **](url)**| $X ...   ← closing ** sits outside the link
+    //   [**Name**](url) | $X ...
+    //   **Name** | $X ...
+    let cleaned = line
+      // [**Name **](url)**...   →   **Name **...
+      .replace(/\[(\*\*[^\]]+?)\]\([^)]+\)/g, '$1')
+      // **Name **|   →   **Name** |
+      .replace(/(\*\*[^*]+?)\s*\*\*\s*\*\*\s*\|/g, '$1** |')
+      // **Name **| (no double **)   →   **Name** |
+      .replace(/(\*\*[^*]+?)\s+\*\*\s*\|/g, '$1** |');
+
+    // Pull the bolded "Company | Amount | Round | Location" block.
+    // Allow the closing ** to appear either inline after the company
+    // name or only at the very end of the location.
+    const headerMatch = cleaned.match(
+      /[*•\-]\s*\*\*\s*([^|*\n]+?)\s*(?:\*\*)?\s*\|\s*\$?([\d.,]+\s*[BMK](?:\s*\([^)]*\))?|Undisclosed|[\d.,]+\s*Valuation)\s*\|\s*([^|\n]+?)\s*\|\s*([^*\n]+?)\s*\*\*/i
+    );
+    if (!headerMatch) continue;
+
+    const company = headerMatch[1].trim().replace(/\s+/g, ' ');
+    const amountStr = headerMatch[2].trim();
+    const roundStr = headerMatch[3].trim();
+    const location = headerMatch[4].trim();
+
+    // Skip the header row if it parsed something obviously bogus
+    if (!company || company.length < 2 || company.length > 80) continue;
+
+    // Look ahead for the description paragraph (next non-empty, non-header line)
+    let description = '';
+    for (let j = i + 1; j < Math.min(i + 6, lines.length); j++) {
+      const next = lines[j].trim();
+      if (!next) continue;
+      if (next.startsWith('#') || next.startsWith('*') || next.startsWith('-')) break;
+      description = next;
+      break;
+    }
+
+    // Parse the amount — supports "$200M", "$1.4B", "Undisclosed", "$22B Valuation"
+    let amountUsd, amountText;
+    if (/undisclosed/i.test(amountStr)) {
+      amountText = 'Undisclosed';
+    } else {
+      const am = amountStr.match(/([\d.,]+)\s*([BMK])/i);
+      if (am) {
+        const num = parseFloat(am[1].replace(/,/g, ''));
+        const mult = { B: 1e9, M: 1e6, K: 1e3 }[am[2].toUpperCase()] || 1;
+        amountUsd = num * mult;
+        amountText = `$${am[1]}${am[2].toUpperCase()}`;
+        if (/valuation/i.test(amountStr)) amountText += ' Valuation';
+      }
+    }
+
+    // Map round to canonical form. Traded uses Series A/B/C/D, Seed,
+    // Pre-Seed, Angel, Growth, Secondary, VC Fund, Series A + B, etc.
+    let round = roundStr;
+    if (/^series\s+([a-f])(\+)?$/i.test(roundStr)) {
+      const m = roundStr.match(/series\s+([a-f])/i);
+      round = `Series ${m[1].toUpperCase()}`;
+    } else if (/^seed/i.test(roundStr)) round = 'Seed';
+    else if (/^pre-?seed/i.test(roundStr)) round = 'Pre-seed';
+    else if (/^growth/i.test(roundStr)) round = 'Growth';
+    else if (/^angel/i.test(roundStr)) round = 'Angel';
+    else if (/^secondary/i.test(roundStr)) round = 'Secondary';
+    else if (/vc\s+fund/i.test(roundStr)) round = 'VC Fund';
+    else if (/extension/i.test(roundStr)) round = roundStr; // keep "Series D Extension"
+
+    const sector = inferSector(`${company} ${description}`);
+
+    // Stable id per (company, date) — a single Traded email can list
+    // 30+ deals so we can't dedupe on URL alone.
+    const dedupKey = `tradedvc|${company.toLowerCase()}|${emailDate || ''}`;
+    const urlHash = crypto.createHash('sha1').update(dedupKey).digest('hex').slice(0, 20);
+
+    events.push({
+      _id: `fundraising-nl-${urlHash}`,
+      _type: 'fundraisingEvent',
+      company,
+      amountUsd: amountUsd || undefined,
+      amountText: amountText || undefined,
+      round,
+      sector,
+      investors: [],
+      announcedAt: emailDate,
+      description: `${description} (${location})`.trim(),
+      sourceUrl: newsletterSrc.fallbackUrl,
+      sourceName: newsletterSrc.sourceName,
+      approved: true,
+    });
+  }
+
+  return events;
+}
+
 /* ── Main ─────────────────────────────────────── */
 
 // Each entry defines a newsletter we want to scrape fundraising signals from.
@@ -308,6 +439,12 @@ const NEWSLETTER_SOURCES = [
     sourceName: 'This Week in CPG',
     gmailQuery: 'from:thisweekincpg@mail.beehiiv.com newer_than:7d',
     fallbackUrl: 'https://thisweekincpg.beehiiv.com/',
+  },
+  {
+    name: 'Traded VC',
+    sourceName: 'Traded: Venture Capital',
+    gmailQuery: 'from:newsletter@vc.traded.co newer_than:7d',
+    fallbackUrl: 'https://vc.traded.co/',
   },
 ];
 
