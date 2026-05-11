@@ -83,7 +83,12 @@ async function loadLogos() {
 }
 
 function logoImg(symbol, size = 20) {
-  const url = _stockLogoUrl(symbol, size);
+  // Always fetch at 64px (Google's standard high-res favicon size) regardless
+  // of display size. Renders crisp on 2x/3x retina screens; the displayed
+  // dimensions still control layout. Without this the email shows 20x20
+  // images upscaled by retina, which look blurry — especially in mover/faller
+  // tables where the logos sit next to crisp text.
+  const url = _stockLogoUrl(symbol, 64);
   if (!url) return '';
   return `<img src="${url}" alt="" width="${size}" height="${size}" style="border-radius:4px;vertical-align:middle;margin-right:6px" />`;
 }
@@ -688,36 +693,82 @@ function buildFundraisingSection(events) {
     console.warn(`  ⚠️  Deal Flow: only ${displayEvents.length} clean rows available — section will be short of the 10-row target.`);
   }
 
-  const rows = displayEvents.map(ev => {
+  // ── Option B: bolded company + editorial sentence ───────────────
+  // Builds a 1-sentence summary from each deal's structured fields,
+  // falling back gracefully when amount/round/investors are missing.
+  // Example: "Blitzy raised $200M Series C led by Northzone (AI)."
+  const items = displayEvents.map((ev) => {
     const company = ev.sourceUrl
-      ? `<a href="${ev.sourceUrl}" style="color:${C.navy};text-decoration:none;font-weight:600">${ev.company}</a>`
-      : `<span style="font-weight:600">${ev.company}</span>`;
-    return `<tr>
-      <td style="padding:10px 14px;font-size:13px;color:${C.navy};border-bottom:1px solid ${C.border}">${company}</td>
-      <td style="padding:10px 14px;font-size:13px;color:${C.grey};border-bottom:1px solid ${C.border}">${ev.amountText || '&mdash;'}</td>
-      <td style="padding:10px 14px;font-size:13px;color:${C.grey};border-bottom:1px solid ${C.border}">${ev.round || '&mdash;'}</td>
-      <td style="padding:10px 14px;font-size:13px;color:${C.light};border-bottom:1px solid ${C.border}">${ev.sector || '&mdash;'}</td>
-    </tr>`;
+      ? `<a href="${ev.sourceUrl}" style="color:${C.navy};text-decoration:none;font-weight:700">${ev.company}</a>`
+      : `<strong style="color:${C.navy};font-weight:700">${ev.company}</strong>`;
+
+    const amount = ev.amountText && !/undisclosed/i.test(ev.amountText) ? ev.amountText : null;
+    const round = ev.round && ev.round !== 'Unknown' ? ev.round : null;
+    const investors = Array.isArray(ev.investors) ? ev.investors.filter(Boolean) : [];
+    const lead = investors[0];
+    const sector = ev.sector && ev.sector !== 'Tech' ? ev.sector : null;
+
+    // Compose the sentence based on round category.
+    const middle = composeMiddle(round, amount);
+
+    let tail = '';
+    if (lead) tail += ` led by <strong style="color:${C.navy}">${lead}</strong>`;
+    if (sector) tail += ` (${sector})`;
+
+    return `<li style="font-size:14px;line-height:1.6;color:${C.grey};margin-bottom:14px">${company} ${middle}${tail}.</li>`;
   }).join('');
 
   return `
     ${sectionHeading('Deal Flow & Fundraising')}
-    <div style="margin-bottom:10px">
+    <div style="margin-bottom:14px">
       <span style="font-size:13px;color:${C.grey};font-weight:500">${timeLabel}</span>
       ${totalRaised > 0 ? `<span style="font-size:13px;color:${C.grey}"> &middot; ${fmtUsd(totalRaised)} raised</span>` : ''}
     </div>
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:${C.card};border:1px solid ${C.border};border-radius:10px;overflow:hidden;margin-bottom:8px">
-      <thead>
-        <tr style="background:#F8FAFC">
-          <th style="padding:10px 14px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:left;border-bottom:1px solid ${C.border}">Company</th>
-          <th style="padding:10px 14px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:left;border-bottom:1px solid ${C.border}">Amount</th>
-          <th style="padding:10px 14px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:left;border-bottom:1px solid ${C.border}">Round</th>
-          <th style="padding:10px 14px;font-size:10px;font-weight:700;color:${C.light};text-transform:uppercase;letter-spacing:0.05em;text-align:left;border-bottom:1px solid ${C.border}">Sector</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
+    <div style="background:${C.card};border:1px solid ${C.border};border-radius:10px;padding:18px 22px 4px;margin-bottom:8px">
+      <ul style="margin:0;padding-left:20px">${items}</ul>
+    </div>
     <a href="${SITE_URL}/fundraising-tracker" style="font-size:12px;color:${C.red};text-decoration:none;font-weight:600">View all deals &rarr;</a>`;
+}
+
+// Compose the verb + amount + round phrase for an editorial sentence.
+// Examples:
+//   composeMiddle('Series B', '$200M')      → "raised $200M Series B"
+//   composeMiddle('IPO', '$2B')             → "filed for a $2B IPO"
+//   composeMiddle('IPO', null)              → "filed for an IPO"
+//   composeMiddle('Acquisition', '$500M')   → "was acquired for $500M"
+//   composeMiddle('VC Fund', '$2.2B')       → "closed a $2.2B fund"
+//   composeMiddle('Secondary', '$22B')      → "hit a $22B valuation on secondary"
+function composeMiddle(round, amount) {
+  const r = (round || '').toLowerCase();
+
+  if (r.includes('ipo')) {
+    return amount ? `filed for a ${amount} IPO` : 'filed for an IPO';
+  }
+  if (r.includes('acquisition') || r.includes('acquired')) {
+    return amount ? `was acquired for ${amount}` : 'was acquired';
+  }
+  if (r.includes('secondary')) {
+    return amount ? `hit a ${amount} valuation on secondary` : 'closed a secondary round';
+  }
+  if (r.includes('vc fund')) {
+    return amount ? `closed a ${amount} fund` : 'closed a new fund';
+  }
+  if (r.includes('extension')) {
+    return amount ? `added ${amount} to its existing round` : `added to its existing round`;
+  }
+  if (r.includes('strategic')) {
+    return amount ? `secured ${amount} strategic investment` : 'secured a strategic investment';
+  }
+
+  // Default: raised | closed | landed (verb varies by stage)
+  let verb = 'raised';
+  if (/series\s*[c-f]/i.test(r)) verb = 'landed';
+  else if (/series\s*b/i.test(r)) verb = 'closed';
+
+  if (amount && round) return `${verb} ${amount} ${round}`;
+  if (amount) return `${verb} ${amount}`;
+  if (round) return `closed a ${round}`;
+  return 'closed a new round';
 }
 
 function buildArticlesSection(articles) {
@@ -744,10 +795,11 @@ function buildArticlesSection(articles) {
         </div>`;
     }
 
+    // Per user feedback 2026-05-06: only the lead Featured card has an image.
+    // Rows below are plain text-only rows for visual hierarchy.
     return `
       <div style="padding:14px 0;border-bottom:${i < articles.length - 1 ? `1px solid ${C.border}` : 'none'}">
         <table width="100%" cellpadding="0" cellspacing="0"><tr>
-          ${imgUrl ? `<td width="100" style="vertical-align:top;padding-right:14px"><a href="${url}"><img src="${imgUrl}" alt="" style="width:100px;height:68px;border-radius:6px;object-fit:cover;display:block" /></a></td>` : ''}
           <td style="vertical-align:top">
             ${a.category ? `<div style="font-size:10px;font-weight:700;color:${C.red};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">${a.category}</div>` : ''}
             <a href="${url}" style="font-size:15px;font-weight:700;color:${C.navy};text-decoration:none;line-height:1.3">${a.title}</a>
@@ -838,6 +890,18 @@ function generateIntro(dcIndex, quotes, fundraising, articles) {
 function buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData, platformNews) {
   const hero = articles[0];
 
+  // Toggle: when --skip-top-article is passed (or DC_SKIP_TOP_ARTICLE=1 set),
+  // we omit the Top Article section AND have the Featured section lead with
+  // articles[0] instead of articles[1]. Used on days where the Top Story is
+  // a workshop, partner launch, or other feature that should stand alone at
+  // the top — we don't want to repeat-feature the most recent article and
+  // we don't want to skip it from Featured either.
+  const skipTopArticle =
+    process.argv.includes('--skip-top-article') || process.env.DC_SKIP_TOP_ARTICLE === '1';
+  const featuredArticles = skipTopArticle
+    ? articles?.slice(0, 6)
+    : articles?.slice(1, 7);
+
   // Intro paragraph — 3-sentence editorial overview, Exec Sum style
   const introPara = generateIntro(dcIndex, quotes, fundraising, articles);
 
@@ -864,14 +928,14 @@ function buildNewsletter(articles, dcIndex, quotes, fundraising, ytdData, platfo
 
       ${buildTopStory(quotes)}
 
-      ${buildTopArticleSection(articles?.[0])}
+      ${skipTopArticle ? '' : buildTopArticleSection(articles?.[0])}
 
       ${buildTopNewsSection(platformNews)}
 
       ${buildIndexSection(dcIndex, quotes, ytdData)}
       ${buildMoversSection(quotes, ytdData)}
       ${buildFundraisingSection(fundraising)}
-      ${buildArticlesSection(articles?.slice(0, 6))}
+      ${buildArticlesSection(featuredArticles)}
 
     </div>`,
   };
@@ -967,6 +1031,18 @@ async function main() {
     console.log(`   6. Deal Flow: ${fundraising.length} deals`);
     console.log(`   7. Articles: ${articles.length} featured`);
     console.log('   8. Footer');
+
+    // Save a preview HTML even in dry-run so we can eyeball the
+    // rendered email without sending. Filename suffixed so it never
+    // overwrites the real draft.
+    const fs = await import('fs');
+    const path = await import('path');
+    const outDir = path.join(process.cwd(), 'newsletter-drafts');
+    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+    const dateSlug = today.toISOString().slice(0, 10);
+    const previewPath = path.join(outDir, `dc-newsletter-${dateSlug}-preview.html`);
+    fs.writeFileSync(previewPath, html, 'utf-8');
+    console.log(`\n📄 Dry-run HTML saved → ${previewPath}`);
     return;
   }
 
