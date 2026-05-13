@@ -708,10 +708,15 @@ function buildFundraisingSection(events) {
   if (cleanEvents.length === 0) {
     console.warn('  ⚠️  Deal Flow: every row failed validation — falling back to raw events to avoid empty section.');
   }
-  // Show all clean deals (up to query cap of 30). User confirmed 2026-05-12:
-  // showing the full day's deal flow beats showing top-10 only, even if the
-  // list is chunky. Counter and header still reflect reality.
-  const displayEvents = (cleanEvents.length > 0 ? cleanEvents : events);
+  // Show up to 15 clean deals — capped per user feedback 2026-05-13:
+  // "30+ rows is too long, 15 is the sweet spot." Counter and header still
+  // reflect the unfiltered total (e.g. "26 new today, $761M raised") so
+  // readers see the real activity level even when the visible list is
+  // trimmed. Sorted by amountUsd desc, NULL amount fallback at the bottom.
+  const sortedClean = (cleanEvents.length > 0 ? cleanEvents : events)
+    .slice()
+    .sort((a, b) => (b.amountUsd || 0) - (a.amountUsd || 0));
+  const displayEvents = sortedClean.slice(0, 15);
 
   // ── Option B: bolded company + editorial sentence ───────────────
   // Prefer each deal's actual description (scraped from the source
@@ -801,7 +806,7 @@ function composeDealSentence(ev) {
   //   "...detection to the food industry  Tech.eu"   (double space)
   //   "...Funding Round afrotech.com"                (single space)
   // The list of common suffixes is finite enough to enumerate.
-  const sourceTail = /\s+(Tech\.eu|TechCrunch|SmartCompany|Construction\s+World|citybiz|afrotech\.com|Pulse\s+2\.0|PPC\s+Land|The\s+Business\s+Journals|EU-Startups|Tech\s+Funding\s+News|PYMNTS(?:\.com)?|Reuters|Bloomberg|Forbes|Fortune|CNBC|Axios|Sifted|Crunchbase\s+News|FT|Financial\s+Times|Yahoo\s+Finance|Business\s+Insider|VentureBeat|TechRadar|The\s+Verge|TechFundingNews)\s*$/i;
+  const sourceTail = /\s+(Tech\.eu|TechCrunch|SmartCompany|Construction\s+World|citybiz|afrotech\.com|Pulse\s+2\.0|PPC\s+Land|The\s+Business\s+Journals|EU-Startups|Tech\s+Funding\s+News|PYMNTS(?:\.com)?|Reuters|Bloomberg|Forbes|Fortune|CNBC|Axios|Sifted|Crunchbase\s+News|FT|Financial\s+Times|Yahoo\s+Finance|Business\s+Insider|VentureBeat|TechRadar|The\s+Verge|TechFundingNews|TicketNews|Washington\s+Technology|Wamda|The\s+SaaS\s+News|CXO\s+Digitalpulse|SiliconANGLE|CairoScene|D2c\s+Insider\s+Pulse|Entrackr|Disrupt\s+Africa|Indian\s+Television\s+Dot\s+Com|Pocket\s+Gamer\.biz|Investing\.com|qz\.com)\s*$/i;
 
   const cleaned = desc
     .replace(sourceTail, '')
