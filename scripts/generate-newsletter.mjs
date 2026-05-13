@@ -687,6 +687,16 @@ function buildFundraisingSection(events) {
   const totalRaised = events.dayTotalUsd ?? events.reduce((s, e) => s + (e.amountUsd || 0), 0);
   const timeLabel = `${dayCount} new today`;
 
+  // Pipe every text field through fixMojibake first. RSS feeds and some
+  // newsletter parsers occasionally leak Mac-Roman mis-decodes (",Äô",
+  // ",Ç¨", etc.) into the company name or description. fixMojibake repairs
+  // them in place so they never reach the rendered email.
+  for (const ev of events) {
+    ev.company = fixMojibake(ev.company);
+    ev.description = fixMojibake(ev.description);
+    ev.amountText = fixMojibake(ev.amountText);
+  }
+
   // Render-time safety net: drop any row whose company name fails strict
   // validation. The unfiltered counts above still reflect reality; only
   // the displayed table is filtered. Logged so we can fix upstream.
@@ -698,25 +708,28 @@ function buildFundraisingSection(events) {
   if (cleanEvents.length === 0) {
     console.warn('  ⚠️  Deal Flow: every row failed validation — falling back to raw events to avoid empty section.');
   }
-  // Cap displayed rows at 10. The query already pulled up to 30 candidates,
-  // so after the validator drops bad names we still typically have ≥10 clean.
-  const displayEvents = (cleanEvents.length > 0 ? cleanEvents : events).slice(0, 10);
-  if (displayEvents.length < 10) {
-    console.warn(`  ⚠️  Deal Flow: only ${displayEvents.length} clean rows available — section will be short of the 10-row target.`);
-  }
+  // Show all clean deals (up to query cap of 30). User confirmed 2026-05-12:
+  // showing the full day's deal flow beats showing top-10 only, even if the
+  // list is chunky. Counter and header still reflect reality.
+  const displayEvents = (cleanEvents.length > 0 ? cleanEvents : events);
 
   // ── Option B: bolded company + editorial sentence ───────────────
   // Prefer each deal's actual description (scraped from the source
   // article or newsletter) as the narrative. Fall back to a composed
   // sentence when description is missing or too thin to read.
+  // Per user feedback 2026-05-12:
+  //   - Company name MUST be bold AND non-italic (some clients/preview
+  //     panels render <a> as italic by default; we force font-style:normal).
+  //   - Inside the sentence we bold key tokens (amount, round, investor names)
+  //     via boldifyKeywords() so the row is skimmable.
   const items = displayEvents.map((ev) => {
     const company = ev.sourceUrl
-      ? `<a href="${ev.sourceUrl}" style="color:${C.navy};text-decoration:none;font-weight:700">${ev.company}</a>`
-      : `<strong style="color:${C.navy};font-weight:700">${ev.company}</strong>`;
+      ? `<a href="${ev.sourceUrl}" style="color:${C.navy};text-decoration:none;font-weight:700;font-style:normal">${ev.company}</a>`
+      : `<strong style="color:${C.navy};font-weight:700;font-style:normal">${ev.company}</strong>`;
 
-    const sentence = composeDealSentence(ev);
+    const sentence = boldifyKeywords(composeDealSentence(ev));
 
-    return `<li style="font-size:14px;line-height:1.6;color:${C.grey};margin-bottom:14px">${company} ${sentence}</li>`;
+    return `<li style="font-size:14px;line-height:1.6;color:${C.grey};margin-bottom:14px;font-style:normal">${company} ${sentence}</li>`;
   }).join('');
 
   return `
@@ -740,6 +753,42 @@ function buildFundraisingSection(events) {
 //   3. Strip the trailing source name Google News appends and the
 //      company name prefix if it's the first word (avoids "Company
 //      Company raised..." style stutter when we prepend the bolded link).
+// Wrap skim-worthy tokens in a Deal Flow sentence with <strong>.
+// Targets: amounts ($1bn, $275M, €40M, $1.65B, $20 million, Rs 120 crore),
+// rounds (Series A/B/.../F, Seed, Pre-Seed, IPO, Series D Extension),
+// and investor names following "led by" / "backed by".
+//
+// Safe to run on text that's already mojibake-cleaned and HTML-entity-encoded.
+// Does NOT re-bold things inside existing <strong>/<a> tags (we run this on
+// the composed sentence before any link wrapping).
+function boldifyKeywords(s) {
+  if (!s) return s;
+  let out = s;
+
+  // Amounts: $X[.Y][B|M|K] (with optional "billion"/"million" variant, plus
+  // "Rs 120 crore" Indian style and €/£ symbols)
+  out = out.replace(
+    /(\$[\d.,]+\s*(?:[BMK]|billion|million|thousand)\b|\$[\d.,]+|&euro;[\d.,]+\s*[BMK]?|&pound;[\d.,]+\s*[BMK]?|Rs\s+[\d.,]+\s*(?:crore|lakh))\b/gi,
+    '<strong>$1</strong>'
+  );
+
+  // Round names: Series A through F, optional + or "Extension"; Seed, Pre-Seed,
+  // Angel, Growth, IPO, Series D Extension, etc.
+  out = out.replace(
+    /\b(Series\s+[A-F](?:\+|\s+Extension)?|Pre[-\s]?Seed|Seed(?:\s+Round)?|Angel|Growth\s+round|Strategic\s+round|IPO|Bridge\s+round|VC\s+Fund)\b/g,
+    '<strong>$1</strong>'
+  );
+
+  // Investor names after "led by" / "co-led by" / "backed by" / "from".
+  // Capture up to the next sentence break, conjunction or period.
+  out = out.replace(
+    /\b(led by|co-led by|backed by)\s+([A-Z][\w&.\s,'-]+?)(?=\s+(?:and|with|to|for|at|in|on|along|plus|joined|with\s+participation|alongside)\b|[.,;:]|$)/g,
+    (_m, prefix, names) => `${prefix} <strong>${names.trim()}</strong>`
+  );
+
+  return out;
+}
+
 function composeDealSentence(ev) {
   const desc = (ev.description || '').replace(/\s+/g, ' ').trim();
   const company = ev.company || '';
