@@ -716,7 +716,35 @@ function buildFundraisingSection(events) {
   const sortedClean = (cleanEvents.length > 0 ? cleanEvents : events)
     .slice()
     .sort((a, b) => (b.amountUsd || 0) - (a.amountUsd || 0));
-  const displayEvents = sortedClean.slice(0, 15);
+
+  // Render-time dedup by canonical company name. The clean-fundraising.mjs
+  // sweep already dedupes at scrape time, but it misses descriptor-variant
+  // duplicates like "Stitch" vs "Saudi Arabia-based Stitch" or "Fasset" vs
+  // "Stablecoin-powered neobank Fasset" because the variants are technically
+  // different strings. Canonicalise here and keep the first occurrence
+  // (which after the amount-desc sort is the cleanest-named, biggest-amount
+  // version). Per user feedback 2026-05-15.
+  const canonicalCompany = (name) => {
+    if (!name) return '';
+    let n = name.toLowerCase().trim();
+    n = n.replace(/^(.*?-based\s+|.*?-founded\s+|saudi arabia-based\s+|stablecoin-powered\s+neobank\s+|saudi fintech\s+|training data provider\s+|israeli\s+|indian\s+|us\s+|uk\s+|new york-based\s+|french\s+|spanish\s+|german\s+|swiss\s+|chinese\s+|japanese\s+|australian\s+|canadian\s+)/, '');
+    n = n.replace(/\s+(therapeutics|industries|labs|technologies|technology|inc\.?|ltd\.?|corp\.?|plc|group|capital(?:\s+partners)?|partners|ventures)$/, '');
+    n = n.replace(/\s+/g, ' ').trim();
+    return n;
+  };
+  const seen = new Set();
+  const deduped = [];
+  for (const ev of sortedClean) {
+    const key = canonicalCompany(ev.company);
+    if (key && seen.has(key)) {
+      if (VERBOSE) console.log(`  ↻ Deal Flow dedupe: dropping ${ev.company}`);
+      continue;
+    }
+    if (key) seen.add(key);
+    deduped.push(ev);
+  }
+
+  const displayEvents = deduped.slice(0, 15);
 
   // ── Option B: bolded company + editorial sentence ───────────────
   // Prefer each deal's actual description (scraped from the source
