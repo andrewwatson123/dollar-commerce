@@ -39,17 +39,39 @@
 const SHEET_ID = '1TQUDREhad2pgfdIGyUy438eqKdkjvEXzskVB7foyWhI';
 const DEFAULT_TAB = 'Jesse_W1';
 
-// PASTE THE EVENT ID FROM STEP 3 OF SETUP HERE.
-// Leave as '' to skip calendar invites (only writes to the sheet).
-const CALENDAR_EVENT_ID = '';
-
-// The calendar that owns the event. 'primary' is the script-owner's
-// personal calendar. Change to a calendar ID (looks like an email) if
-// the event lives on a shared calendar.
+// The calendar that owns the workshop events. 'primary' is the
+// script-owner's personal calendar. Change to a calendar ID (looks
+// like an email) if the events live on a shared calendar.
 const CALENDAR_ID = 'primary';
 
 // Sender display name on the confirmation email.
 const FROM_NAME = 'Igloo Media × Dollar Commerce';
+
+// One entry per workshop. The `workshopId` field on each form
+// submission is matched against the keys here.
+//
+// To add a new workshop:
+//   1. Create the Calendar event in Google Calendar.
+//   2. Run logEventIdsForDate (top of editor → set the date param) and
+//      copy the event ID from the logs.
+//   3. Add a row to this map with the event ID, friendly title, and
+//      the date/format strings used inside the confirmation email.
+const WORKSHOPS = {
+  'jesse-w1': {
+    title: 'Workshop with Jesse Horwitz',
+    eventId: '',                          // ← paste Jesse's event ID
+    date: 'Monday, May 18 · 12:00 PM ET',
+    format: 'Google Meet · 1 hour',
+    signoff: 'Andrew, Alex & Ben',
+  },
+  'rafa-w1': {
+    title: 'Workshop with Rafa Guida — Implementing AI-Creative in Facebook Ads',
+    eventId: '',                          // ← paste Rafa's event ID
+    date: 'Monday, June 22 · 12:00 PM ET',
+    format: 'Google Meet · 1 hour',
+    signoff: 'Andrew, Alex & Ben',
+  },
+};
 
 const HEADERS = [
   'Timestamp',
@@ -67,10 +89,11 @@ function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents || '{}');
     const tabName = body.tab || DEFAULT_TAB;
+    const workshop = WORKSHOPS[body.workshopId] || null;
 
     // 1. Write to the sheet.
     const sheet = getOrCreateSheet(tabName);
-    const calendarStatus = addToCalendarEvent(body.email, body.fullName);
+    const calendarStatus = addToCalendarEvent(workshop, body.email, body.fullName);
     sheet.appendRow([
       body.timestamp || new Date().toISOString(),
       body.workshopId || '',
@@ -86,8 +109,8 @@ function doPost(e) {
     // 2. Send confirmation email (only if calendar add succeeded — that
     //    proves the applicant is now on the event and gives us the Meet
     //    link to share).
-    if (calendarStatus === 'added' || calendarStatus === 'already-on') {
-      sendConfirmationEmail(body);
+    if (workshop && (calendarStatus === 'added' || calendarStatus === 'already-on')) {
+      sendConfirmationEmail(workshop, body);
     }
 
     return jsonOut({ ok: true, calendar: calendarStatus });
@@ -104,14 +127,15 @@ function doGet() {
  * Add the applicant as an attendee on the workshop event.
  * Uses sendUpdates: 'none' so existing attendees aren't notified.
  *
- * Returns: 'added' | 'already-on' | 'no-event-id' | 'error: ...'
+ * Returns: 'added' | 'already-on' | 'no-event-id' | 'unknown-workshop' | 'error: ...'
  */
-function addToCalendarEvent(email, fullName) {
-  if (!CALENDAR_EVENT_ID) return 'no-event-id';
+function addToCalendarEvent(workshop, email, fullName) {
+  if (!workshop) return 'unknown-workshop';
+  if (!workshop.eventId) return 'no-event-id';
   if (!email) return 'error: no email';
 
   try {
-    const event = Calendar.Events.get(CALENDAR_ID, CALENDAR_EVENT_ID);
+    const event = Calendar.Events.get(CALENDAR_ID, workshop.eventId);
     const existing = (event.attendees || []).map(a => (a.email || '').toLowerCase());
     if (existing.indexOf(email.toLowerCase()) !== -1) return 'already-on';
 
@@ -126,7 +150,7 @@ function addToCalendarEvent(email, fullName) {
     Calendar.Events.patch(
       { attendees: newAttendees },
       CALENDAR_ID,
-      CALENDAR_EVENT_ID,
+      workshop.eventId,
       { sendUpdates: 'none' } // ← key: nobody on the event gets pinged
     );
 
@@ -141,55 +165,55 @@ function addToCalendarEvent(email, fullName) {
  * Pulled separately from the Calendar invite so existing attendees
  * aren't disturbed.
  */
-function sendConfirmationEmail(body) {
+function sendConfirmationEmail(workshop, body) {
   if (!body.email) return;
+  if (!workshop) return;
 
   let meetLink = '';
-  let eventStart = '';
   try {
-    const event = Calendar.Events.get(CALENDAR_ID, CALENDAR_EVENT_ID);
+    const event = Calendar.Events.get(CALENDAR_ID, workshop.eventId);
     meetLink = event.hangoutLink || (event.conferenceData && event.conferenceData.entryPoints
       && event.conferenceData.entryPoints[0] && event.conferenceData.entryPoints[0].uri) || '';
-    eventStart = event.start && (event.start.dateTime || event.start.date) || '';
   } catch (err) {
     // Email still goes out without the link if Calendar lookup fails.
   }
 
   const firstName = (body.fullName || '').split(' ')[0] || 'there';
-  const subject = "You're in — Workshop with Jesse Horwitz, Mon May 18";
+  const subject = "You're in — " + workshop.title;
 
   const text = [
     "Hey " + firstName + ",",
     "",
-    "Thanks for applying to the founder workshop with Jesse Horwitz.",
-    "You're in. Here are the details:",
+    "Thanks for applying to the founder workshop. You're in.",
     "",
-    "Date    Monday, May 18 · 12:00 PM ET",
-    "Format  Google Meet · 1 hour",
-    meetLink ? "Meet    " + meetLink : "",
+    "Workshop  " + workshop.title,
+    "Date      " + workshop.date,
+    "Format    " + workshop.format,
+    meetLink ? "Meet      " + meetLink : "",
     "",
     "You'll also see this on your Google Calendar — we've added you as a guest.",
     "",
     "Bring your toughest questions. We're keeping the room small so the Q&A actually works.",
     "",
-    "See you Monday,",
-    "Andrew, Alex & Ben",
+    "See you then,",
+    workshop.signoff,
     "Igloo Media × Dollar Commerce",
   ].filter(Boolean).join('\n');
 
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Inter', Helvetica, Arial, sans-serif; color:#0A0A0A; line-height:1.55; max-width:560px;">
       <p>Hey ${escapeHtml(firstName)},</p>
-      <p>Thanks for applying to the founder workshop with <strong>Jesse Horwitz</strong>. You're in — here are the details:</p>
+      <p>Thanks for applying to the founder workshop. You're in — here are the details:</p>
       <table cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin:18px 0;">
-        <tr><td style="padding:6px 18px 6px 0; color:#8A95A0; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;">Date</td><td style="padding:6px 0; font-size:15px;">Monday, May 18 · 12:00 PM ET</td></tr>
-        <tr><td style="padding:6px 18px 6px 0; color:#8A95A0; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;">Format</td><td style="padding:6px 0; font-size:15px;">Google Meet · 1 hour</td></tr>
+        <tr><td style="padding:6px 18px 6px 0; color:#8A95A0; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;">Workshop</td><td style="padding:6px 0; font-size:15px;">${escapeHtml(workshop.title)}</td></tr>
+        <tr><td style="padding:6px 18px 6px 0; color:#8A95A0; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;">Date</td><td style="padding:6px 0; font-size:15px;">${escapeHtml(workshop.date)}</td></tr>
+        <tr><td style="padding:6px 18px 6px 0; color:#8A95A0; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;">Format</td><td style="padding:6px 0; font-size:15px;">${escapeHtml(workshop.format)}</td></tr>
         ${meetLink ? `<tr><td style="padding:6px 18px 6px 0; color:#8A95A0; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;">Join</td><td style="padding:6px 0; font-size:15px;"><a href="${escapeHtml(meetLink)}" style="color:#1AA3F0; text-decoration:none; font-weight:600;">${escapeHtml(meetLink)}</a></td></tr>` : ''}
       </table>
       <p>You'll also see this on your Google Calendar — we've added you as a guest.</p>
       <p>Bring your toughest questions. We're keeping the room small so the Q&amp;A actually works.</p>
-      <p style="margin-top:24px;">See you Monday,<br>
-      Andrew, Alex &amp; Ben<br>
+      <p style="margin-top:24px;">See you then,<br>
+      ${escapeHtml(workshop.signoff)}<br>
       <span style="color:#8A95A0; font-size:13px;">Igloo Media × Dollar Commerce</span></p>
     </div>
   `;
@@ -233,13 +257,16 @@ function escapeHtml(s) {
 }
 
 /**
- * Helper: list candidate event IDs around the workshop date.
- * Run this once from the Apps Script editor (top toolbar → pick this
- * function → Run). Then View → Logs to see the result.
+ * Helpers: list candidate event IDs around each workshop date.
+ * Run from the Apps Script editor (top toolbar → pick the function →
+ * Run), then View → Logs to see the IDs.
  */
-function logEventIdsForWorkshopDate() {
-  const start = new Date('2026-05-18T00:00:00-04:00');
-  const end = new Date('2026-05-19T00:00:00-04:00');
+function logJesseEventId() { logEventIdsForDate('2026-05-18'); }
+function logRafaEventId()  { logEventIdsForDate('2026-06-22'); }
+
+function logEventIdsForDate(yyyy_mm_dd) {
+  const start = new Date(yyyy_mm_dd + 'T00:00:00-04:00');
+  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
   const events = Calendar.Events.list(CALENDAR_ID, {
     timeMin: start.toISOString(),
     timeMax: end.toISOString(),
@@ -247,7 +274,7 @@ function logEventIdsForWorkshopDate() {
     orderBy: 'startTime',
   });
   if (!events.items || events.items.length === 0) {
-    Logger.log('No events found on May 18, 2026 in calendar: ' + CALENDAR_ID);
+    Logger.log('No events found on ' + yyyy_mm_dd + ' in calendar: ' + CALENDAR_ID);
     return;
   }
   events.items.forEach(ev => {
@@ -258,15 +285,17 @@ function logEventIdsForWorkshopDate() {
 
 /**
  * Helper: end-to-end test from the Apps Script editor. Edit the email
- * to your own address, run, then check the sheet, your calendar, and
- * your inbox.
+ * + workshopId, run, then check the sheet, your calendar, and inbox.
  */
-function testSubmission() {
+function testJesseSubmission() { runTestSubmission('jesse-w1', 'Jesse_W1'); }
+function testRafaSubmission()  { runTestSubmission('rafa-w1',  'Rafa_W1'); }
+
+function runTestSubmission(workshopId, tab) {
   const fake = {
     postData: {
       contents: JSON.stringify({
-        tab: DEFAULT_TAB,
-        workshopId: 'jesse-w1',
+        tab: tab,
+        workshopId: workshopId,
         timestamp: new Date().toISOString(),
         fullName: 'Test Founder',
         email: 'you@your-domain.com', // ← edit before running
