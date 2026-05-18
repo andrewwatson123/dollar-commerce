@@ -52,7 +52,11 @@ export async function POST(request) {
 
   // Tab name matches the workshop. The Apps Script reads `tab` and falls back
   // to a default if missing.
-  const tab = workshopId === 'jesse-w1' ? 'Jesse_W1' : workshopId;
+  const TAB_BY_WORKSHOP = {
+    'jesse-w1': 'Jesse_W1',
+    'rafa-w1': 'Rafa_W1',
+  };
+  const tab = TAB_BY_WORKSHOP[workshopId] || workshopId;
 
   const payload = {
     tab,

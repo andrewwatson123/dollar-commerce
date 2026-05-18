@@ -5,7 +5,8 @@
       "name": "dc-next",
       "runtimeExecutable": "/Users/andrewwatson/Dollar Commerce/.claude/run-dev.sh",
       "runtimeArgs": [],
-      "port": 5180
+      "port": 5180,
+      "autoPort": true
     }
   ]
 }

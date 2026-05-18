@@ -2,12 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Building & Selling DTC — A Founder Workshop with Jesse Horwitz',
+  title: 'Implementing AI-Creative in Facebook Ads — A Founder Workshop with Rafa Guida',
   description:
-    'A free 1-hour Google Meet workshop for DTC founders on May 18 at 12:00 PM ET. Hosted by Andrew Watson, Alex Knight, and Ben Cogan with guest Jesse Horwitz (Hubble Contacts). Co-sponsored by Igloo Media and Dollar Commerce.',
-  alternates: { canonical: '/workshops/jesse-w1' },
+    'A free 1-hour Google Meet workshop for DTC founders on June 22 at 12:00 PM ET. Rafa Guida (creative leader, Meta / Ogilvy / TBWA) on how to actually implement AI-creative in Facebook ads. Co-sponsored by Igloo Media and Dollar Commerce.',
+  alternates: { canonical: '/workshops/rafa-w1' },
   openGraph: {
-    title: 'Founder Workshop with Jesse Horwitz · May 18',
+    title: 'Implementing AI-Creative in Facebook Ads · with Rafa Guida · June 22',
     description:
       'Free 1-hour Google Meet workshop for DTC founders. Hosted by Igloo Media and Dollar Commerce.',
     type: 'website',
@@ -44,7 +44,7 @@ export default function Page() {
           </div>
           <nav className="ig-nav-links">
             <a href="#about">Hosts</a>
-            <Link href="/workshops/jesse-w1/apply" className="ig-nav-cta">Reserve seat</Link>
+            <Link href="/workshops/rafa-w1/apply" className="ig-nav-cta">Reserve seat</Link>
           </nav>
         </div>
       </header>
@@ -58,21 +58,21 @@ export default function Page() {
             </span>
 
             <h1 className="ig-h1">
-              Building &amp; selling
+              Implementing AI-creative
               <br />
-              <em>DTC, honestly.</em>
+              <em>in Facebook ads.</em>
             </h1>
 
             <p className="ig-lede">
-              A 1-hour Google Meet session with <strong>Jesse Horwitz</strong>, co-founder
-              of Hubble Contacts, on what it actually takes to build, scale, raise, and
-              exit a direct-to-consumer brand.
+              A 1-hour Google Meet session with <strong>Rafa Guida</strong>, a 20-year
+              creative leader from Meta, Ogilvy, and TBWA, on how DTC brands actually
+              build paid-social creative that scales.
             </p>
 
             <div className="ig-meta">
               <div className="ig-meta-item">
                 <div className="ig-meta-label">Date</div>
-                <div className="ig-meta-value">Mon, May 18 · 12:00 PM ET</div>
+                <div className="ig-meta-value">Mon, Jun 22 · 12:00 PM ET</div>
               </div>
               <div className="ig-meta-item">
                 <div className="ig-meta-label">Format</div>
@@ -108,33 +108,33 @@ export default function Page() {
 
             <div className="ig-guest-photo">
               <Image
-                src="/writers/jesse-horwitz.png"
-                alt="Jesse Horwitz"
+                src="/writers/rafa-guida.jpg"
+                alt="Rafa Guida"
                 fill
                 priority
                 sizes="(max-width: 900px) 100vw, 480px"
                 style={{ objectFit: 'cover' }}
               />
               <div className="ig-guest-photo-fade" />
-              <div className="ig-guest-photo-tag">Co-founder · Hubble Contacts</div>
+              <div className="ig-guest-photo-tag">Creative leader · Meta / Ogilvy / TBWA</div>
             </div>
 
             <div className="ig-guest-body">
-              <div className="ig-guest-name">Jesse Horwitz</div>
+              <div className="ig-guest-name">Rafa Guida</div>
               <p className="ig-guest-bio">
-                Built and sold one of the largest contact lens brands of the DTC era. Now
-                an active investor and operator across consumer, commerce, and emerging
-                tech.
+                Twenty years of creative leadership across Meta, Ogilvy, and TBWA on four
+                continents. Now closes the creative gap for DTC brands trying to scale
+                paid social. 200+ Cannes, D&amp;AD, and Effie awards. Based in NYC.
               </p>
             </div>
 
             <div className="ig-topics">
               <div className="ig-topics-label">Topics</div>
               <ul className="ig-topics-list">
-                <li>Building a category-leading e-commerce brand</li>
-                <li>Raising venture capital (and when not to)</li>
-                <li>Sourcing and structuring the right team</li>
-                <li>Lessons learned, including the ones that cost</li>
+                <li>Where AI hits its limits in building creative</li>
+                <li>Where to focus: volume vs quality</li>
+                <li>Which tools lead on design, voiceover, and the wider tech stack</li>
+                <li>Building a creative feedback loop with Claude to fast-track sprints</li>
                 <li>Live Q&amp;A with founders</li>
               </ul>
             </div>
@@ -164,7 +164,7 @@ export default function Page() {
             We keep the room tight so the Q&amp;A is useful. Apply in under a minute &mdash;
             we&apos;ll send a Google Meet link to selected founders.
           </p>
-          <Link href="/workshops/jesse-w1/apply" className="ig-cta-btn">
+          <Link href="/workshops/rafa-w1/apply" className="ig-cta-btn">
             Reserve your seat
             <span aria-hidden>→</span>
           </Link>
