@@ -834,10 +834,16 @@ function composeDealSentence(ev) {
   //   "...detection to the food industry  Tech.eu"   (double space)
   //   "...Funding Round afrotech.com"                (single space)
   // The list of common suffixes is finite enough to enumerate.
-  const sourceTail = /\s+(Tech\.eu|TechCrunch|SmartCompany|Construction\s+World|citybiz|afrotech\.com|Pulse\s+2\.0|PPC\s+Land|The\s+Business\s+Journals|EU-Startups|Tech\s+Funding\s+News|PYMNTS(?:\.com)?|Reuters|Bloomberg|Forbes|Fortune|CNBC|Axios|Sifted|Crunchbase\s+News|FT|Financial\s+Times|Yahoo\s+Finance|Business\s+Insider|VentureBeat|TechRadar|The\s+Verge|TechFundingNews|TicketNews|Washington\s+Technology|Wamda|The\s+SaaS\s+News|CXO\s+Digitalpulse|SiliconANGLE|CairoScene|D2c\s+Insider\s+Pulse|Entrackr|Disrupt\s+Africa|Indian\s+Television\s+Dot\s+Com|Pocket\s+Gamer\.biz|Investing\.com|qz\.com)\s*$/i;
+  const sourceTail = /\s+(Tech\.eu|TechCrunch|SmartCompany|Construction\s+World|citybiz|afrotech\.com|Pulse\s+2\.0|PPC\s+Land|The\s+Business\s+Journals|EU-Startups|Tech\s+Funding\s+News|PYMNTS(?:\.com)?|Reuters|Bloomberg|Forbes|Fortune|CNBC|Axios|Sifted|Crunchbase\s+News|FT|Financial\s+Times|Yahoo\s+Finance|Business\s+Insider|VentureBeat|TechRadar|The\s+Verge|TechFundingNews|TicketNews|Washington\s+Technology|Wamda|The\s+SaaS\s+News|CXO\s+Digitalpulse|SiliconANGLE|CairoScene|D2c\s+Insider\s+Pulse|Entrackr|Disrupt\s+Africa|Indian\s+Television\s+Dot\s+Com|Pocket\s+Gamer\.biz|Investing\.com|qz\.com|FinTech\s+Futures|Yellow\.com|Startups\s+Magazine|Robotics\s+&\s+Automation\s+News|Wowtale|BioXconomy|FoodBev\s+Media|The\s+Quantum\s+Insider|Business\s+News\s+Australia|MarketBeat|INSCMagazine)\s*$/i;
+
+  // Catch non-Latin source tags (Korean, Chinese, Japanese, etc.) that
+  // leak in from Google News redirects. The character class targets the
+  // Unicode blocks for Hangul, CJK, Hiragana, Katakana, Cyrillic, Arabic.
+  const nonLatinTail = /\s+[\u0400-\u04FF\u0590-\u05FF\u0600-\u06FF\u3000-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF][^\s.,;:]*\s*$/;
 
   const cleaned = desc
     .replace(sourceTail, '')
+    .replace(nonLatinTail, '')
     // Also collapse leftover double-spaces
     .replace(/\s{2,}/g, ' ')
     .replace(/^[\*\-•]\s*/, '')
