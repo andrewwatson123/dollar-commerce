@@ -37,7 +37,7 @@
  */
 
 const SHEET_ID = '1TQUDREhad2pgfdIGyUy438eqKdkjvEXzskVB7foyWhI';
-const DEFAULT_TAB = 'Jesse_W1';
+const DEFAULT_TAB = 'Rafa_W1';
 
 // The calendar that owns the workshop events. 'primary' is the
 // script-owner's personal calendar. Change to a calendar ID (looks
@@ -57,18 +57,12 @@ const FROM_NAME = 'Igloo Media × Dollar Commerce';
 //   3. Add a row to this map with the event ID, friendly title, and
 //      the date/format strings used inside the confirmation email.
 const WORKSHOPS = {
-  'jesse-w1': {
-    title: 'Workshop with Jesse Horwitz',
-    eventId: '',                          // ← paste Jesse's event ID
-    date: 'Monday, May 18 · 12:00 PM ET',
-    format: 'Google Meet · 1 hour',
-    signoff: 'Andrew, Alex & Ben',
-  },
   'rafa-w1': {
-    title: 'Workshop with Rafa Guida — Implementing AI-Creative in Facebook Ads',
+    title: 'Rafa Guida <> AI Creative Workshop',
     eventId: '',                          // ← paste Rafa's event ID
     date: 'Monday, June 22 · 12:00 PM ET',
     format: 'Google Meet · 1 hour',
+    meetLinkFallback: 'https://meet.google.com/wdv-hjfj-dih',
     signoff: 'Andrew, Alex & Ben',
   },
 };
@@ -175,8 +169,9 @@ function sendConfirmationEmail(workshop, body) {
     meetLink = event.hangoutLink || (event.conferenceData && event.conferenceData.entryPoints
       && event.conferenceData.entryPoints[0] && event.conferenceData.entryPoints[0].uri) || '';
   } catch (err) {
-    // Email still goes out without the link if Calendar lookup fails.
+    // Calendar lookup failed — we'll use the fallback below.
   }
+  if (!meetLink && workshop.meetLinkFallback) meetLink = workshop.meetLinkFallback;
 
   const firstName = (body.fullName || '').split(' ')[0] || 'there';
   const subject = "You're in — " + workshop.title;
@@ -257,12 +252,11 @@ function escapeHtml(s) {
 }
 
 /**
- * Helpers: list candidate event IDs around each workshop date.
+ * Helper: list candidate event IDs around the Rafa workshop date.
  * Run from the Apps Script editor (top toolbar → pick the function →
  * Run), then View → Logs to see the IDs.
  */
-function logJesseEventId() { logEventIdsForDate('2026-05-18'); }
-function logRafaEventId()  { logEventIdsForDate('2026-06-22'); }
+function logRafaEventId() { logEventIdsForDate('2026-06-22'); }
 
 function logEventIdsForDate(yyyy_mm_dd) {
   const start = new Date(yyyy_mm_dd + 'T00:00:00-04:00');
@@ -287,8 +281,7 @@ function logEventIdsForDate(yyyy_mm_dd) {
  * Helper: end-to-end test from the Apps Script editor. Edit the email
  * + workshopId, run, then check the sheet, your calendar, and inbox.
  */
-function testJesseSubmission() { runTestSubmission('jesse-w1', 'Jesse_W1'); }
-function testRafaSubmission()  { runTestSubmission('rafa-w1',  'Rafa_W1'); }
+function testRafaSubmission() { runTestSubmission('rafa-w1', 'Rafa_W1'); }
 
 function runTestSubmission(workshopId, tab) {
   const fake = {
