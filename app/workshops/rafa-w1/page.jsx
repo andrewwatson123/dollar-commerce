@@ -64,9 +64,9 @@ export default function Page() {
             </h1>
 
             <p className="ig-lede">
-              A 1-hour Google Meet session with <strong>Rafa Guida</strong>, a 20-year
-              creative leader from Meta, Ogilvy, and TBWA, on how DTC brands actually
-              build paid-social creative that scales.
+              A 1-hour Google Meet session with <strong>Rafa Guida</strong>, a veteran
+              creative leader and graphic designer from Meta, Ogilvy, and TBWA, on how
+              DTC brands actually build paid-social creatives for marketing.
             </p>
 
             <div className="ig-meta">
