@@ -63,7 +63,7 @@ export async function getHomepageData({ limit = 12 } = {}) {
     `{
       "hero": *[_type=="article"] | order(publishedAt desc)[0] ${ARTICLE_CARD_PROJECTION},
       "topStories": *[_type=="article"] | order(publishedAt desc)[1...${limit + 1}] ${ARTICLE_CARD_PROJECTION},
-      "features": *[_type=="article" && category->slug.current=="features"] | order(publishedAt desc)[0...6] ${ARTICLE_CARD_PROJECTION},
+      "features": *[_type=="article" && (homepageSection=="founder-features" || category->slug.current=="features")] | order(publishedAt desc)[0...6] ${ARTICLE_CARD_PROJECTION},
       "platforms": *[_type=="article" && category->slug.current=="platforms"] | order(publishedAt desc)[0...6] ${ARTICLE_CARD_PROJECTION},
       "opinion": *[_type=="article" && category->slug.current=="opinion"] | order(publishedAt desc)[0...6] ${ARTICLE_CARD_PROJECTION},
       "ecommerce": *[_type=="article" && category->slug.current=="e-commerce"] | order(publishedAt desc)[0...6] ${ARTICLE_CARD_PROJECTION}

@@ -58,24 +58,17 @@ export default {
     },
     {
       name: 'homepageSection',
-      title: 'Homepage Section',
+      title: 'Add to Founder Features carousel?',
       type: 'string',
-      description: 'Pin this article to a specific homepage section. Leave blank for default placement.',
+      description:
+        'Every new article auto-publishes as the homepage hero (most recent wins). Set this to "Founder Features" to ALSO include it in the Founder Features carousel below. Leave blank if it should only appear in the hero / category pages.',
       options: {
         list: [
-          { title: 'Top Story (hero)', value: 'top-story' },
-          { title: 'Top Stories (sidebar)', value: 'top-stories' },
+          { title: '— No (default)', value: '' },
           { title: 'Founder Features', value: 'founder-features' },
-          { title: 'Latest', value: 'latest' },
-          { title: 'Most Read', value: 'most-read' },
         ],
+        layout: 'radio',
       },
-    },
-    {
-      name: 'homepageOrder',
-      title: 'Homepage Order',
-      type: 'number',
-      description: 'Lower numbers appear first within the section. Leave blank for default sort by date.',
     },
     {
       name: 'isPremium',
