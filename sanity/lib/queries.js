@@ -86,8 +86,18 @@ export async function getAllArticleSlugs() {
 }
 
 export async function getArticlesByCategory(categorySlug, { limit = 100 } = {}) {
+  // Special case for the Features category: also include any article
+  // flagged via the "Add to Founder Features carousel?" dropdown
+  // (homepageSection == "founder-features"), even when its primary
+  // category is something else like E-Commerce or Opinion. Mirrors the
+  // homepage carousel behaviour so /category/features stays in sync.
+  const isFeatures = categorySlug === 'features';
+  const filter = isFeatures
+    ? `_type=="article" && (category->slug.current==$slug || homepageSection=="founder-features")`
+    : `_type=="article" && category->slug.current==$slug`;
+
   return sanityClient.fetch(
-    `*[_type=="article" && category->slug.current==$slug] | order(publishedAt desc)[0...${limit}] ${ARTICLE_CARD_PROJECTION}`,
+    `*[${filter}] | order(publishedAt desc)[0...${limit}] ${ARTICLE_CARD_PROJECTION}`,
     { slug: categorySlug },
     { next: { revalidate: 60, tags: ['articles', `category:${categorySlug}`] } }
   );
