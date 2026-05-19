@@ -153,11 +153,17 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
 
   /* ── computed display values ── */
 
+  // Selected range that isn't 1D/All but periodData hasn't loaded for it
+  // yet. Without this guard the % display falls back to allTimeChange
+  // mid-fetch (e.g. flashes +12.80% when switching from 1D to 1W).
+  const isWaitingForPeriodData =
+    activeRange !== 'All' && activeRange !== '1D' && (loading || !periodData);
+
   const allTimeChange = (overall?.value ?? 100) - 100;
   const periodChange = computePeriodChange(basketStocks, overall?.weights);
   const displayOverall = {
     value: overall?.value,
-    change: periodChange ?? allTimeChange,
+    change: isWaitingForPeriodData ? null : (periodChange ?? allTimeChange),
   };
 
   const displayBuckets = BUCKET_NAMES.map(bucket => {
@@ -168,7 +174,7 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
     return {
       bucket,
       value: serverIdx?.value,
-      change: bPeriodChange ?? bAllTimeChange,
+      change: isWaitingForPeriodData ? null : (bPeriodChange ?? bAllTimeChange),
       coverage: serverIdx?.coverage,
     };
   });
