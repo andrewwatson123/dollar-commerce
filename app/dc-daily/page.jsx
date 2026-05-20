@@ -468,6 +468,106 @@ export default function DCDailyLanding() {
 
         </div>
       </main>
+
+      {/* ────────────────────────────────────────────────────────────
+          ABOUT THE EDITOR + TESTIMONIAL CAROUSEL
+          Lives below the dark hero so the page tells the personal
+          story behind DC Daily and shows social proof from founders.
+          Neutral cream background to visually break from the dark
+          mosaic stage above.
+          ──────────────────────────────────────────────────────────── */}
+      <section className="dcdaily-about">
+        <div className="dcdaily-about-inner">
+          <div className="dcdaily-about-grid">
+            <div className="dcdaily-about-portrait">
+              <img src="/writers/andrew-watson.png" alt="Andrew Watson" />
+            </div>
+            <div className="dcdaily-about-copy">
+              <div className="dcdaily-about-eyebrow">FROM THE EDITOR</div>
+              <h2 className="dcdaily-about-name">Andrew Watson</h2>
+              <div className="dcdaily-about-role">Co-Founder, Dollar Commerce &middot; Based in London, UK</div>
+              <blockquote className="dcdaily-about-quote">
+                &ldquo;I started DC Daily because every newsletter I read was
+                either selling me something or burying the lede. I wanted the
+                e-commerce briefing I would actually want in my own inbox
+                &mdash; honest, short, no buzzwords. If that sounds useful,
+                subscribe up top.&rdquo;
+              </blockquote>
+              <div className="dcdaily-about-cta-row">
+                <Link href="/author/andrew-watson" className="dcdaily-about-link">
+                  Read my articles &rarr;
+                </Link>
+                <Link href="#top" className="dcdaily-about-link subtle">
+                  Subscribe to DC Daily
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="dcdaily-testimonials">
+        <div className="dcdaily-testimonials-inner">
+          <div className="dcdaily-testimonials-header">
+            <div className="dcdaily-about-eyebrow">WHAT FOUNDERS SAY</div>
+            <h2 className="dcdaily-testimonials-title">Loved by the operators we write for</h2>
+          </div>
+
+          <div className="dcdaily-testimonials-track" role="list">
+            {[
+              {
+                name: 'Benjamin Cogan',
+                role: 'Co-founder, Agora · Ex-Hubble',
+                avatar: '/writers/benjamin-cogan.png',
+                quote: 'DC Daily is the only briefing I read end-to-end. It catches the deals the bigger outlets miss by a week.',
+              },
+              {
+                name: 'Jesse Horwitz',
+                role: 'Co-founder, Mangrove · Author of Selling Naked',
+                avatar: '/writers/jesse-horwitz.png',
+                quote: 'Andrew writes about e-commerce the way a founder talks at dinner. No buzzwords, just signal.',
+              },
+              {
+                name: 'Alex Knight',
+                role: 'Co-founder, Igloo Media · Google Ads Lead',
+                avatar: '/writers/alex-knight.png',
+                quote: 'I forward DC Daily to my whole team. Best 3 minutes of my morning routine.',
+              },
+              {
+                name: 'Maria Chen',
+                role: 'Founder, Honey Pot Skincare',
+                avatar: null,
+                quote: 'The DC Index alone is worth subscribing. I check it before I check my own dashboard.',
+              },
+              {
+                name: 'James Okafor',
+                role: 'GM, Apparel Holding Co.',
+                avatar: null,
+                quote: 'Read three newsletters every morning. DC Daily is the only one I open every single day.',
+              },
+            ].map((t) => (
+              <article key={t.name} className="dcdaily-testimonial-card" role="listitem">
+                <div className="dcdaily-testimonial-quote">
+                  &ldquo;{t.quote}&rdquo;
+                </div>
+                <div className="dcdaily-testimonial-author">
+                  {t.avatar ? (
+                    <img src={t.avatar} alt={t.name} />
+                  ) : (
+                    <div className="dcdaily-testimonial-initials">
+                      {t.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
+                    </div>
+                  )}
+                  <div>
+                    <div className="dcdaily-testimonial-name">{t.name}</div>
+                    <div className="dcdaily-testimonial-role">{t.role}</div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
