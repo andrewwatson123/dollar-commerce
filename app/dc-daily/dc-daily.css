@@ -151,12 +151,12 @@
 
 .dcdaily-meet-quote {
   font-family: var(--f-fraunces), Georgia, serif;
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(19px, 2vw, 24px);
   line-height: 1.55;
   color: #0B1128;
   margin: 0 0 44px;
-  max-width: 560px;
+  max-width: 760px;
   position: relative;
 }
 .dcdaily-meet-quote::before,
@@ -280,6 +280,7 @@
   border-radius: 50%;
   background: rgba(11, 17, 40, 0.2);
   display: inline-block;
+  font-style: normal;
 }
 
 /* ── KPI strip below the CTA ─── */
@@ -344,7 +345,7 @@
 }
 .dcdaily-float-quote blockquote {
   font-family: var(--f-fraunces), Georgia, serif;
-  font-style: italic;
+  font-style: normal;
   font-size: 15.5px;
   line-height: 1.5;
   color: #0B1128;
