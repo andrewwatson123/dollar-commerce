@@ -39,9 +39,7 @@ export default function SubscribeForm() {
 
   return (
     <form onSubmit={handleSubmit} className="dcdaily-card">
-      <h2>
-        <span className="pulse" aria-hidden="true" />DC Daily
-      </h2>
+      <h2>DC Daily</h2>
       <p>Top stories, latest articles and a snapshot of everything public.</p>
 
       {status !== 'success' && (
