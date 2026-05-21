@@ -449,22 +449,30 @@
   .dcdaily-kpi:nth-child(4) { border-bottom: 0; }
   .dcdaily-kpi-value { font-size: 22px; }
 
-  /* Floating quotes don't work on phones — collapse into a stacked
-     column below the CTA where they read like a normal testimonial list. */
+  /* Floating quotes don't work on phones — collapse into a horizontal
+     swipeable carousel below the CTA. */
   .dcdaily-floating-quotes {
     position: static;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 14px;
-    padding: 24px 18px 0;
-    margin-top: 16px;
+    padding: 14px 18px 18px;
+    margin: 12px -18px 0;
     border-top: 1px solid rgba(11, 17, 40, 0.08);
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-padding-left: 18px;
   }
+  .dcdaily-floating-quotes::-webkit-scrollbar { display: none; }
   .dcdaily-float-quote {
     position: static;
     transform: none !important;
-    width: 100%;
+    width: 280px;
+    flex: 0 0 280px;
     margin: 0;
+    scroll-snap-align: start;
   }
 }
