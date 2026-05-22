@@ -10,7 +10,11 @@
   font-family: var(--f-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   position: relative;
-  overflow-x: hidden;
+  /* overflow-x: clip instead of hidden so the y-axis stays in the
+     document's natural scroll context. Using `hidden` here was
+     making the entire page a nested scroll container on mobile,
+     which trapped touch gestures past the CTA. */
+  overflow-x: clip;
 }
 
 /* Soft red corner accent, decorative only */
@@ -461,11 +465,17 @@
     margin: 12px -18px 0;
     border-top: 1px solid rgba(11, 17, 40, 0.08);
     overflow-x: auto;
-    overflow-y: visible;
-    scroll-snap-type: x mandatory;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     scroll-padding-left: 18px;
+    /* iOS-correct touch handling: declare ONLY pan-x on the carousel.
+       The browser then routes vertical drags to the document scroll,
+       fixing the "stuck past the carousel" bug. Drop scroll-snap
+       because combined with pan-x on iOS it occasionally locks
+       horizontal scroll entirely. */
+    touch-action: pan-x;
+    overscroll-behavior: contain;
   }
   .dcdaily-floating-quotes::-webkit-scrollbar { display: none; }
   .dcdaily-float-quote {
@@ -474,6 +484,13 @@
     width: 280px;
     flex: 0 0 280px;
     margin: 0;
-    scroll-snap-align: start;
+  }
+
+  /* Mobile-only: shrink the editor signature quote 20% so the CTA
+     sits closer to the fold and less of the hero is taken up by copy. */
+  .dcdaily-meet-quote {
+    font-size: clamp(15.2px, 1.6vw, 19.2px);
+    line-height: 1.5;
+    margin-bottom: 32px;
   }
 }
