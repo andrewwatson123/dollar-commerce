@@ -10,10 +10,20 @@
   font-family: var(--f-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   position: relative;
-  /* iOS Safari fix — `clip` was inconsistent inside layered absolute
-     layouts; `hidden` behaves more predictably here in combination
-     with the per-section overflow + touch-action declarations. */
-  overflow-x: hidden;
+  /* `clip` keeps the y-axis fully visible/native-document-scroll so
+     mobile touch never gets trapped. `hidden` would silently become
+     `hidden auto` on the y-axis and steal vertical scroll. */
+  overflow-x: clip;
+}
+
+/* On mobile drop the min-height so the page ends where the content
+   ends. The 100vh min-height was creating dead cream space below the
+   carousel. Also remove the decorative ::after radial accent which
+   extends 360px past the page bottom and adds scrollable empty space. */
+@media (max-width: 640px) {
+  .dcdaily-page { min-height: 0; }
+  .dcdaily-page::after { display: none; }
+  .dcdaily-page::before { display: none; }
 }
 
 /* Soft red corner accent, decorative only */
@@ -459,47 +469,96 @@
   .dcdaily-kpi:nth-child(4) { border-bottom: 0; }
   .dcdaily-kpi-value { font-size: 22px; }
 
-  /* Mobile carousel — iOS Safari fix.
-     - position:relative + z-index:2 + contain: layout paint isolate the
-       carousel into its own stable stacking + layout context so the
-       desktop absolute-positioned floats don't bleed compositing rules.
-     - touch-action: pan-y pan-x lets vertical drags route to the document
-       while horizontal pans stay in the carousel.
-     - overscroll-behavior: auto on both axes so Safari doesn't create a
-       scroll boundary that traps vertical scroll near the carousel.
-     - will-change: transform + backface-visibility on the cards gives
-       Safari stable composited layers, fixing the frozen-horizontal bug. */
-  .dcdaily-floating-quotes {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: row;
-    gap: 14px;
-    padding: 14px 18px 18px;
-    margin: 12px -18px 0;
+  /* Mobile hides the desktop floating quotes entirely.
+     The mobile-only <section.dc-mobile-testimonials> renders instead. */
+  .dcdaily-floating-quotes { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE TESTIMONIALS CAROUSEL
+   Sibling of <main>, separate DOM tree from desktop floats.
+   Plain horizontal scroller — no contain, no touch-action overrides,
+   no will-change. Just overflow-x: auto and natural flex flow.
+   ═══════════════════════════════════════════════════════════════════ */
+.dc-mobile-testimonials { display: none; }
+
+@media (max-width: 640px) {
+  .dc-mobile-testimonials {
+    display: block;
+    padding: 24px 0 32px;
     border-top: 1px solid rgba(11, 17, 40, 0.08);
+  }
+  .dc-mob-track {
+    list-style: none;
+    margin: 0;
+    /* First card sits centered on viewport; subsequent cards peek
+       from the right. End padding equals start padding so the LAST
+       card also snaps to center when scrolled to the end. */
+    padding-left: calc((100vw - 280px) / 2);
+    padding-right: calc((100vw - 280px) / 2);
+    display: flex;
+    gap: 12px;
     overflow-x: auto;
-    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    touch-action: pan-y pan-x;
-    overscroll-behavior-x: auto;
-    overscroll-behavior-y: auto;
-    contain: layout paint;
-    width: calc(100% + 36px);
-    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: calc((100vw - 280px) / 2);
   }
-  .dcdaily-floating-quotes::-webkit-scrollbar { display: none; }
-  .dcdaily-float-quote {
-    position: relative;
-    width: 280px;
-    min-width: 280px;
+  .dc-mob-track::-webkit-scrollbar { display: none; }
+  .dc-mob-card {
     flex: 0 0 280px;
+    background: #fff;
+    border: 1px solid rgba(11, 17, 40, 0.08);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 24px -16px rgba(11, 17, 40, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 200px;
+    scroll-snap-align: center;
+  }
+  .dc-mob-quote {
+    font-family: var(--f-fraunces), Georgia, serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #0B1128;
     margin: 0;
-    transform: none !important;
-    pointer-events: auto;
-    will-change: transform;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+  }
+  .dc-mob-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dc-mob-author img,
+  .dc-mob-initials {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .dc-mob-initials {
+    background: #0B1128;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .dc-mob-author b {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0B1128;
+    line-height: 1.2;
+  }
+  .dc-mob-role {
+    display: block;
+    font-size: 11px;
+    color: #64748B;
+    margin-top: 2px;
   }
 }

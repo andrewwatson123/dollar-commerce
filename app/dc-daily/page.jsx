@@ -282,9 +282,9 @@ export default function DCDailyLanding() {
 
       </main>
 
-      {/* Floating testimonial quotes — scattered as ambient social proof
-          behind/around the central content. Each one positioned absolutely
-          with a slight rotation so it reads like overheard chatter. */}
+      {/* ── DESKTOP testimonial quotes ────────────────────────────
+          Scattered absolutely around the central content. Hidden on
+          mobile via CSS where the carousel sibling below renders instead. */}
       <div className="dcdaily-floating-quotes" aria-label="What founders say">
         {TESTIMONIALS.map((t, i) => (
           <figure
@@ -309,6 +309,33 @@ export default function DCDailyLanding() {
           </figure>
         ))}
       </div>
+
+      {/* ── MOBILE testimonial carousel ───────────────────────────
+          Plain horizontal scroller, sibling of <main>. Separate DOM
+          tree from the desktop floats so the two layouts never share
+          conflicting CSS contexts. Hidden on desktop via CSS. */}
+      <section className="dc-mobile-testimonials" aria-label="What founders say">
+        <ul className="dc-mob-track">
+          {TESTIMONIALS.map((t) => (
+            <li key={t.name} className="dc-mob-card">
+              <p className="dc-mob-quote">&ldquo;{t.quote}&rdquo;</p>
+              <div className="dc-mob-author">
+                {t.avatar ? (
+                  <img src={t.avatar} alt="" />
+                ) : (
+                  <span className="dc-mob-initials">
+                    {t.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
+                  </span>
+                )}
+                <div>
+                  <b>{t.name}</b>
+                  <span className="dc-mob-role">{t.role}</span>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }
