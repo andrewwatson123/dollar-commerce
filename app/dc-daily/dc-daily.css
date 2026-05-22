@@ -10,11 +10,10 @@
   font-family: var(--f-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   position: relative;
-  /* overflow-x: clip instead of hidden so the y-axis stays in the
-     document's natural scroll context. Using `hidden` here was
-     making the entire page a nested scroll container on mobile,
-     which trapped touch gestures past the CTA. */
-  overflow-x: clip;
+  /* iOS Safari fix — `clip` was inconsistent inside layered absolute
+     layouts; `hidden` behaves more predictably here in combination
+     with the per-section overflow + touch-action declarations. */
+  overflow-x: hidden;
 }
 
 /* Soft red corner accent, decorative only */
@@ -429,8 +428,8 @@
 /* ── Mobile ─── */
 @media (max-width: 640px) {
   .dcdaily-nav-light { padding: 16px 16px; }
-  .dcdaily-center { padding: 8px 18px 56px; }
-  .dcdaily-center-hero { padding-bottom: 48px; }
+  .dcdaily-center { padding: 8px 18px 24px; }
+  .dcdaily-center-hero { padding-bottom: 24px; }
   .dcdaily-meet-portrait {
     width: 160px;
     height: 160px;
@@ -438,7 +437,13 @@
     border-width: 4px;
   }
   .dcdaily-meet-role { margin-bottom: 24px; }
-  .dcdaily-meet-quote { margin-bottom: 32px; }
+  /* Mobile-only: shrink the editor signature quote 20% so the CTA
+     sits closer to the fold and less of the hero is taken up by copy. */
+  .dcdaily-meet-quote {
+    font-size: clamp(15.2px, 1.6vw, 19.2px);
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
   .dcdaily-card { padding: 24px 22px 22px; }
   .dcdaily-meet-trust { flex-wrap: wrap; justify-content: center; gap: 8px 12px; }
 
@@ -454,10 +459,19 @@
   .dcdaily-kpi:nth-child(4) { border-bottom: 0; }
   .dcdaily-kpi-value { font-size: 22px; }
 
-  /* Floating quotes don't work on phones — collapse into a horizontal
-     swipeable carousel below the CTA. */
+  /* Mobile carousel — iOS Safari fix.
+     - position:relative + z-index:2 + contain: layout paint isolate the
+       carousel into its own stable stacking + layout context so the
+       desktop absolute-positioned floats don't bleed compositing rules.
+     - touch-action: pan-y pan-x lets vertical drags route to the document
+       while horizontal pans stay in the carousel.
+     - overscroll-behavior: auto on both axes so Safari doesn't create a
+       scroll boundary that traps vertical scroll near the carousel.
+     - will-change: transform + backface-visibility on the cards gives
+       Safari stable composited layers, fixing the frozen-horizontal bug. */
   .dcdaily-floating-quotes {
-    position: static;
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: row;
     gap: 14px;
@@ -465,32 +479,27 @@
     margin: 12px -18px 0;
     border-top: 1px solid rgba(11, 17, 40, 0.08);
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    scroll-padding-left: 18px;
-    /* iOS-correct touch handling: declare ONLY pan-x on the carousel.
-       The browser then routes vertical drags to the document scroll,
-       fixing the "stuck past the carousel" bug. Drop scroll-snap
-       because combined with pan-x on iOS it occasionally locks
-       horizontal scroll entirely. */
-    touch-action: pan-x;
-    overscroll-behavior: contain;
+    touch-action: pan-y pan-x;
+    overscroll-behavior-x: auto;
+    overscroll-behavior-y: auto;
+    contain: layout paint;
+    width: calc(100% + 36px);
+    scroll-behavior: smooth;
   }
   .dcdaily-floating-quotes::-webkit-scrollbar { display: none; }
   .dcdaily-float-quote {
-    position: static;
-    transform: none !important;
+    position: relative;
     width: 280px;
+    min-width: 280px;
     flex: 0 0 280px;
     margin: 0;
-  }
-
-  /* Mobile-only: shrink the editor signature quote 20% so the CTA
-     sits closer to the fold and less of the hero is taken up by copy. */
-  .dcdaily-meet-quote {
-    font-size: clamp(15.2px, 1.6vw, 19.2px);
-    line-height: 1.5;
-    margin-bottom: 32px;
+    transform: none !important;
+    pointer-events: auto;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 }
