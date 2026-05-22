@@ -35,6 +35,31 @@ function formatTimeAgo(iso) {
   if (days < 30) return `${days}d ago`;
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
+// Pick the best preview text for the hero card:
+//   1) first 3 sentences of the article body (heroBodyText, sliced)
+//   2) the article excerpt
+//   3) the article subtitle
+// Caps at ~360 chars so the layout doesn't blow out.
+function heroPreviewText(article) {
+  const raw = (article?.heroBodyText || '').replace(/\s+/g, ' ').trim();
+  if (raw) {
+    // Split on sentence boundary and take the first three.
+    const sentences = raw.match(/[^.!?]+[.!?]+/g) || [raw];
+    let preview = sentences.slice(0, 3).join(' ').trim();
+    if (preview.length > 360) {
+      const cut = preview.slice(0, 360);
+      const lastSpace = cut.lastIndexOf(' ');
+      preview = cut.slice(0, lastSpace > 320 ? lastSpace : 360).replace(/[,;:]?\s*$/, '') + '...';
+    }
+    if (preview.length > 40) return preview;
+  }
+  return (
+    article?.excerpt ||
+    article?.subtitle ||
+    "As AI-powered creative tools proliferate, Meta's Advantage+ campaigns show signs of creative fatigue."
+  );
+}
+
 function heroUrl(image, w = 1200, h = 675) {
   if (!image?.asset) return null;
   try {
@@ -433,33 +458,50 @@ export default function DCHomepageDesktop({
               fontSize: '34px',
               fontWeight: '700',
               lineHeight: '1.2',
-              marginBottom: '16px',
+              marginBottom: '12px',
               color: '#000'
             }}>
               {heroArticle?.title || "Meta's advertising platform faces unprecedented creative generation challenge"}
             </h1>
-            <p data-dc="hero-excerpt" style={{
-              fontSize: '18px',
-              lineHeight: '1.6',
-              color: '#666',
-              marginBottom: '16px'
-            }}>
-              {heroArticle?.excerpt || heroArticle?.subtitle || "As AI-powered creative tools proliferate, Meta's Advantage+ campaigns show signs of creative fatigue."}
-            </p>
-            <div style={{
+            <div data-dc="hero-byline" style={{
               display: 'flex',
-              gap: '16px',
               alignItems: 'center',
-              fontSize: '14px',
-              color: '#666'
+              gap: '10px',
+              fontSize: '13px',
+              color: '#666',
+              marginBottom: '16px',
             }}>
               <span style={{ fontWeight: '600', color: '#0F172A' }}>{heroArticle?.author?.name || 'Andrew Watson'}</span>
               <span>•</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Clock size={14} />
+                <Clock size={13} />
                 {formatTimeAgo(heroArticle?.publishedAt)}
               </span>
             </div>
+            <p data-dc="hero-excerpt" style={{
+              fontSize: '17px',
+              lineHeight: '1.65',
+              color: '#475569',
+              marginBottom: '20px'
+            }}>
+              {heroPreviewText(heroArticle)}
+            </p>
+            <span data-dc="hero-cta" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: '#0F172A',
+              color: '#fff',
+              fontWeight: '700',
+              fontSize: '13px',
+              letterSpacing: '0.02em',
+              padding: '10px 18px',
+              borderRadius: '8px',
+              textDecoration: 'none',
+            }}>
+              Read article
+              <span aria-hidden="true">→</span>
+            </span>
           </Link>
 
           {/* STICKY Sidebar - Top Stories */}

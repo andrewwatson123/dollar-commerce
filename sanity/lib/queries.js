@@ -59,9 +59,27 @@ export async function getMostReadArticles(limit = 5) {
 }
 
 export async function getHomepageData({ limit = 12 } = {}) {
+  // Hero projection adds heroBodyText — the plain-text concatenation of
+  // the first few body blocks, used to render a 3-sentence preview on
+  // the homepage hero card with a "Read article" CTA.
+  const HERO_PROJECTION = `{
+    _id,
+    title,
+    "slug": slug.current,
+    subtitle,
+    excerpt,
+    publishedAt,
+    isPremium,
+    "viewCount": coalesce(viewCount, 0),
+    "likeCount": coalesce(likeCount, 0),
+    "category": category->{title, "slug": slug.current, color},
+    "author": author->{name, "slug": slug.current, "avatar": avatar},
+    heroImage,
+    "heroBodyText": pt::text(body[0...6])
+  }`;
   return sanityClient.fetch(
     `{
-      "hero": *[_type=="article"] | order(publishedAt desc)[0] ${ARTICLE_CARD_PROJECTION},
+      "hero": *[_type=="article"] | order(publishedAt desc)[0] ${HERO_PROJECTION},
       "topStories": *[_type=="article"] | order(publishedAt desc)[1...${limit + 1}] ${ARTICLE_CARD_PROJECTION},
       "features": *[_type=="article" && (homepageSection=="founder-features" || category->slug.current=="features")] | order(publishedAt desc)[0...6] ${ARTICLE_CARD_PROJECTION},
       "platforms": *[_type=="article" && category->slug.current=="platforms"] | order(publishedAt desc)[0...6] ${ARTICLE_CARD_PROJECTION},
