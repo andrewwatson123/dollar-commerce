@@ -260,10 +260,10 @@ export default function DCDailyLanding() {
           </div>
 
           <blockquote className="dcdaily-meet-quote">
-            &ldquo;I wanted to create a safe place where young founders of
-            tomorrow could listen in on the philosophy from the best founders,
-            scientists, athletes around the World. For those who prefer
-            straight-talk over buzzwords.&rdquo;
+            &ldquo;I want to create a community where young founders of
+            tomorrow could listen in on the philosophy from the best operators
+            e-commerce has to offer. From founder interviews, scientists and
+            athletes from all walks of life.&rdquo;
           </blockquote>
 
           <div className="dcdaily-meet-cta">
