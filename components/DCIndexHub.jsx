@@ -655,7 +655,7 @@ function SectionHeading({ children, carousel }) {
         {children}
       </h2>
       {carousel && (
-        <div data-dc="carousel-controls" style={{ display: 'none', gap: 6 }}>
+        <div data-dc="carousel-controls" style={{ display: 'flex', gap: 6 }}>
           <button
             onClick={() => scroll(-1)}
             aria-label="Previous"
