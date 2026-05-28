@@ -610,24 +610,34 @@ export default function DCIndexHub({ dcIndex, basketStocks, etfStocks, watchlist
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <SectionHeading carousel="related-carousel">Related Stocks</SectionHeading>
       <div data-dc="related-carousel" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8, marginBottom: 16 }}>
-        {displayWatchlist.map((s) => (
-          <div key={s.symbol} style={{
-            minWidth: 140, background: '#fff', borderRadius: 10, padding: '12px 14px',
-            border: '1px solid #E8E8E8', flexShrink: 0,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {stockLogoUrl(s.symbol) && <img src={stockLogoUrl(s.symbol, 16)} alt="" width={16} height={16} style={{ borderRadius: 3 }} />}
-                <span style={{ fontSize: 14, fontWeight: 700 }}>{s.symbol}</span>
+        {displayWatchlist.map((s) => {
+          const unavailable = s.price == null;
+          return (
+            <div key={s.symbol} style={{
+              minWidth: 140, background: '#fff', borderRadius: 10, padding: '12px 14px',
+              border: '1px solid #E8E8E8', flexShrink: 0,
+              opacity: unavailable ? 0.55 : 1,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {stockLogoUrl(s.symbol) && <img src={stockLogoUrl(s.symbol, 16)} alt="" width={16} height={16} style={{ borderRadius: 3 }} />}
+                  <span style={{ fontSize: 14, fontWeight: 700 }}>{s.symbol}</span>
+                </div>
+                {unavailable ? (
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#94A3B8' }}>—</span>
+                ) : (
+                  <span style={{ fontSize: 10, fontWeight: 700, color: (s.changePercent ?? 0) >= 0 ? '#10b981' : '#ef4444' }}>
+                    {(s.changePercent ?? 0) >= 0 ? '▲' : '▼'} {Math.abs(s.changePercent ?? 0).toFixed(1)}%
+                  </span>
+                )}
               </div>
-              <span style={{ fontSize: 10, fontWeight: 700, color: (s.changePercent ?? 0) >= 0 ? '#10b981' : '#ef4444' }}>
-                {(s.changePercent ?? 0) >= 0 ? '▲' : '▼'} {Math.abs(s.changePercent ?? 0).toFixed(1)}%
-              </span>
+              <div style={{ fontSize: 10, color: '#999' }}>{s.name}</div>
+              <div style={{ fontSize: 15, fontWeight: 600, marginTop: 2 }}>
+                {unavailable ? <span style={{ color: '#94A3B8' }}>—</span> : fmtPrice(s.price)}
+              </div>
             </div>
-            <div style={{ fontSize: 10, color: '#999' }}>{s.name}</div>
-            <div style={{ fontSize: 15, fontWeight: 600, marginTop: 2 }}>{fmtPrice(s.price)}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
     </div>

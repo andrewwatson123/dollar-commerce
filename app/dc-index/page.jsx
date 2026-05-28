@@ -30,7 +30,7 @@ export const metadata = {
 
 // Base prices and market caps now imported from lib/index-base-data.js
 
-async function fetchQuote(symbol) {
+async function fetchQuote(symbol, attempt = 0) {
   const token = process.env.FINNHUB_API_KEY;
   if (!token) return null;
   try {
@@ -38,6 +38,11 @@ async function fetchQuote(symbol) {
       `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${token}`,
       { next: { revalidate: 300 } }
     );
+    // 429 = rate limited. Retry once after a short wait.
+    if (res.status === 429 && attempt === 0) {
+      await new Promise((r) => setTimeout(r, 600));
+      return fetchQuote(symbol, 1);
+    }
     if (!res.ok) return null;
     const q = await res.json();
     if (typeof q.c !== 'number' || q.c === 0) return null;
@@ -50,12 +55,34 @@ async function fetchQuote(symbol) {
   }
 }
 
-async function fetchQuotes(list) {
-  const quotes = await Promise.all(list.map((s) => fetchQuote(s.symbol)));
-  return quotes.filter(Boolean).map((q) => {
-    const m = list.find((s) => s.symbol === q.symbol) || {};
-    return { ...q, name: m.name || q.symbol, bucket: m.bucket || null };
-  });
+// Throttled batch fetcher — chunks requests so we don't blow Finnhub's
+// 60 calls/min free-tier limit when the basket + ETFs + watchlist fire
+// in parallel (~140 calls). Without this most quotes silently return
+// null and entire tickers disappear from the UI.
+async function fetchQuotes(list, { keepNulls = false } = {}) {
+  const CHUNK = 20;
+  const PAUSE_MS = 250;
+  const results = [];
+  for (let i = 0; i < list.length; i += CHUNK) {
+    const chunk = list.slice(i, i + CHUNK);
+    const quotes = await Promise.all(chunk.map((s) => fetchQuote(s.symbol)));
+    quotes.forEach((q, idx) => {
+      const m = chunk[idx];
+      if (q) {
+        results.push({ ...q, name: m.name || q.symbol, bucket: m.bucket || null });
+      } else if (keepNulls) {
+        // Placeholder so the carousel stays stable when a quote fails.
+        results.push({
+          symbol: m.symbol, name: m.name || m.symbol, bucket: m.bucket || null,
+          price: null, change: null, changePercent: null,
+          high: null, low: null, open: null, prevClose: null, timestamp: null,
+          unavailable: true,
+        });
+      }
+    });
+    if (i + CHUNK < list.length) await new Promise((r) => setTimeout(r, PAUSE_MS));
+  }
+  return results;
 }
 
 async function fetchConsumerSentiment() {
@@ -90,7 +117,7 @@ export default async function DCIndexPage() {
   const [basketStocks, etfStocks, watchlistStocks, sentiment, topBar] = await Promise.all([
     fetchQuotes(DC_INDEX_BASKET),
     fetchQuotes(ECOMMERCE_ETFS),
-    fetchQuotes(WATCHLIST),
+    fetchQuotes(WATCHLIST, { keepNulls: true }),
     fetchConsumerSentiment(),
     getTopBarData(),
   ]);
