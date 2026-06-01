@@ -182,9 +182,8 @@ body:has([data-dc="fullscreen"]) [data-dc="side-nav"] {
   [data-dc="hero-grid"] > * {
     margin-bottom: 32px;
   }
-  [data-dc="hero-image"] {
-    height: 240px !important;
-  }
+  /* Hero already uses aspect-ratio 3/2 from its inline style — no
+     override needed at this breakpoint. */
   [data-dc="hero-title"] {
     font-size: 28px !important;
     line-height: 1.2 !important;
@@ -287,7 +286,7 @@ body:has([data-dc="fullscreen"]) [data-dc="side-nav"] {
   }
 
   /* --- Homepage hero (extends 900 rules) --- */
-  [data-dc="hero-image"]   { height: 200px !important; }
+  /* hero-image: aspect-ratio 3/2 inherited from inline style */
   [data-dc="hero-title"]   { font-size: 22px !important; text-align: left !important; }
   [data-dc="hero-excerpt"] { font-size: 14px !important; text-align: left !important; }
 
@@ -597,6 +596,15 @@ body:has([data-dc="fullscreen"]) [data-dc="side-nav"] {
     height: auto !important;
     margin: 20px 0 !important;
     border-radius: 6px !important;
+  }
+  /* Author avatar in the meta row is a 32px circular icon, NOT an
+     article-body image. Override the blanket img rule above. */
+  [data-dc="article-meta"] img {
+    width: 32px !important;
+    height: 32px !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
   }
 
   /* --- Profile --- */

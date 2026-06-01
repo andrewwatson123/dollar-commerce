@@ -27,7 +27,7 @@ export default function ArticleCard({ article, variant = 'compact' }) {
           href={`/article/${slug}`}
           style={{
             width: '100%',
-            aspectRatio: '4 / 3',
+            aspectRatio: '3 / 2',
             background: '#eee',
             borderRadius: 4,
             overflow: 'hidden',
@@ -37,7 +37,7 @@ export default function ArticleCard({ article, variant = 'compact' }) {
         >
           {heroImage?.asset && (
             <Image
-              src={urlFor(heroImage).width(800).height(600).url()}
+              src={urlFor(heroImage).width(900).height(600).fit('crop').url()}
               alt={title}
               fill
               style={{ objectFit: 'cover' }}

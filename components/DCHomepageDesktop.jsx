@@ -63,7 +63,10 @@ function heroPreviewText(article) {
 function heroUrl(image, w = 1200, h = 675) {
   if (!image?.asset) return null;
   try {
-    return urlFor(image).width(w).height(h).url();
+    // fit('crop') ensures Sanity crops to the exact aspect we're rendering
+    // at (instead of letterboxing) so the CSS background-cover doesn't
+    // need to zoom-overflow the container on mobile.
+    return urlFor(image).width(w).height(h).fit('crop').url();
   } catch {
     return null;
   }
@@ -431,9 +434,9 @@ export default function DCHomepageDesktop({
           >
             <div data-dc="hero-image" style={{
               width: '100%',
-              height: '440px',
+              aspectRatio: '3 / 2',
               background: heroUrl(heroArticle?.heroImage)
-                ? `#eee center/cover no-repeat url(${heroUrl(heroArticle?.heroImage, 1600, 900)})`
+                ? `#eee center/cover no-repeat url(${heroUrl(heroArticle?.heroImage, 1500, 1000)})`
                 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               borderRadius: '4px',
               marginBottom: '24px',

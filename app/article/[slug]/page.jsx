@@ -140,7 +140,7 @@ export default async function ArticlePage({ params }) {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 16,
+            gap: 12,
             fontSize: 14,
             color: '#666',
             padding: '16px 0',
@@ -149,32 +149,42 @@ export default async function ArticlePage({ params }) {
             marginBottom: 32,
           }}
         >
-          {article.author && (
+          {article.author?.avatar?.asset && (
             <Link
               href={`/author/${article.author.slug}`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 10,
-                fontWeight: 600,
-                color: '#0F172A',
-                textDecoration: 'none',
-              }}
+              style={{ display: 'block', flexShrink: 0, lineHeight: 0 }}
+              aria-label={article.author.name}
             >
-              {article.author.avatar?.asset && (
-                <Image
-                  src={urlFor(article.author.avatar).width(64).height(64).fit('crop').url()}
-                  alt={article.author.name}
-                  width={32}
-                  height={32}
-                  style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', display: 'block' }}
-                />
-              )}
-              {article.author.name}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={urlFor(article.author.avatar).width(120).height(120).fit('crop').url()}
+                alt={article.author.name}
+                width={32}
+                height={32}
+                style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', display: 'block' }}
+              />
             </Link>
           )}
-          <span>·</span>
-          <span>{formatDate(article.publishedAt)}</span>
+          {article.author && (
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25, minWidth: 0 }}>
+              <Link
+                href={`/author/${article.author.slug}`}
+                style={{
+                  fontWeight: 600,
+                  color: '#0F172A',
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {article.author.name}
+              </Link>
+              <span style={{ fontSize: 12, color: '#94A3B8' }}>
+                {formatDate(article.publishedAt)}
+              </span>
+            </div>
+          )}
           <div style={{ flex: 1 }} />
           <LikeButton slug={article.slug} initialCount={article.likeCount || 0} size={20} color="#0F172A" />
           <BookmarkButton article={article} size={22} color="#0F172A" />
