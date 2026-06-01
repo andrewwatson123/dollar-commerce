@@ -152,8 +152,24 @@ export default async function ArticlePage({ params }) {
           {article.author && (
             <Link
               href={`/author/${article.author.slug}`}
-              style={{ fontWeight: 600, color: '#0F172A', textDecoration: 'none' }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 10,
+                fontWeight: 600,
+                color: '#0F172A',
+                textDecoration: 'none',
+              }}
             >
+              {article.author.avatar?.asset && (
+                <Image
+                  src={urlFor(article.author.avatar).width(64).height(64).fit('crop').url()}
+                  alt={article.author.name}
+                  width={32}
+                  height={32}
+                  style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', display: 'block' }}
+                />
+              )}
               {article.author.name}
             </Link>
           )}
