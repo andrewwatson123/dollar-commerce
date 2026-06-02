@@ -28,7 +28,10 @@ export async function GET(req) {
 
   return new Promise((resolve) => {
     const scriptPath = path.join(process.cwd(), 'scripts', 'scrape-platform-news.mjs');
-    const child = spawn('node', ['--env-file=.env.local', scriptPath], {
+    // Vercel injects env vars into process.env directly — no .env.local
+    // file exists in the serverless bundle, so `--env-file=.env.local`
+    // makes node exit code 9 with "node: .env.local: not found".
+    const child = spawn('node', [scriptPath], {
       cwd: process.cwd(),
       env: process.env,
     });
